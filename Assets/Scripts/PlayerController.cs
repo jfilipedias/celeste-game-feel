@@ -5,20 +5,23 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     #region Attributies
-
     [Header("Movement")]
-    [SerializeField] private float maxSpeed;
-    [SerializeField] private float speedIncreaser;
+    [SerializeField] private float speed;
     [SerializeField] private float jumpForce;
 
     [Header("Check Collision")]
-    [SerializeField] private Transform playerFoot;
     [SerializeField] private float gizmoSize;
-    [SerializeField] private float groundDistance;
+    [SerializeField] private float collisionDistance;
     [SerializeField] private LayerMask groundMask;
 
+    [Header("Ground Collision")]
+    [SerializeField] private Transform playerFoot;
+ 
+    [Header("Wall Collision")]
+    [SerializeField] private Transform playerRightSide;
+    [SerializeField] private Transform playerLeftSide;
+
     private float movementDirection;
-    private float speed;
 
     private bool isJumping = false;
     private bool isGrounded = false;
@@ -44,13 +47,15 @@ public class PlayerController : MonoBehaviour
     {
         if (isJumping && isGrounded)
             Jump();
-        else
+        else if(!isGrounded)
             CheckGroundCollision();
 
-        if (movementDirection != 0)
-            Move();
-        else
-            ResetSpeed();
+        Move();
+
+        if (isGrounded && playerRigidbody2D.velocity.y != 0)
+            ResetVerticalVelocity();
+        
+        Debug.Log(playerRigidbody2D.velocity.y);
     }
 
 
@@ -58,6 +63,8 @@ public class PlayerController : MonoBehaviour
     {
         Gizmos.color = Color.magenta;
         Gizmos.DrawWireSphere(playerFoot.position, gizmoSize);
+        Gizmos.DrawWireSphere(playerRightSide.position, gizmoSize);
+        Gizmos.DrawWireSphere(playerLeftSide.position, gizmoSize);
     }
     #endregion
 
@@ -76,8 +83,6 @@ public class PlayerController : MonoBehaviour
     
     private void Move()
     {
-        SmoothSpeed();
-
         float newVelocityX = movementDirection * speed;
 
         playerRigidbody2D.velocity =  new Vector2(newVelocityX, playerRigidbody2D.velocity.y);
@@ -86,7 +91,6 @@ public class PlayerController : MonoBehaviour
 
     private void Jump()
     {
-        Debug.Log("Jump");
         isJumping = false;
         isGrounded = false;
 
@@ -94,27 +98,17 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    private void SmoothSpeed()
-    {
-        if (speed < maxSpeed)
-            speed *= speedIncreaser;
-        else
-            speed = maxSpeed;
-    }
-
-
-    private void ResetSpeed()
-    {
-        speed = 1f;
-        playerRigidbody2D.velocity = new Vector2(0, playerRigidbody2D.velocity.y);
-    }
-
-
     private void CheckGroundCollision()
     {
         Vector2 rayStart = (Vector2)playerFoot.position;
 
-        isGrounded = Physics2D.Raycast(rayStart, Vector2.down, groundDistance, groundMask);
+        isGrounded = Physics2D.Raycast(rayStart, Vector2.down, collisionDistance, groundMask);
+    }
+
+
+    private void ResetVerticalVelocity()
+    {
+        playerRigidbody2D.velocity = new Vector2(playerRigidbody2D.velocity.x, 0);
     }
     #endregion
 }
