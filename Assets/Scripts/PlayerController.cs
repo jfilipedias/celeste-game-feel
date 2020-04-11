@@ -56,12 +56,6 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        Debug.Log(collision.gameObject.name);
-    }
-
-
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.magenta;
@@ -76,6 +70,12 @@ public class PlayerController : MonoBehaviour
     #region Controller Methods
     private void HandleInput()
     {
+        /**
+         * Z to Hold
+         * X to Dash 
+         * C to Jump
+         */ 
+
         // Horizontal movement
         movementDirection = Input.GetAxisRaw("Horizontal");
        
