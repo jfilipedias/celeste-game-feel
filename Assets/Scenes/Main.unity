@@ -1029,8 +1029,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eafbf626127280f4db48de2a9cb32cfe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 4
+  moveSpeed: 4
+  climbSpeed: 1
   jumpForce: 4
+  dashForce: 8
   gizmoSize: 0.03
   collisionDistance: 0.02
   groundMask:

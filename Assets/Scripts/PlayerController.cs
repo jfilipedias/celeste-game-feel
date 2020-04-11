@@ -6,8 +6,10 @@ public class PlayerController : MonoBehaviour
 {
     #region Attributies
     [Header("Movement")]
-    [SerializeField] private float speed;
+    [SerializeField] private float moveSpeed;
+    [SerializeField] private float climbSpeed;
     [SerializeField] private float jumpForce;
+    [SerializeField] private float dashForce;
 
     [Header("Check Collision")]
     [SerializeField] private float gizmoSize;
@@ -18,10 +20,15 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform playerRightSide;
     [SerializeField] private Transform playerLeftSide;
 
-    private float movementDirection;
+    private float horizontalMovementDirection;
+    private float verticalMovementDirection;
 
     private bool isJumping = false;
     private bool isGrounded = false;
+    private bool isClimbing = false;
+    private bool isDashing = false;
+    private bool isRightWall = false;
+    private bool isLeftWall = false;
     
     private Rigidbody2D playerRigidbody2D;
     #endregion
@@ -47,12 +54,20 @@ public class PlayerController : MonoBehaviour
         else
             CheckGroundCollision();
 
+        CheckWallCollistion();
+
         Move();
 
-        if (isGrounded && playerRigidbody2D.velocity.y != 0)
+        if (isClimbing)
+            Climb();
+        else
+            playerRigidbody2D.bodyType = RigidbodyType2D.Dynamic;
+
+        if (isDashing)
+            Dash();
+
+        if (isGrounded && !isClimbing && playerRigidbody2D.velocity.y != 0)
             ResetVerticalVelocity();
-        
-        //Debug.Log(playerRigidbody2D.velocity.y);
     }
 
 
@@ -71,23 +86,32 @@ public class PlayerController : MonoBehaviour
     private void HandleInput()
     {
         /**
-         * Z to Hold
+         * Z to Climb
          * X to Dash 
          * C to Jump
-         */ 
+         */
+         
+        // Horizontal Movement
+        horizontalMovementDirection = Input.GetAxisRaw("Horizontal");
 
-        // Horizontal movement
-        movementDirection = Input.GetAxisRaw("Horizontal");
+        // Vertical Movement
+        verticalMovementDirection = Input.GetAxisRaw("Vertical");
        
         // Jumping
         if (Input.GetButtonDown("Jump") && isGrounded)
             isJumping = true;
+
+        // Climb
+        if (Input.GetButton("Hold") && (isRightWall || isLeftWall))
+            isClimbing = true;
+        else
+            isClimbing = false;
     }
 
     
     private void Move()
     {
-        float newVelocityX = movementDirection * speed;
+        float newVelocityX = horizontalMovementDirection * moveSpeed;
 
         playerRigidbody2D.velocity =  new Vector2(newVelocityX, playerRigidbody2D.velocity.y);
     }
@@ -102,6 +126,21 @@ public class PlayerController : MonoBehaviour
     }
 
 
+    private void Climb()
+    {
+        float newVelocityY = verticalMovementDirection * climbSpeed;
+
+        playerRigidbody2D.bodyType = RigidbodyType2D.Kinematic;
+        playerRigidbody2D.velocity = new Vector2(0, newVelocityY);
+    }
+
+
+    private void Dash()
+    {
+
+    }
+
+
     private void CheckGroundCollision()
     {
         Vector2 rayStart = (Vector2)playerFoot.position;
@@ -109,6 +148,15 @@ public class PlayerController : MonoBehaviour
         isGrounded = Physics2D.Raycast(rayStart, Vector2.down, collisionDistance, groundMask);
     }
 
+
+    private void CheckWallCollistion()
+    {
+        Vector2 rightRayStart = (Vector2)playerRightSide.position;
+        Vector2 leftRayStart = (Vector2)playerLeftSide.position;
+
+        isRightWall = Physics2D.Raycast(rightRayStart, Vector2.right, collisionDistance, groundMask);
+        isLeftWall = Physics2D.Raycast(leftRayStart, Vector2.left, collisionDistance, groundMask);
+    }
 
     private void ResetVerticalVelocity()
     {
