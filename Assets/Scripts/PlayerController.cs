@@ -13,11 +13,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float gizmoSize;
     [SerializeField] private float collisionDistance;
     [SerializeField] private LayerMask groundMask;
-
-    [Header("Ground Collision")]
+    [SerializeField] private Transform playerHead;
     [SerializeField] private Transform playerFoot;
- 
-    [Header("Wall Collision")]
     [SerializeField] private Transform playerRightSide;
     [SerializeField] private Transform playerLeftSide;
 
@@ -47,7 +44,7 @@ public class PlayerController : MonoBehaviour
     {
         if (isJumping && isGrounded)
             Jump();
-        else if(!isGrounded)
+        else
             CheckGroundCollision();
 
         Move();
@@ -55,13 +52,20 @@ public class PlayerController : MonoBehaviour
         if (isGrounded && playerRigidbody2D.velocity.y != 0)
             ResetVerticalVelocity();
         
-        Debug.Log(playerRigidbody2D.velocity.y);
+        //Debug.Log(playerRigidbody2D.velocity.y);
+    }
+
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        Debug.Log(collision.gameObject.name);
     }
 
 
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.magenta;
+        Gizmos.DrawWireSphere(playerHead.position, gizmoSize);
         Gizmos.DrawWireSphere(playerFoot.position, gizmoSize);
         Gizmos.DrawWireSphere(playerRightSide.position, gizmoSize);
         Gizmos.DrawWireSphere(playerLeftSide.position, gizmoSize);
