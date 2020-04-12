@@ -13,10 +13,12 @@ public class PlayerController : MonoBehaviour
 
     [Header("Check Collision")]
     [SerializeField] private float gizmoSize;
-    [SerializeField] private float collisionDistance;
+    [SerializeField] private float groundCollisionDistance;
+    [SerializeField] private float wallCollisionDistance;
     [SerializeField] private LayerMask groundMask;
+    [SerializeField] private Transform playerFace;
+    [SerializeField] private Transform playerHand;
     [SerializeField] private Transform playerFoot;
-    [SerializeField] private Transform playerHead;
 
     private Rigidbody2D playerRigidbody2D;
     private SpriteRenderer playerSprite;
@@ -38,6 +40,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         playerRigidbody2D = this.GetComponent<Rigidbody2D>();
+        playerSprite = this.GetComponent<SpriteRenderer>();
     }
 
 
@@ -59,7 +62,7 @@ public class PlayerController : MonoBehaviour
 
         CheckWallCollistion();
 
-        Move();
+        Run();
 
         if (isClimbing)
             Climb();
@@ -77,22 +80,26 @@ public class PlayerController : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.magenta;
-        Gizmos.DrawWireSphere(playerHead.position, gizmoSize);
+
+        // Face
+        Gizmos.DrawWireSphere(playerFace.position, gizmoSize);
+        Gizmos.DrawLine(playerFace.position, (playerFace.position + new Vector3(wallCollisionDistance * facingDirection.x, 0, 0)));
+        
+        // Hand
+        Gizmos.DrawWireSphere(playerHand.position, gizmoSize);
+        Gizmos.DrawLine(playerHand.position, (playerHand.position + new Vector3(wallCollisionDistance * facingDirection.x, 0, 0)));
+        
+        // Foot
         Gizmos.DrawWireSphere(playerFoot.position, gizmoSize);
-        Gizmos.DrawWireSphere(playerHead.position, gizmoSize);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawLine(playerFoot.position, (playerFoot.position + new Vector3(0, groundCollisionDistance * -1, 0)));
     }
     #endregion
 
 
     #region Controller Methods
     private void HandleInput()
-    {
-        /**
-         * Z to Climb
-         * X to Dash 
-         * C to Jump
-         */
-         
+    {         
         // Horizontal Movement
         horizontalMovementDirection = Input.GetAxisRaw("Horizontal");
 
@@ -111,7 +118,7 @@ public class PlayerController : MonoBehaviour
     }
 
     
-    private void Move()
+    private void Run()
     {
         float newVelocityX = horizontalMovementDirection * moveSpeed;
 
@@ -145,7 +152,7 @@ public class PlayerController : MonoBehaviour
 
     private void Flip()
     {
-        facingDirection *= -facingDirection;
+        facingDirection.x *= -1;
         playerSprite.flipX = !playerSprite.flipX;
     }
 
@@ -153,16 +160,14 @@ public class PlayerController : MonoBehaviour
     private void CheckGroundCollision()
     {
         Vector2 rayStart = (Vector2)playerFoot.position;
-
-        isGrounded = Physics2D.Raycast(rayStart, Vector2.down, collisionDistance, groundMask);
+        isGrounded = Physics2D.Raycast(rayStart, Vector2.down, groundCollisionDistance, groundMask);
     }
 
 
     private void CheckWallCollistion()
     {
-        Vector2 rightRayStart = (Vector2)playerHead.position;
-
-        isWall = Physics2D.Raycast(rightRayStart, Vector2.right, collisionDistance, groundMask);
+        Vector2 rayStart = (Vector2)playerHand.position;
+        isWall = Physics2D.Raycast(rayStart, facingDirection, wallCollisionDistance, groundMask);
     }
 
 
