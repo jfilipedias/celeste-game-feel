@@ -15,22 +15,22 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float gizmoSize;
     [SerializeField] private float collisionDistance;
     [SerializeField] private LayerMask groundMask;
-    [SerializeField] private Transform playerHead;
     [SerializeField] private Transform playerFoot;
-    [SerializeField] private Transform playerRightSide;
-    [SerializeField] private Transform playerLeftSide;
+    [SerializeField] private Transform playerHead;
+
+    private Rigidbody2D playerRigidbody2D;
+    private SpriteRenderer playerSprite;
 
     private float horizontalMovementDirection;
     private float verticalMovementDirection;
 
-    private bool isJumping = false;
+    private Vector2 facingDirection = Vector2.right;
+
     private bool isGrounded = false;
+    private bool isWall = false;
+    private bool isJumping = false;
     private bool isClimbing = false;
     private bool isDashing = false;
-    private bool isRightWall = false;
-    private bool isLeftWall = false;
-    
-    private Rigidbody2D playerRigidbody2D;
     #endregion
 
 
@@ -44,6 +44,9 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         HandleInput();
+
+        if (facingDirection.x != horizontalMovementDirection && horizontalMovementDirection != 0)
+            Flip();
     }
 
 
@@ -76,8 +79,7 @@ public class PlayerController : MonoBehaviour
         Gizmos.color = Color.magenta;
         Gizmos.DrawWireSphere(playerHead.position, gizmoSize);
         Gizmos.DrawWireSphere(playerFoot.position, gizmoSize);
-        Gizmos.DrawWireSphere(playerRightSide.position, gizmoSize);
-        Gizmos.DrawWireSphere(playerLeftSide.position, gizmoSize);
+        Gizmos.DrawWireSphere(playerHead.position, gizmoSize);
     }
     #endregion
 
@@ -102,7 +104,7 @@ public class PlayerController : MonoBehaviour
             isJumping = true;
 
         // Climb
-        if (Input.GetButton("Hold") && (isRightWall || isLeftWall))
+        if (Input.GetButton("Hold") && isWall)
             isClimbing = true;
         else
             isClimbing = false;
@@ -141,6 +143,13 @@ public class PlayerController : MonoBehaviour
     }
 
 
+    private void Flip()
+    {
+        facingDirection *= -facingDirection;
+        playerSprite.flipX = !playerSprite.flipX;
+    }
+
+
     private void CheckGroundCollision()
     {
         Vector2 rayStart = (Vector2)playerFoot.position;
@@ -151,12 +160,11 @@ public class PlayerController : MonoBehaviour
 
     private void CheckWallCollistion()
     {
-        Vector2 rightRayStart = (Vector2)playerRightSide.position;
-        Vector2 leftRayStart = (Vector2)playerLeftSide.position;
+        Vector2 rightRayStart = (Vector2)playerHead.position;
 
-        isRightWall = Physics2D.Raycast(rightRayStart, Vector2.right, collisionDistance, groundMask);
-        isLeftWall = Physics2D.Raycast(leftRayStart, Vector2.left, collisionDistance, groundMask);
+        isWall = Physics2D.Raycast(rightRayStart, Vector2.right, collisionDistance, groundMask);
     }
+
 
     private void ResetVerticalVelocity()
     {
