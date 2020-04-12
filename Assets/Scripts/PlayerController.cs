@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float moveSpeed;
     [SerializeField] private float climbSpeed;
     [SerializeField] private float jumpForce;
+    [SerializeField] private float jumpOverWallForce;
     [SerializeField] private float dashForce;
 
     [Header("Check Collision")]
@@ -29,7 +30,8 @@ public class PlayerController : MonoBehaviour
     private Vector2 facingDirection = Vector2.right;
 
     private bool isGrounded = false;
-    private bool isWall = false;
+    private bool isOnWall = false;
+    private bool isFacingWall = false;
     private bool isJumping = false;
     private bool isClimbing = false;
     private bool isDashing = false;
@@ -55,20 +57,27 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // Jump
         if (isJumping && isGrounded)
             Jump();
         else
             CheckGroundCollision();
-
-        CheckWallCollistion();
-
+        
+        // Run
         Run();
 
+        //Climb
+        CheckWallCollistion();
+        
         if (isClimbing)
             Climb();
         else
             playerRigidbody2D.bodyType = RigidbodyType2D.Dynamic;
 
+        if (isClimbing && !isFacingWall)
+            JumpOverWall();
+
+        // Dash
         if (isDashing)
             Dash();
 
@@ -144,6 +153,11 @@ public class PlayerController : MonoBehaviour
     }
 
 
+    private void JumpOverWall()
+    {
+
+    }
+
     private void Dash()
     {
 
@@ -166,8 +180,11 @@ public class PlayerController : MonoBehaviour
 
     private void CheckWallCollistion()
     {
-        Vector2 rayStart = (Vector2)playerHand.position;
-        isWall = Physics2D.Raycast(rayStart, facingDirection, wallCollisionDistance, groundMask);
+        Vector2 handRayStart = (Vector2)playerHand.position;
+        isOnWall = Physics2D.Raycast(handRayStart, facingDirection, wallCollisionDistance, groundMask);
+
+        Vector2 faceRayStart = (Vector2)playerFace.position;
+        isFacingWall = Physics2D.Raycast(faceRayStart, facingDirection, wallCollisionDistance, groundMask);
     }
 
 
