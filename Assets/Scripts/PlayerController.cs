@@ -9,63 +9,53 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float moveSpeed;
     [SerializeField] private float climbSpeed;
     [SerializeField] private float jumpForce;
-    [SerializeField] private float jumpOverWallForce;
+    [SerializeField] private float climbLedgeForce;
     [SerializeField] private float dashForce;
-
-    [Header("Check Collision")]
-    [SerializeField] private float groundCollisionDistance;
-    [SerializeField] private float wallCollisionDistance;
-    [SerializeField] private float sphereGizmoSize;
-    [SerializeField] private LayerMask groundMask;
-    [SerializeField] private Transform playerHand;
-    [SerializeField] private Transform playerKnee;
-    [SerializeField] private Transform playerRightFoot;
-    [SerializeField] private Transform playerLeftFoot;
 
     private Rigidbody2D playerRigidbody2D;
     private SpriteRenderer playerSprite;
+    private PlayerCollision playerCollision;
 
     private float horizontalMovementDirection;
     private float verticalMovementDirection;
 
-    private Vector2 facingDirection = Vector2.right;
+    private float facingDirection = Vector2.right.x;
 
     private bool isOnGround = false;
     private bool isOnWall = false;
-    private bool isFacingWall = false;
+    private bool isHandOnWall = false;
     private bool isJumping = false;
     private bool isClimbing = false;
     private bool isDashing = false;
     #endregion
 
+    #region Properties
+    public float FacingDirection { get => facingDirection; }
+    #endregion
 
     #region Engine Methods
     private void Awake()
     {
         playerRigidbody2D = this.GetComponent<Rigidbody2D>();
         playerSprite = this.GetComponent<SpriteRenderer>();
+        playerCollision = this.GetComponent<PlayerCollision>();
     }
-
 
     private void Update()
     {
         HandleInput();
 
-        if (facingDirection.x != horizontalMovementDirection && horizontalMovementDirection != 0)
+        if (facingDirection != horizontalMovementDirection && horizontalMovementDirection != 0 && !isClimbing)
             Flip();
     }
-
 
     private void FixedUpdate()
     {
         // Check Colision
-        if(!isOnGround)
-            CheckGroundCollision();
-    
-        CheckWallCollistion();
+        CheckCollision();
 
         // Move
-        if (!isClimbing)
+        if(!isClimbing)
             Move();
 
         // Jump
@@ -76,10 +66,10 @@ public class PlayerController : MonoBehaviour
         if (isClimbing)
             Climb();
         else
-            playerRigidbody2D.bodyType = RigidbodyType2D.Dynamic;
+            SetDinamicRigidbody2D();
 
-        if (isClimbing && !isFacingWall)
-            JumpOverWall();
+        if (isClimbing && !isHandOnWall)
+            //StartCoroutine(ClimbLedge());
 
         // Dash
         if (isDashing)
@@ -89,29 +79,7 @@ public class PlayerController : MonoBehaviour
         if (isOnGround && !isClimbing && playerRigidbody2D.velocity.y != 0)
             ResetVerticalVelocity();
     }
-
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.magenta;
-
-        // Face
-        Gizmos.DrawWireSphere(playerKnee.position, sphereGizmoSize);
-        Gizmos.DrawLine(playerKnee.position, (playerKnee.position + new Vector3(wallCollisionDistance * facingDirection.x, 0, 0)));
-        
-        // Hand
-        Gizmos.DrawWireSphere(playerHand.position, sphereGizmoSize);
-        Gizmos.DrawLine(playerHand.position, (playerHand.position + new Vector3(wallCollisionDistance * facingDirection.x, 0, 0)));
-        
-        // Foot
-        Gizmos.DrawWireSphere(playerRightFoot.position, sphereGizmoSize);
-        Gizmos.DrawWireSphere(playerLeftFoot.position, sphereGizmoSize);
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(playerRightFoot.position, (playerRightFoot.position + new Vector3(0, groundCollisionDistance * -1, 0)));
-        Gizmos.DrawLine(playerLeftFoot.position, (playerLeftFoot.position + new Vector3(0, groundCollisionDistance * -1, 0)));
-    }
     #endregion
-
 
     #region Controller Methods
     private void HandleInput()
@@ -132,16 +100,13 @@ public class PlayerController : MonoBehaviour
         else
             isClimbing = false;
     }
-
     
     private void Move()
     {
-        Debug.Log("Move");
         float newVelocityX = horizontalMovementDirection * moveSpeed;
 
         playerRigidbody2D.velocity =  new Vector2(newVelocityX, playerRigidbody2D.velocity.y);
     }
-
 
     private void Jump()
     {
@@ -151,21 +116,24 @@ public class PlayerController : MonoBehaviour
         isOnGround = false;
     }
 
-
     private void Climb()
     {
         isOnGround = false;
 
+        SetKinematicRigidbody2D(true);
+
         float newVelocityY = verticalMovementDirection * climbSpeed;
 
-        playerRigidbody2D.bodyType = RigidbodyType2D.Kinematic;
         playerRigidbody2D.velocity = new Vector2(0, newVelocityY);
     }
 
-
-    private void JumpOverWall()
+    private IEnumerator ClimbLedge()
     {
+        SetDinamicRigidbody2D();
 
+        playerRigidbody2D.velocity = new Vector2(climbLedgeForce * facingDirection, climbLedgeForce);
+
+        yield return new WaitForFixedUpdate();
     }
 
     private void Dash()
@@ -173,40 +141,38 @@ public class PlayerController : MonoBehaviour
 
     }
 
-
     private void Flip()
     {
-        facingDirection.x *= -1;
+        facingDirection *= -1;
         playerSprite.flipX = !playerSprite.flipX;
     }
 
-
-    private void CheckGroundCollision()
+    private void CheckCollision()
     {
-        Vector2 rightRayStart = (Vector2)playerRightFoot.position;
-        Vector2 leftRayStart = (Vector2)playerLeftFoot.position;
-
-        bool rightFootOnGround = Physics2D.Raycast(rightRayStart, Vector2.down, groundCollisionDistance, groundMask);
-        bool leftFootOnGround = Physics2D.Raycast(leftRayStart, Vector2.down, groundCollisionDistance, groundMask);
-
-        isOnGround = rightFootOnGround || leftFootOnGround ? true : false;
-
+        if(!isJumping)
+            isOnGround = playerCollision.CheckGroundCollision();
+        
+        isOnWall = playerCollision.CheckWallCollistion(facingDirection);
+        isHandOnWall = playerCollision.CheckHandsOnWall(facingDirection);
     }
-
-
-    private void CheckWallCollistion()
-    {
-        Vector2 handRayStart = (Vector2)playerHand.position;
-        isOnWall = Physics2D.Raycast(handRayStart, facingDirection, wallCollisionDistance, groundMask);
-
-        Vector2 faceRayStart = (Vector2)playerKnee.position;
-        isFacingWall = Physics2D.Raycast(faceRayStart, facingDirection, wallCollisionDistance, groundMask);
-    }
-
 
     private void ResetVerticalVelocity()
     {
         playerRigidbody2D.velocity = new Vector2(playerRigidbody2D.velocity.x, 0);
+    }
+
+    private void SetDinamicRigidbody2D()
+    {
+        playerRigidbody2D.bodyType = RigidbodyType2D.Dynamic;
+        playerRigidbody2D.constraints = RigidbodyConstraints2D.FreezeRotation;
+    } 
+
+    private void SetKinematicRigidbody2D(bool freezePositionX)
+    {
+        playerRigidbody2D.bodyType = RigidbodyType2D.Kinematic;
+        
+        if (freezePositionX)
+            playerRigidbody2D.constraints = RigidbodyConstraints2D.FreezeRotation | RigidbodyConstraints2D.FreezePositionX;
     }
     #endregion
 }
