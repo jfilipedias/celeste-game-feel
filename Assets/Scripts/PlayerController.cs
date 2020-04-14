@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
     #region Attributies
     [Header("Movement")]
     [SerializeField] private float moveSpeed;
+    [SerializeField] private float wallSlideSpeed;
     [SerializeField] private float climbSpeed;
     [SerializeField] private float jumpForce;
     [SerializeField] private float climbLedgeForce;
@@ -64,14 +65,16 @@ public class PlayerController : MonoBehaviour
         if (isJumping && isOnGround)
             Jump();
 
-        //Climb        
+        // Climb        
         if (isClimbing)
             Climb();
-        else
-            SetDinamicRigidbody2D();
 
         if (isClimbing && !isHandOnWall)
             StartCoroutine(ClimbLedge());
+
+        // Wall Slide
+        if (isOnWall && !isClimbing && !isOnGround && horizontalMovementDirection == facingDirection)
+            WallSlide();
 
         // Dash
         if (isDashing)
@@ -80,6 +83,11 @@ public class PlayerController : MonoBehaviour
         // Reset Y Velocity
         if (isOnGround && !isClimbing && playerRigidbody2D.velocity.y != 0)
             ResetVerticalVelocity();
+
+        // Control Rigidbody Mode
+        if(!isClimbing 
+            && !(isOnWall && !isOnGround && horizontalMovementDirection == facingDirection))
+            SetDinamicRigidbody2D();
     }
     #endregion
 
@@ -145,6 +153,14 @@ public class PlayerController : MonoBehaviour
         playerRigidbody2D.MovePosition(foward);
 
         yield return new WaitForFixedUpdate();
+    }
+
+    private void WallSlide()
+    {
+        bool freezePositionX = true;
+        SetKinematicRigidbody2D(freezePositionX);
+
+        playerRigidbody2D.velocity = new Vector2(0, wallSlideSpeed) * Vector2.down;
     }
 
     private void Dash()

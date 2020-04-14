@@ -1067,6 +1067,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 3
+  wallSlideSpeed: 0.5
   climbSpeed: 1
   jumpForce: 4
   climbLedgeForce: 1.5
