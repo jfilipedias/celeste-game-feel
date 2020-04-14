@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float climbSpeed;
     [SerializeField] private float jumpForce;
     [SerializeField] private float climbLedgeForce;
+    [SerializeField] private float climbFowardDistance;
     [SerializeField] private float dashForce;
 
     private Rigidbody2D playerRigidbody2D;
@@ -131,6 +132,7 @@ public class PlayerController : MonoBehaviour
     private IEnumerator ClimbLedge()
     {
         SetDinamicRigidbody2D();
+
         while (isFeetOnWall)
         {
             playerRigidbody2D.velocity = new Vector2(0, climbLedgeForce);
@@ -138,7 +140,9 @@ public class PlayerController : MonoBehaviour
             yield return null;
         }
 
-        playerRigidbody2D.velocity = new Vector2(moveSpeed * facingDirection * 2, climbLedgeForce / 2 );
+        Vector2 foward = playerRigidbody2D.position + new Vector2(climbFowardDistance * facingDirection, 0);
+
+        playerRigidbody2D.MovePosition(foward);
 
         yield return new WaitForFixedUpdate();
     }
