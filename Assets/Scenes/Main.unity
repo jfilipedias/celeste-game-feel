@@ -1078,7 +1078,7 @@ MonoBehaviour:
   moveSpeed: 3
   climbSpeed: 1
   jumpForce: 4
-  climbLedgeForce: 3
+  climbLedgeForce: 1.5
   dashForce: 0
 --- !u!66 &888320558
 CompositeCollider2D:

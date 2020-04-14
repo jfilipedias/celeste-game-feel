@@ -24,6 +24,7 @@ public class PlayerController : MonoBehaviour
     private bool isOnGround = false;
     private bool isOnWall = false;
     private bool isHandOnWall = false;
+    private bool isFeetOnWall = false;
     private bool isJumping = false;
     private bool isClimbing = false;
     private bool isDashing = false;
@@ -69,7 +70,7 @@ public class PlayerController : MonoBehaviour
             SetDinamicRigidbody2D();
 
         if (isClimbing && !isHandOnWall)
-            //StartCoroutine(ClimbLedge());
+            StartCoroutine(ClimbLedge());
 
         // Dash
         if (isDashing)
@@ -130,8 +131,14 @@ public class PlayerController : MonoBehaviour
     private IEnumerator ClimbLedge()
     {
         SetDinamicRigidbody2D();
+        while (isFeetOnWall)
+        {
+            playerRigidbody2D.velocity = new Vector2(0, climbLedgeForce);
 
-        playerRigidbody2D.velocity = new Vector2(climbLedgeForce * facingDirection, climbLedgeForce);
+            yield return null;
+        }
+
+        playerRigidbody2D.velocity = new Vector2(moveSpeed * facingDirection * 2, climbLedgeForce / 2 );
 
         yield return new WaitForFixedUpdate();
     }
@@ -154,6 +161,7 @@ public class PlayerController : MonoBehaviour
         
         isOnWall = playerCollision.CheckWallCollistion(facingDirection);
         isHandOnWall = playerCollision.CheckHandsOnWall(facingDirection);
+        isFeetOnWall = playerCollision.CheckFeetOnWall(facingDirection);
     }
 
     private void ResetVerticalVelocity()

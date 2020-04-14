@@ -82,5 +82,12 @@ public class PlayerCollision : MonoBehaviour
 
         return Physics2D.Raycast(handRayStart, new Vector2(facingDirection, 0), wallCollisionDistance, groundMask);
     }
+
+    public bool CheckFeetOnWall(float facingDirection)
+    {
+        Vector2 feetRayStart = (Vector2)playerFeet.position;
+
+        return Physics2D.Raycast(feetRayStart, new Vector2(facingDirection, 0), wallCollisionDistance,groundMask);
+    }
     #endregion
 }
