@@ -7,9 +7,10 @@ public class PlayerController : MonoBehaviour
     #region Attributies
     [Header("Movement")]
     [SerializeField] private float moveSpeed;
+    [SerializeField] private float jumpForce;
+    [SerializeField] private float wallJumpForce;
     [SerializeField] private float wallSlideSpeed;
     [SerializeField] private float climbSpeed;
-    [SerializeField] private float jumpForce;
     [SerializeField] private float climbLedgeForce;
     [SerializeField] private float climbFowardDistance;
     [SerializeField] private float dashForce;
@@ -28,6 +29,7 @@ public class PlayerController : MonoBehaviour
     private bool isHandOnWall = false;
     private bool isFeetOnWall = false;
     private bool isJumping = false;
+    private bool isWallJumping = false;
     private bool isClimbing = false;
     private bool isDashing = false;
     #endregion
@@ -54,40 +56,35 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // Check Colision
         CheckCollision();
 
-        // Move
-        if(!isClimbing)
+        if(!isClimbing && !isWallJumping)
             Move();
 
-        // Jump
         if (isJumping && isOnGround)
             Jump();
 
-        // Climb        
-        if (isClimbing)
+        if (isOnWall && isWallJumping)
+            WallJump();
+
+        if (isOnWall && !isClimbing && !isOnGround && horizontalMovementDirection == facingDirection)
+            WallSlide();
+
+        if (isClimbing && !isWallJumping)
             Climb();
+        else
+            SetDinamicRigidbody2D();
 
         if (isClimbing && !isHandOnWall)
             StartCoroutine(ClimbLedge());
 
-        // Wall Slide
-        if (isOnWall && !isClimbing && !isOnGround && horizontalMovementDirection == facingDirection)
-            WallSlide();
-
-        // Dash
         if (isDashing)
             Dash();
 
-        // Reset Y Velocity
         if (isOnGround && !isClimbing && playerRigidbody2D.velocity.y != 0)
             ResetVerticalVelocity();
 
-        // Control Rigidbody Mode
-        if(!isClimbing 
-            && !(isOnWall && !isOnGround && horizontalMovementDirection == facingDirection))
-            SetDinamicRigidbody2D();
+        ResetBooleans();
     }
     #endregion
 
@@ -104,8 +101,12 @@ public class PlayerController : MonoBehaviour
         if (Input.GetButtonDown("Jump") && isOnGround)
             isJumping = true;
 
+        // Wall Jump
+        if (Input.GetButtonDown("Jump") && isOnWall && !isOnGround)
+            isWallJumping = true;
+
         // Climb
-        if (Input.GetButton("Hold") && isOnWall)
+        if (Input.GetButton("Hold") && isOnWall && !isWallJumping)
             isClimbing = true;
         else
             isClimbing = false;
@@ -122,8 +123,25 @@ public class PlayerController : MonoBehaviour
     {
         playerRigidbody2D.velocity += Vector2.up * jumpForce;
         
-        isJumping = false;
         isOnGround = false;
+    }
+
+    private void WallJump()
+    {
+        Debug.Log("Wall Jump");
+        
+        SetDinamicRigidbody2D();
+
+        Vector2 force = new Vector2(wallJumpForce * facingDirection, wallJumpForce);
+        playerRigidbody2D.AddForce(force, ForceMode2D.Impulse);
+    }
+
+    private void WallSlide()
+    {
+        bool freezePositionX = true;
+        SetKinematicRigidbody2D(freezePositionX);
+
+        playerRigidbody2D.velocity = new Vector2(0, wallSlideSpeed) * Vector2.down;
     }
 
     private void Climb()
@@ -133,7 +151,7 @@ public class PlayerController : MonoBehaviour
         SetKinematicRigidbody2D(true);
 
         float newVelocityY = verticalMovementDirection * climbSpeed;
-
+ 
         playerRigidbody2D.velocity = new Vector2(0, newVelocityY);
     }
 
@@ -153,14 +171,6 @@ public class PlayerController : MonoBehaviour
         playerRigidbody2D.MovePosition(foward);
 
         yield return new WaitForFixedUpdate();
-    }
-
-    private void WallSlide()
-    {
-        bool freezePositionX = true;
-        SetKinematicRigidbody2D(freezePositionX);
-
-        playerRigidbody2D.velocity = new Vector2(0, wallSlideSpeed) * Vector2.down;
     }
 
     private void Dash()
@@ -201,6 +211,12 @@ public class PlayerController : MonoBehaviour
         
         if (freezePositionX)
             playerRigidbody2D.constraints = RigidbodyConstraints2D.FreezeRotation | RigidbodyConstraints2D.FreezePositionX;
+    }
+
+    private void ResetBooleans()
+    {
+        isJumping = false;
+        isWallJumping = false;
     }
     #endregion
 }
