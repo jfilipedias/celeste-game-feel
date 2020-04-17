@@ -11,6 +11,7 @@ public class PlayerCollision : MonoBehaviour
     [SerializeField] private float sphereGizmoSize;
     [SerializeField] private LayerMask groundMask;
 
+    [Space]
     [Header("Collision Transform")]
     [SerializeField] private Transform playerHand;
     [SerializeField] private Transform playerFeet;
@@ -63,7 +64,7 @@ public class PlayerCollision : MonoBehaviour
         bool rightFootOnGround = Physics2D.Raycast(rightRayStart, Vector2.down, groundCollisionDistance, groundMask);
         bool leftFootOnGround = Physics2D.Raycast(leftRayStart, Vector2.down, groundCollisionDistance, groundMask);
 
-        return rightFootOnGround || leftFootOnGround ? true : false;
+        return rightFootOnGround || leftFootOnGround;
 
     }
 

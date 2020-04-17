@@ -1074,6 +1074,9 @@ MonoBehaviour:
   climbLedgeForce: 1.5
   climbFowardDistance: 0.1
   dashForce: 0
+  disabledMoveTime: 0.2
+  disabledJumpTime: 1
+  disabledClimbTime: 0.2
 --- !u!66 &888320558
 CompositeCollider2D:
   m_ObjectHideFlags: 0

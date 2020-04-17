@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     #region Attributies
+    // Show in Inspector
     [Header("Movement")]
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
@@ -15,23 +16,37 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float climbFowardDistance;
     [SerializeField] private float dashForce;
 
+    [Space]
+    [Header("Disablement Time")]
+    [SerializeField] private float disabledMoveTime;
+    [SerializeField] private float disabledJumpTime;
+    [SerializeField] private float disabledClimbTime;
+
+    // Game Object Components
     private Rigidbody2D playerRigidbody2D;
     private SpriteRenderer playerSprite;
     private PlayerCollision playerCollision;
 
+    // Moviement
     private float horizontalMovementDirection;
     private float verticalMovementDirection;
-
     private float facingDirection = Vector2.right.x;
 
-    private bool isOnGround = false;
-    private bool isOnWall = false;
-    private bool isHandOnWall = false;
-    private bool isFeetOnWall = false;
+    // Booleans
+    private bool onGround = false;
+    private bool onWall = false;
+    
+    private bool handOnWall = false;
+    private bool feetOnWall = false;
+    
     private bool isJumping = false;
     private bool isWallJumping = false;
     private bool isClimbing = false;
     private bool isDashing = false;
+    
+    private bool canMove = true;
+    private bool canClimb = true;
+    private bool canJump = true;
     #endregion
 
     #region Properties
@@ -50,7 +65,7 @@ public class PlayerController : MonoBehaviour
     {
         HandleInput();
 
-        if (facingDirection != horizontalMovementDirection && horizontalMovementDirection != 0 && !isClimbing)
+        if (facingDirection != horizontalMovementDirection && horizontalMovementDirection != 0 && !isClimbing && !isWallJumping)
             Flip();
     }
 
@@ -58,16 +73,16 @@ public class PlayerController : MonoBehaviour
     {
         CheckCollision();
 
-        if(!isClimbing && !isWallJumping)
+        if(canMove && !isClimbing && !isWallJumping)
             Move();
 
-        if (isJumping && isOnGround)
-            Jump();
+        if (isJumping && onGround && !isClimbing)
+            Jump(Vector2.up);
 
-        if (isOnWall && isWallJumping)
+        if (canJump && onWall && isWallJumping)
             WallJump();
 
-        if (isOnWall && !isClimbing && !isOnGround && horizontalMovementDirection == facingDirection)
+        if (onWall && !isClimbing && !onGround && horizontalMovementDirection == facingDirection)
             WallSlide();
 
         if (isClimbing && !isWallJumping)
@@ -75,16 +90,14 @@ public class PlayerController : MonoBehaviour
         else
             SetDinamicRigidbody2D();
 
-        if (isClimbing && !isHandOnWall)
+        if (isClimbing && !handOnWall)
             StartCoroutine(ClimbLedge());
 
         if (isDashing)
             Dash();
 
-        if (isOnGround && !isClimbing && playerRigidbody2D.velocity.y != 0)
+        if (onGround && !isClimbing && playerRigidbody2D.velocity.y != 0)
             ResetVerticalVelocity();
-
-        ResetBooleans();
     }
     #endregion
 
@@ -98,15 +111,15 @@ public class PlayerController : MonoBehaviour
         verticalMovementDirection = Input.GetAxisRaw("Vertical");
        
         // Jumping
-        if (Input.GetButtonDown("Jump") && isOnGround)
+        if (Input.GetButtonDown("Jump") && onGround)
             isJumping = true;
 
         // Wall Jump
-        if (Input.GetButtonDown("Jump") && isOnWall && !isOnGround)
+        if (Input.GetButtonDown("Jump") && onWall && !onGround)
             isWallJumping = true;
 
         // Climb
-        if (Input.GetButton("Hold") && isOnWall && !isWallJumping)
+        if (Input.GetButton("Hold") && canClimb && onWall && !isWallJumping)
             isClimbing = true;
         else
             isClimbing = false;
@@ -119,21 +132,29 @@ public class PlayerController : MonoBehaviour
         playerRigidbody2D.velocity =  new Vector2(newVelocityX, playerRigidbody2D.velocity.y);
     }
 
-    private void Jump()
+    private void Jump(Vector2 jumpDirection)
     {
-        playerRigidbody2D.velocity += Vector2.up * jumpForce;
+        playerRigidbody2D.velocity += jumpDirection * jumpForce ;
         
-        isOnGround = false;
+        onGround = false;
+        isJumping = false;
     }
 
     private void WallJump()
     {
-        Debug.Log("Wall Jump");
+        isWallJumping = false;
         
         SetDinamicRigidbody2D();
 
-        Vector2 force = new Vector2(wallJumpForce * facingDirection, wallJumpForce);
-        playerRigidbody2D.AddForce(force, ForceMode2D.Impulse);
+        StartCoroutine(DisableMovement());
+        StartCoroutine(DisableClimb());
+        StartCoroutine(DisableJump());
+
+        Vector2 horizontalDirection = Vector2.right * horizontalMovementDirection;
+
+        Vector2 jumpDirection = Vector2.up + horizontalDirection;
+
+        Jump(jumpDirection);
     }
 
     private void WallSlide()
@@ -146,7 +167,7 @@ public class PlayerController : MonoBehaviour
 
     private void Climb()
     {
-        isOnGround = false;
+        onGround = false;
 
         SetKinematicRigidbody2D(true);
 
@@ -159,7 +180,7 @@ public class PlayerController : MonoBehaviour
     {
         SetDinamicRigidbody2D();
 
-        while (isFeetOnWall)
+        while (feetOnWall)
         {
             playerRigidbody2D.velocity = new Vector2(0, climbLedgeForce);
 
@@ -184,14 +205,41 @@ public class PlayerController : MonoBehaviour
         playerSprite.flipX = !playerSprite.flipX;
     }
 
+    private IEnumerator DisableMovement()
+    {
+        canMove = false;
+
+        yield return new WaitForSeconds(disabledMoveTime);
+
+        canMove = true;
+    }
+    
+    private IEnumerator DisableJump()
+    {
+        canJump = false;
+
+        yield return new WaitForSeconds(disabledJumpTime);
+
+        canJump = true;
+    }
+
+    private IEnumerator DisableClimb()
+    {
+        canClimb = false;
+
+        yield return new WaitForSeconds(disabledClimbTime);
+
+        canClimb = true;
+    }
+
     private void CheckCollision()
     {
         if(!isJumping)
-            isOnGround = playerCollision.CheckGroundCollision();
+            onGround = playerCollision.CheckGroundCollision();
         
-        isOnWall = playerCollision.CheckWallCollistion(facingDirection);
-        isHandOnWall = playerCollision.CheckHandsOnWall(facingDirection);
-        isFeetOnWall = playerCollision.CheckFeetOnWall(facingDirection);
+        onWall = playerCollision.CheckWallCollistion(facingDirection);
+        handOnWall = playerCollision.CheckHandsOnWall(facingDirection);
+        feetOnWall = playerCollision.CheckFeetOnWall(facingDirection);
     }
 
     private void ResetVerticalVelocity()
@@ -211,12 +259,6 @@ public class PlayerController : MonoBehaviour
         
         if (freezePositionX)
             playerRigidbody2D.constraints = RigidbodyConstraints2D.FreezeRotation | RigidbodyConstraints2D.FreezePositionX;
-    }
-
-    private void ResetBooleans()
-    {
-        isJumping = false;
-        isWallJumping = false;
     }
     #endregion
 }
