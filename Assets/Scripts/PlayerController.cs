@@ -9,18 +9,18 @@ public class PlayerController : MonoBehaviour
     [Header("Movement")]
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
-    [SerializeField] private float wallJumpForce;
-    [SerializeField] private float wallSlideSpeed;
     [SerializeField] private float climbSpeed;
     [SerializeField] private float climbLedgeForce;
     [SerializeField] private float climbFowardDistance;
-    [SerializeField] private float dashForce;
+    [SerializeField] private float wallSlideSpeed;
+    [SerializeField] private float dashSpeed;
 
     [Space]
-    [Header("Disablement Time")]
+    [Header("Timers")]
     [SerializeField] private float disabledMoveTime;
     [SerializeField] private float disabledJumpTime;
     [SerializeField] private float disabledClimbTime;
+    [SerializeField] private float dashWaitTime;
 
     // Game Object Components
     private Rigidbody2D playerRigidbody2D;
@@ -45,8 +45,9 @@ public class PlayerController : MonoBehaviour
     private bool isDashing = false;
     
     private bool canMove = true;
-    private bool canClimb = true;
     private bool canJump = true;
+    private bool canClimb = true;
+    private bool canDash = true;
     #endregion
 
     #region Properties
@@ -98,6 +99,9 @@ public class PlayerController : MonoBehaviour
 
         if (onGround && !isClimbing && playerRigidbody2D.velocity.y != 0)
             ResetVerticalVelocity();
+
+        if (onGround && !isDashing)
+            canDash = true;
     }
     #endregion
 
@@ -123,6 +127,10 @@ public class PlayerController : MonoBehaviour
             isClimbing = true;
         else
             isClimbing = false;
+
+        // Dash
+        if (Input.GetButtonDown("Dash") && canDash)
+            isDashing = true;
     }
     
     private void Move()
@@ -196,7 +204,22 @@ public class PlayerController : MonoBehaviour
 
     private void Dash()
     {
+        Debug.Log("Dash");
+        canDash = false;
 
+        StartCoroutine(WaitDashTime());
+
+        float horizontalDirection;
+
+        if (horizontalMovementDirection == 0 && verticalMovementDirection == 0)
+            horizontalDirection = facingDirection;
+        else
+            horizontalDirection = horizontalMovementDirection;
+
+        Vector2 direction = new Vector2(horizontalDirection, verticalMovementDirection);
+
+        playerRigidbody2D.velocity = Vector2.zero;
+        playerRigidbody2D.velocity = direction * dashSpeed;
     }
 
     private void Flip()
@@ -230,6 +253,22 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(disabledClimbTime);
 
         canClimb = true;
+    }
+
+    private IEnumerator WaitDashTime()
+    {
+        canMove = false;
+        canJump = false;
+        SetKinematicRigidbody2D(false);
+
+        yield return new WaitForSeconds(dashWaitTime);
+
+        canMove = true;
+        canJump = true;
+        isDashing = false;
+
+        playerRigidbody2D.velocity = Vector2.zero;
+        SetDinamicRigidbody2D();
     }
 
     private void CheckCollision()

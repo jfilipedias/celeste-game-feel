@@ -2328,15 +2328,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 3
   jumpForce: 4
-  wallJumpForce: 2
-  wallSlideSpeed: 0.5
   climbSpeed: 1
   climbLedgeForce: 1.5
   climbFowardDistance: 0.1
-  dashForce: 0
-  disabledMoveTime: 0.2
-  disabledJumpTime: 1
+  wallSlideSpeed: 0.5
+  dashSpeed: 7
+  disabledMoveTime: 0.1
+  disabledJumpTime: 0.5
   disabledClimbTime: 0.2
+  dashWaitTime: 0.15
 --- !u!66 &888320558
 CompositeCollider2D:
   m_ObjectHideFlags: 0
