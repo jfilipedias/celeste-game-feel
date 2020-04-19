@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviour
     private SpriteRenderer playerSprite;
     private PlayerCollision playerCollision;
 
-    // Moviement
+    // Movement
     private float horizontalMovementDirection;
     private float verticalMovementDirection;
     private float facingDirection = Vector2.right.x;
@@ -142,7 +142,7 @@ public class PlayerController : MonoBehaviour
 
     private void Jump(Vector2 jumpDirection)
     {
-        playerRigidbody2D.velocity += jumpDirection * jumpForce ;
+        playerRigidbody2D.velocity += jumpDirection * jumpForce;
         
         onGround = false;
         isJumping = false;
@@ -211,7 +211,7 @@ public class PlayerController : MonoBehaviour
 
         float horizontalDirection;
 
-        if (horizontalMovementDirection == 0 && verticalMovementDirection == 0)
+        if (horizontalMovementDirection == 0 && (onGround || verticalMovementDirection == 0))
             horizontalDirection = facingDirection;
         else
             horizontalDirection = horizontalMovementDirection;

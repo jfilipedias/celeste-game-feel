@@ -2214,7 +2214,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 2
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -2327,16 +2327,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 3
-  jumpForce: 4
+  jumpForce: 7
   climbSpeed: 1
   climbLedgeForce: 1.5
   climbFowardDistance: 0.1
   wallSlideSpeed: 0.5
-  dashSpeed: 7
+  dashSpeed: 8
   disabledMoveTime: 0.1
   disabledJumpTime: 0.5
   disabledClimbTime: 0.2
-  dashWaitTime: 0.15
+  dashWaitTime: 0.1
 --- !u!66 &888320558
 CompositeCollider2D:
   m_ObjectHideFlags: 0
