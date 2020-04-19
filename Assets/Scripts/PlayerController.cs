@@ -27,6 +27,8 @@ public class PlayerController : MonoBehaviour
     private SpriteRenderer playerSprite;
     private PlayerCollision playerCollision;
 
+    private float initialGravityScale;
+
     // Movement
     private float horizontalMovementDirection;
     private float verticalMovementDirection;
@@ -60,6 +62,8 @@ public class PlayerController : MonoBehaviour
         playerRigidbody2D = this.GetComponent<Rigidbody2D>();
         playerSprite = this.GetComponent<SpriteRenderer>();
         playerCollision = this.GetComponent<PlayerCollision>();
+
+        initialGravityScale = playerRigidbody2D.gravityScale;
     }
 
     private void Update()
@@ -67,7 +71,7 @@ public class PlayerController : MonoBehaviour
         HandleInput();
 
         if (facingDirection != horizontalMovementDirection && horizontalMovementDirection != 0 && !isClimbing && !isWallJumping)
-            Flip();
+            FlipSprite();
     }
 
     private void FixedUpdate()
@@ -160,7 +164,7 @@ public class PlayerController : MonoBehaviour
 
         Vector2 horizontalDirection = Vector2.right * horizontalMovementDirection;
 
-        Vector2 jumpDirection = Vector2.up + horizontalDirection;
+        Vector2 jumpDirection = Vector2.up + horizontalDirection / 2;
 
         Jump(jumpDirection);
     }
@@ -190,24 +194,19 @@ public class PlayerController : MonoBehaviour
 
         while (feetOnWall)
         {
-            playerRigidbody2D.velocity = new Vector2(0, climbLedgeForce);
+            playerRigidbody2D.velocity += Vector2.up * climbLedgeForce;
 
             yield return null;
         }
 
-        Vector2 foward = playerRigidbody2D.position + new Vector2(climbFowardDistance * facingDirection, 0);
+        Vector2 foward = playerRigidbody2D.position + (Vector2.right * climbFowardDistance * facingDirection);
 
         playerRigidbody2D.MovePosition(foward);
-
-        yield return new WaitForFixedUpdate();
     }
 
     private void Dash()
     {
-        Debug.Log("Dash");
         canDash = false;
-
-        StartCoroutine(WaitDashTime());
 
         float horizontalDirection;
 
@@ -218,11 +217,35 @@ public class PlayerController : MonoBehaviour
 
         Vector2 direction = new Vector2(horizontalDirection, verticalMovementDirection);
 
-        playerRigidbody2D.velocity = Vector2.zero;
+        StartCoroutine(WaitDashTime(direction));
+
         playerRigidbody2D.velocity = direction * dashSpeed;
     }
 
-    private void Flip()
+    private IEnumerator WaitDashTime(Vector2 direction)
+    {
+        canMove = false;
+        canJump = false;
+        canDash = false;
+
+        if (direction.y >= 0)
+            playerRigidbody2D.gravityScale = 0f;
+
+        yield return new WaitForSeconds(dashWaitTime);
+
+        if (direction.y >= 0)
+            playerRigidbody2D.velocity *= 0.7f;
+        
+        playerRigidbody2D.gravityScale = initialGravityScale;
+
+        canMove = true;
+        canJump = true;
+        canDash = true;
+        isDashing = false;
+        yield return new WaitForFixedUpdate();
+    }
+
+    private void FlipSprite()
     {
         facingDirection *= -1;
         playerSprite.flipX = !playerSprite.flipX;
@@ -253,22 +276,6 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(disabledClimbTime);
 
         canClimb = true;
-    }
-
-    private IEnumerator WaitDashTime()
-    {
-        canMove = false;
-        canJump = false;
-        SetKinematicRigidbody2D(false);
-
-        yield return new WaitForSeconds(dashWaitTime);
-
-        canMove = true;
-        canJump = true;
-        isDashing = false;
-
-        playerRigidbody2D.velocity = Vector2.zero;
-        SetDinamicRigidbody2D();
     }
 
     private void CheckCollision()

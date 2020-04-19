@@ -13,10 +13,11 @@ public class PlayerCollision : MonoBehaviour
 
     [Space]
     [Header("Collision Transform")]
-    [SerializeField] private Transform playerHand;
-    [SerializeField] private Transform playerFeet;
-    [SerializeField] private Transform playerRightFoot;
-    [SerializeField] private Transform playerLeftFoot;
+    [SerializeField] private Transform hand;
+    [SerializeField] private Transform feet;
+    [SerializeField] private Transform ledgeOffset;
+    [SerializeField] private Transform rightFoot;
+    [SerializeField] private Transform leftFoot;
 
     private float facingDirection = Vector2.right.x;
 
@@ -39,27 +40,27 @@ public class PlayerCollision : MonoBehaviour
         Gizmos.color = Color.magenta;
 
         // Face
-        Gizmos.DrawWireSphere(playerFeet.position, sphereGizmoSize);
-        Gizmos.DrawLine(playerFeet.position, (playerFeet.position + new Vector3(wallCollisionDistance * facingDirection, 0, 0)));
+        Gizmos.DrawWireSphere(feet.position, sphereGizmoSize);
+        Gizmos.DrawLine(feet.position, (feet.position + new Vector3(wallCollisionDistance * facingDirection, 0, 0)));
 
         // Hand
-        Gizmos.DrawWireSphere(playerHand.position, sphereGizmoSize);
-        Gizmos.DrawLine(playerHand.position, (playerHand.position + new Vector3(wallCollisionDistance * facingDirection, 0, 0)));
+        Gizmos.DrawWireSphere(hand.position, sphereGizmoSize);
+        Gizmos.DrawLine(hand.position, (hand.position + new Vector3(wallCollisionDistance * facingDirection, 0, 0)));
 
         // Foot
-        Gizmos.DrawWireSphere(playerRightFoot.position, sphereGizmoSize);
-        Gizmos.DrawWireSphere(playerLeftFoot.position, sphereGizmoSize);
+        Gizmos.DrawWireSphere(rightFoot.position, sphereGizmoSize);
+        Gizmos.DrawWireSphere(leftFoot.position, sphereGizmoSize);
         Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(playerRightFoot.position, (playerRightFoot.position + new Vector3(0, groundCollisionDistance * -1, 0)));
-        Gizmos.DrawLine(playerLeftFoot.position, (playerLeftFoot.position + new Vector3(0, groundCollisionDistance * -1, 0)));
+        Gizmos.DrawLine(rightFoot.position, (rightFoot.position + new Vector3(0, groundCollisionDistance * -1, 0)));
+        Gizmos.DrawLine(leftFoot.position, (leftFoot.position + new Vector3(0, groundCollisionDistance * -1, 0)));
     }
     #endregion
 
     #region Class Methods
     public bool CheckGroundCollision()
     {
-        Vector2 rightRayStart = (Vector2)playerRightFoot.position;
-        Vector2 leftRayStart = (Vector2)playerLeftFoot.position;
+        Vector2 rightRayStart = (Vector2)rightFoot.position;
+        Vector2 leftRayStart = (Vector2)leftFoot.position;
 
         bool rightFootOnGround = Physics2D.Raycast(rightRayStart, Vector2.down, groundCollisionDistance, groundMask);
         bool leftFootOnGround = Physics2D.Raycast(leftRayStart, Vector2.down, groundCollisionDistance, groundMask);
@@ -70,8 +71,8 @@ public class PlayerCollision : MonoBehaviour
 
     public bool CheckWallCollistion(float facingDirection)
     {
-        Vector2 feetRayStart = (Vector2)playerFeet.position;
-        Vector2 handRayStart = (Vector2)playerHand.position;
+        Vector2 feetRayStart = (Vector2)feet.position;
+        Vector2 handRayStart = (Vector2)hand.position;
 
         return Physics2D.Raycast(feetRayStart, new Vector2(facingDirection, 0), wallCollisionDistance, groundMask) ||
                Physics2D.Raycast(handRayStart, new Vector2(facingDirection, 0), wallCollisionDistance, groundMask);
@@ -79,14 +80,14 @@ public class PlayerCollision : MonoBehaviour
 
     public bool CheckHandsOnWall(float facingDirection)
     {
-        Vector2 handRayStart = (Vector2)playerHand.position;
+        Vector2 handRayStart = (Vector2)hand.position;
 
         return Physics2D.Raycast(handRayStart, new Vector2(facingDirection, 0), wallCollisionDistance, groundMask);
     }
 
     public bool CheckFeetOnWall(float facingDirection)
     {
-        Vector2 feetRayStart = (Vector2)playerFeet.position;
+        Vector2 feetRayStart = (Vector2)feet.position;
 
         return Physics2D.Raycast(feetRayStart, new Vector2(facingDirection, 0), wallCollisionDistance,groundMask);
     }
