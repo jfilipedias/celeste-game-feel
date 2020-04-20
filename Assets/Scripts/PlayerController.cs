@@ -72,6 +72,9 @@ public class PlayerController : MonoBehaviour
 
         if (facingDirection != horizontalMovementDirection && horizontalMovementDirection != 0 && !isClimbing && !isWallJumping)
             FlipSprite();
+
+        if (isDashing)
+            StartCoroutine(Camera.main.GetComponent<CameraShake>().Shake());
     }
 
     private void FixedUpdate()
@@ -234,7 +237,9 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(dashWaitTime);
 
         if (direction.y >= 0)
-            playerRigidbody2D.velocity *= 0.7f;
+            playerRigidbody2D.velocity *= 0.5f;
+        else
+            playerRigidbody2D.velocity *= 0.8f;
         
         playerRigidbody2D.gravityScale = initialGravityScale;
 
@@ -242,6 +247,7 @@ public class PlayerController : MonoBehaviour
         canJump = true;
         canDash = true;
         isDashing = false;
+
         yield return new WaitForFixedUpdate();
     }
 
