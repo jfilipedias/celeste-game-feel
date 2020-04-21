@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    #region Attributies
+    #region Attributes
     // Show in Inspector
     [Header("Movement")]
     [SerializeField] private float moveSpeed;
@@ -22,9 +22,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float disabledClimbTime;
     [SerializeField] private float dashWaitTime;
 
+    [Space]
+    [Header("Particles")]
+    [SerializeField] private ParticleSystem dashParticles;
+
     // Game Object Components
     private Rigidbody2D playerRigidbody2D;
-    private SpriteRenderer playerSprite;
     private PlayerCollision playerCollision;
 
     private float initialGravityScale;
@@ -45,6 +48,7 @@ public class PlayerController : MonoBehaviour
     private bool isWallJumping = false;
     private bool isClimbing = false;
     private bool isDashing = false;
+    private bool isFlipped = false;
     
     private bool canMove = true;
     private bool canJump = true;
@@ -54,13 +58,14 @@ public class PlayerController : MonoBehaviour
 
     #region Properties
     public float FacingDirection { get => facingDirection; }
+    public bool CanDash { get => canDash; }
+    public bool IsFlipped { get => isFlipped; }
     #endregion
 
     #region Engine Methods
     private void Awake()
     {
         playerRigidbody2D = this.GetComponent<Rigidbody2D>();
-        playerSprite = this.GetComponent<SpriteRenderer>();
         playerCollision = this.GetComponent<PlayerCollision>();
 
         initialGravityScale = playerRigidbody2D.gravityScale;
@@ -71,7 +76,7 @@ public class PlayerController : MonoBehaviour
         HandleInput();
 
         if (facingDirection != horizontalMovementDirection && horizontalMovementDirection != 0 && !isClimbing && !isWallJumping)
-            FlipSprite();
+            FlipDirection();
 
         if (isDashing)
             StartCoroutine(Camera.main.GetComponent<CameraShake>().Shake());
@@ -202,6 +207,8 @@ public class PlayerController : MonoBehaviour
             yield return null;
         }
 
+        ResetVerticalVelocity();
+
         Vector2 foward = playerRigidbody2D.position + (Vector2.right * climbFowardDistance * facingDirection);
 
         playerRigidbody2D.MovePosition(foward);
@@ -231,6 +238,8 @@ public class PlayerController : MonoBehaviour
         canJump = false;
         canDash = false;
 
+        dashParticles.Play();
+
         if (direction.y >= 0)
             playerRigidbody2D.gravityScale = 0f;
 
@@ -240,21 +249,21 @@ public class PlayerController : MonoBehaviour
             playerRigidbody2D.velocity *= 0.5f;
         else
             playerRigidbody2D.velocity *= 0.8f;
-        
+
         playerRigidbody2D.gravityScale = initialGravityScale;
 
         canMove = true;
         canJump = true;
-        canDash = true;
         isDashing = false;
 
+        dashParticles.Stop();
         yield return new WaitForFixedUpdate();
     }
 
-    private void FlipSprite()
+    private void FlipDirection()
     {
         facingDirection *= -1;
-        playerSprite.flipX = !playerSprite.flipX;
+        isFlipped = !isFlipped;
     }
 
     private IEnumerator DisableMovement()

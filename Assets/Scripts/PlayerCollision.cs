@@ -15,7 +15,6 @@ public class PlayerCollision : MonoBehaviour
     [Header("Collision Transform")]
     [SerializeField] private Transform hand;
     [SerializeField] private Transform feet;
-    [SerializeField] private Transform ledgeOffset;
     [SerializeField] private Transform rightFoot;
     [SerializeField] private Transform leftFoot;
 
