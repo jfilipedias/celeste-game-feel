@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float disabledMoveTime;
     [SerializeField] private float disabledJumpTime;
     [SerializeField] private float disabledClimbTime;
+    [SerializeField] private float disabledWallSlideTime;
     [SerializeField] private float dashWaitTime;
 
     [Space]
@@ -49,11 +50,14 @@ public class PlayerController : MonoBehaviour
     private bool isClimbing = false;
     private bool isDashing = false;
     private bool isFlipped = false;
+
+    private bool wasWallJumping = false;
     
     private bool canMove = true;
     private bool canJump = true;
     private bool canClimb = true;
     private bool canDash = true;
+    private bool canSlideOnWall = true;
     #endregion
 
     #region Properties
@@ -75,11 +79,14 @@ public class PlayerController : MonoBehaviour
     {
         HandleInput();
 
-        if (facingDirection != horizontalMovementDirection && horizontalMovementDirection != 0 && !isClimbing && !isWallJumping)
+        if ((horizontalMovementDirection != facingDirection && horizontalMovementDirection != 0) && !isClimbing && !isWallJumping && (canMove || wasWallJumping))
             FlipDirection();
 
         if (isDashing)
             StartCoroutine(Camera.main.GetComponent<CameraShake>().Shake());
+
+        if (wasWallJumping)
+            wasWallJumping = false;
     }
 
     private void FixedUpdate()
@@ -95,7 +102,7 @@ public class PlayerController : MonoBehaviour
         if (canJump && onWall && isWallJumping)
             WallJump();
 
-        if (onWall && !isClimbing && !onGround && horizontalMovementDirection == facingDirection)
+        if (onWall && !isClimbing && !onGround && horizontalMovementDirection == facingDirection && canSlideOnWall)
             WallSlide();
 
         if (isClimbing && !isWallJumping)
@@ -163,18 +170,26 @@ public class PlayerController : MonoBehaviour
     private void WallJump()
     {
         isWallJumping = false;
-        
+
         SetDinamicRigidbody2D();
 
         StartCoroutine(DisableMovement());
         StartCoroutine(DisableClimb());
         StartCoroutine(DisableJump());
+        StartCoroutine(DisableWallSlide());
 
-        Vector2 horizontalDirection = Vector2.right * horizontalMovementDirection;
+        Vector2 horizontalDirection = Vector2.zero;
 
-        Vector2 jumpDirection = Vector2.up + horizontalDirection / 2;
+        if (horizontalMovementDirection != facingDirection) 
+            horizontalDirection = Vector2.right * horizontalMovementDirection;
+
+        Vector2 jumpDirection = Vector2.up + (horizontalDirection / 2);
+
+        Debug.Log(jumpDirection);
 
         Jump(jumpDirection);
+
+        wasWallJumping = true;
     }
 
     private void WallSlide()
@@ -291,6 +306,15 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(disabledClimbTime);
 
         canClimb = true;
+    }
+
+    private IEnumerator DisableWallSlide()
+    {
+        canSlideOnWall = false;
+
+        yield return new WaitForSeconds(disabledWallSlideTime);
+
+        canSlideOnWall = true;
     }
 
     private void CheckCollision()

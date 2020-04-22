@@ -493,7 +493,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 888320552}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.75, y: -8.997, z: 0}
+  m_LocalPosition: {x: -16.45, y: -8.997, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 102383568}
@@ -516,13 +516,13 @@ MonoBehaviour:
   moveSpeed: 10
   jumpForce: 16
   climbSpeed: 5
-  climbLedgeForce: 5
+  climbLedgeForce: 15
   climbFowardDistance: 0.3
   wallSlideSpeed: 2
   dashSpeed: 22
-  disabledMoveTime: 0.1
+  disabledMoveTime: 0.5
   disabledJumpTime: 0.5
-  disabledClimbTime: 0.2
+  disabledClimbTime: 0.5
   dashWaitTime: 0.15
   dashParticles: {fileID: 1540624872}
 --- !u!66 &888320558
