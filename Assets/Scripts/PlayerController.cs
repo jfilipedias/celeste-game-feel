@@ -174,19 +174,19 @@ public class PlayerController : MonoBehaviour
 
         SetDinamicRigidbody2D();
 
-        StartCoroutine(DisableMovement());
         StartCoroutine(DisableClimb());
         StartCoroutine(DisableJump());
         StartCoroutine(DisableWallSlide());
 
         Vector2 horizontalDirection = Vector2.zero;
 
-        if (horizontalMovementDirection != facingDirection) 
+        if (horizontalMovementDirection != facingDirection && horizontalMovementDirection != 0)
+        {
+            StartCoroutine(DisableMovement());
             horizontalDirection = Vector2.right * horizontalMovementDirection;
+        }
 
         Vector2 jumpDirection = Vector2.up + (horizontalDirection / 2);
-
-        Debug.Log(jumpDirection);
 
         Jump(jumpDirection);
 

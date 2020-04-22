@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraShake : MonoBehaviour
@@ -9,8 +8,6 @@ public class CameraShake : MonoBehaviour
 
     public IEnumerator Shake()
     {
-        Debug.Log("Shaking");
-
         Vector3 originalPosition = this.transform.localPosition;
 
         float elapsed = 0f;

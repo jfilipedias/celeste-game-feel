@@ -256,7 +256,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9af8132cf4124254bbfd2e9a004cff9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  force: 0.02
+  force: 0.1
   duration: 0.1
 --- !u!20 &519420031
 Camera:
@@ -524,7 +524,7 @@ MonoBehaviour:
   disabledMoveTime: 0.5
   disabledJumpTime: 0.5
   disabledClimbTime: 0.5
-  disabledWallSlideTime: 0
+  disabledWallSlideTime: 0.5
   dashWaitTime: 0.15
   dashParticles: {fileID: 1540624872}
 --- !u!66 &888320558
@@ -599,6 +599,51 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   redSprite: {fileID: 21300000, guid: afff83e7484671e46af612ed6f8592fb, type: 3}
   blueSprite: {fileID: 21300000, guid: f14b6dff48c1aab41833327c44e2e4c2, type: 3}
+--- !u!1 &1031944736
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1031944737}
+  - component: {fileID: 1031944738}
+  m_Layer: 0
+  m_Name: Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1031944737
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1031944736}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1031944738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1031944736}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23d7048420c54a944a41e6f4dfe12ede, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  additiveSceneList:
+  - Enviroment
 --- !u!1 &1428634271
 GameObject:
   m_ObjectHideFlags: 0
