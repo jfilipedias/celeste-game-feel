@@ -258,7 +258,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   force: 0.1
-  duration: 0.1
+  duration: 0.05
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -5272,13 +5272,13 @@ MonoBehaviour:
   jumpForce: 16
   climbSpeed: 5
   climbDownSpeed: 10
-  climbLedgeForce: 15
+  climbLedgeForce: 10
   climbFowardDistance: 0.3
   wallSlideSpeed: 2
   dashSpeed: 22
   disabledMoveTime: 0.5
   disabledJumpTime: 0.5
-  disabledClimbTime: 0.25
+  disabledClimbTime: 0.3
   disabledWallSlideTime: 0.5
   dashWaitTime: 0.15
   dashTrailParticles: {fileID: 781467068}

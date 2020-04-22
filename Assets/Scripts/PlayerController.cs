@@ -7,22 +7,22 @@ public class PlayerController : MonoBehaviour
     #region Attributes
     // Show in Inspector
     [Header("Movement")]
-    [SerializeField] private float moveSpeed;
-    [SerializeField] private float jumpForce;
-    [SerializeField] private float climbSpeed;
-    [SerializeField] private float climbDownSpeed;
-    [SerializeField] private float climbLedgeForce;
-    [SerializeField] private float climbFowardDistance;
-    [SerializeField] private float wallSlideSpeed;
-    [SerializeField] private float dashSpeed;
+    [SerializeField] private float moveSpeed = 10f;
+    [SerializeField] private float jumpForce = 16f;
+    [SerializeField] private float climbSpeed = 5f;
+    [SerializeField] private float climbDownSpeed = 10f;
+    [SerializeField] private float climbLedgeForce = 10f;
+    [SerializeField] private float climbFowardDistance = 0.3f;
+    [SerializeField] private float wallSlideSpeed = 2f;
+    [SerializeField] private float dashSpeed = 22f;
 
     [Space]
     [Header("Timers")]
-    [SerializeField] private float disabledMoveTime;
-    [SerializeField] private float disabledJumpTime;
-    [SerializeField] private float disabledClimbTime;
-    [SerializeField] private float disabledWallSlideTime;
-    [SerializeField] private float dashWaitTime;
+    [SerializeField] private float disabledMoveTime = 0.5f;
+    [SerializeField] private float disabledJumpTime = 0.5f;
+    [SerializeField] private float disabledClimbTime = 0.3f;
+    [SerializeField] private float disabledWallSlideTime = 0.5f;
+    [SerializeField] private float dashWaitTime = 0.15f;
 
     [Space]
     [Header("Particles")]
@@ -101,16 +101,16 @@ public class PlayerController : MonoBehaviour
         if (isJumping && onGround && !isClimbing)
             Jump(Vector2.up);
 
-        if (canJump && onWall && isWallJumping)
+        if (onWall && isWallJumping)
             WallJump();
 
-        if (onWall && !isClimbing && !onGround && horizontalMovementDirection == facingDirection && canSlideOnWall)
+        if (onWall && canSlideOnWall && !isClimbing && !onGround && horizontalMovementDirection == facingDirection)
             WallSlide();
 
         if (isClimbing && !isWallJumping)
             Climb();
         else
-            SetDinamicRigidbody2D();
+            SetGravityScaleValue(defaultGravityScale);
 
         if (isClimbing && !handOnWall)
             StartCoroutine(ClimbLedge());
@@ -136,11 +136,11 @@ public class PlayerController : MonoBehaviour
         verticalMovementDirection = Input.GetAxisRaw("Vertical");
        
         // Jumping
-        if (Input.GetButtonDown("Jump") && onGround)
+        if (Input.GetButtonDown("Jump") && onGround && canJump)
             isJumping = true;
 
         // Wall Jump
-        if (Input.GetButtonDown("Jump") && onWall && !onGround)
+        if (Input.GetButtonDown("Jump") && onWall && !onGround && canJump)
             isWallJumping = true;
 
         // Climb
@@ -173,11 +173,11 @@ public class PlayerController : MonoBehaviour
     {
         isWallJumping = false;
 
-        SetDinamicRigidbody2D();
-
         StartCoroutine(DisableClimb());
         StartCoroutine(DisableJump());
         StartCoroutine(DisableWallSlide());
+        
+        SetGravityScaleValue(defaultGravityScale);
 
         Vector2 horizontalDirection = Vector2.zero;
 
@@ -196,8 +196,7 @@ public class PlayerController : MonoBehaviour
 
     private void WallSlide()
     {
-        bool freezePositionX = true;
-        SetKinematicRigidbody2D(freezePositionX);
+        SetGravityScaleValue(0);
 
         playerRigidbody2D.velocity = new Vector2(0, wallSlideSpeed) * Vector2.down;
     }
@@ -206,13 +205,13 @@ public class PlayerController : MonoBehaviour
     {
         onGround = false;
 
-        SetKinematicRigidbody2D(true);
+        SetGravityScaleValue(0);
 
         float newVelocityY = 0f;
 
         if (verticalMovementDirection > 0)
             newVelocityY = verticalMovementDirection * climbSpeed;
-        else if (verticalMovementDirection < 0)
+        else if (verticalMovementDirection < 0 && !onGround)
             newVelocityY = verticalMovementDirection * climbDownSpeed;
 
         playerRigidbody2D.velocity = new Vector2(0, newVelocityY);
@@ -220,7 +219,7 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator ClimbLedge()
     {
-        SetDinamicRigidbody2D();
+        SetGravityScaleValue(defaultGravityScale);
 
         while (feetOnWall)
         {
@@ -264,7 +263,7 @@ public class PlayerController : MonoBehaviour
         dashSpreadParticles.Play();
 
         if (direction.y >= 0)
-            playerRigidbody2D.gravityScale = 0f;
+            SetGravityScaleValue(0);
 
         yield return new WaitForSeconds(dashWaitTime);
 
@@ -273,7 +272,7 @@ public class PlayerController : MonoBehaviour
         else
             playerRigidbody2D.velocity *= 0.8f;
 
-        playerRigidbody2D.gravityScale = defaultGravityScale;
+        SetGravityScaleValue(defaultGravityScale);
 
         canMove = true;
         canJump = true;
@@ -341,18 +340,9 @@ public class PlayerController : MonoBehaviour
         playerRigidbody2D.velocity = new Vector2(playerRigidbody2D.velocity.x, 0);
     }
 
-    private void SetDinamicRigidbody2D()
+    private void SetGravityScaleValue(float newGravityScaleValue)
     {
-        playerRigidbody2D.bodyType = RigidbodyType2D.Dynamic;
-        playerRigidbody2D.constraints = RigidbodyConstraints2D.FreezeRotation;
-    } 
-
-    private void SetKinematicRigidbody2D(bool freezePositionX)
-    {
-        playerRigidbody2D.bodyType = RigidbodyType2D.Kinematic;
-        
-        if (freezePositionX)
-            playerRigidbody2D.constraints = RigidbodyConstraints2D.FreezeRotation | RigidbodyConstraints2D.FreezePositionX;
+        playerRigidbody2D.gravityScale = newGravityScaleValue;
     }
     #endregion
 }
