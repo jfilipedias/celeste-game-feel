@@ -26,13 +26,14 @@ public class PlayerController : MonoBehaviour
 
     [Space]
     [Header("Particles")]
-    [SerializeField] private ParticleSystem dashParticles;
+    [SerializeField] private ParticleSystem dashTrailParticles;
+    [SerializeField] private ParticleSystem dashSpreadParticles;
 
     // Game Object Components
     private Rigidbody2D playerRigidbody2D;
     private PlayerCollision playerCollision;
 
-    private float initialGravityScale;
+    private float defaultGravityScale;
 
     // Movement
     private float horizontalMovementDirection;
@@ -73,7 +74,7 @@ public class PlayerController : MonoBehaviour
         playerRigidbody2D = this.GetComponent<Rigidbody2D>();
         playerCollision = this.GetComponent<PlayerCollision>();
 
-        initialGravityScale = playerRigidbody2D.gravityScale;
+        defaultGravityScale = playerRigidbody2D.gravityScale;
     }
 
     private void Update()
@@ -259,7 +260,8 @@ public class PlayerController : MonoBehaviour
         canJump = false;
         canDash = false;
 
-        dashParticles.Play();
+        dashTrailParticles.Play();
+        dashSpreadParticles.Play();
 
         if (direction.y >= 0)
             playerRigidbody2D.gravityScale = 0f;
@@ -271,13 +273,14 @@ public class PlayerController : MonoBehaviour
         else
             playerRigidbody2D.velocity *= 0.8f;
 
-        playerRigidbody2D.gravityScale = initialGravityScale;
+        playerRigidbody2D.gravityScale = defaultGravityScale;
 
         canMove = true;
         canJump = true;
         isDashing = false;
 
-        dashParticles.Stop();
+        dashTrailParticles.Stop();
+        dashSpreadParticles.Stop();
         yield return new WaitForFixedUpdate();
     }
 
