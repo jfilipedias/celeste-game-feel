@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
     [SerializeField] private float climbSpeed;
+    [SerializeField] private float climbDownSpeed;
     [SerializeField] private float climbLedgeForce;
     [SerializeField] private float climbFowardDistance;
     [SerializeField] private float wallSlideSpeed;
@@ -206,8 +207,13 @@ public class PlayerController : MonoBehaviour
 
         SetKinematicRigidbody2D(true);
 
-        float newVelocityY = verticalMovementDirection * climbSpeed;
- 
+        float newVelocityY = 0f;
+
+        if (verticalMovementDirection > 0)
+            newVelocityY = verticalMovementDirection * climbSpeed;
+        else if (verticalMovementDirection < 0)
+            newVelocityY = verticalMovementDirection * climbDownSpeed;
+
         playerRigidbody2D.velocity = new Vector2(0, newVelocityY);
     }
 

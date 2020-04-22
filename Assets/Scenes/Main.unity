@@ -516,6 +516,7 @@ MonoBehaviour:
   moveSpeed: 10
   jumpForce: 16
   climbSpeed: 5
+  climbDownSpeed: 10
   climbLedgeForce: 15
   climbFowardDistance: 0.3
   wallSlideSpeed: 2
@@ -523,6 +524,7 @@ MonoBehaviour:
   disabledMoveTime: 0.5
   disabledJumpTime: 0.5
   disabledClimbTime: 0.5
+  disabledWallSlideTime: 0
   dashWaitTime: 0.15
   dashParticles: {fileID: 1540624872}
 --- !u!66 &888320558
