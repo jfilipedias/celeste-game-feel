@@ -18,16 +18,17 @@ public class PlayerController : MonoBehaviour
 
     [Space]
     [Header("Timers")]
-    [SerializeField] private float disabledMoveTime = 0.5f;
-    [SerializeField] private float disabledJumpTime = 0.5f;
+    [SerializeField] private float disabledMoveTime = 0.3f;
+    [SerializeField] private float disabledJumpTime = 0.3f;
     [SerializeField] private float disabledClimbTime = 0.3f;
-    [SerializeField] private float disabledWallSlideTime = 0.5f;
+    [SerializeField] private float disabledWallSlideTime = 0.3f;
     [SerializeField] private float dashWaitTime = 0.15f;
 
     [Space]
     [Header("Particles")]
     [SerializeField] private ParticleSystem dashTrailParticles;
     [SerializeField] private ParticleSystem dashSpreadParticles;
+    [SerializeField] private ParticleSystem groundDustParticles;
 
     // Game Object Components
     private Rigidbody2D playerRigidbody2D;
@@ -54,6 +55,7 @@ public class PlayerController : MonoBehaviour
     private bool isFlipped = false;
 
     private bool wasWallJumping = false;
+    private bool wasUnground = false;
     
     private bool canMove = true;
     private bool canJump = true;
@@ -95,6 +97,9 @@ public class PlayerController : MonoBehaviour
     {
         CheckCollision();
 
+        if (!onGround)
+            wasUnground = true;
+
         if(canMove && !isClimbing && !isWallJumping)
             Move();
 
@@ -123,6 +128,9 @@ public class PlayerController : MonoBehaviour
 
         if (onGround && !isDashing)
             canDash = true;
+
+        if (wasUnground && onGround)
+            Landing();
     }
     #endregion
 
@@ -163,8 +171,11 @@ public class PlayerController : MonoBehaviour
 
     private void Jump(Vector2 jumpDirection)
     {
+        if (onGround)
+            groundDustParticles.Play();
+
         playerRigidbody2D.velocity += jumpDirection * jumpForce;
-        
+
         onGround = false;
         isJumping = false;
     }
@@ -281,6 +292,12 @@ public class PlayerController : MonoBehaviour
         dashTrailParticles.Stop();
         dashSpreadParticles.Stop();
         yield return new WaitForFixedUpdate();
+    }
+
+    private void Landing()
+    {
+        wasUnground = false;
+        groundDustParticles.Play();
     }
 
     private void FlipDirection()
