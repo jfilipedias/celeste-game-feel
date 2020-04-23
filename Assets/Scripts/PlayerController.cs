@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float disabledClimbTime = 0.3f;
     [SerializeField] private float disabledWallSlideTime = 0.3f;
     [SerializeField] private float dashWaitTime = 0.15f;
+    [SerializeField] private float coyoteTime = 0.2f;
 
     [Space]
     [Header("Particles")]
@@ -38,6 +39,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D playerRigidbody2D;
     private PlayerCollision playerCollision;
 
+    // Default Values
     private float defaultGravityScale;
 
     // Movement
@@ -58,6 +60,7 @@ public class PlayerController : MonoBehaviour
     private bool isClimbing = false;
     private bool isDashing = false;
     private bool isFlipped = false;
+    private bool isCoyoteTime = false;
 
     private bool wasWallJumping = false;
     private bool wasUnground = false;
@@ -67,6 +70,7 @@ public class PlayerController : MonoBehaviour
     private bool canClimb = true;
     private bool canDash = true;
     private bool canSlideOnWall = true;
+    private bool canCoyoteTime = true;
     #endregion
 
     #region Properties
@@ -88,6 +92,8 @@ public class PlayerController : MonoBehaviour
     {
         HandleInput();
 
+        ControlBooleans();
+
         if (onSpike || this.transform.position.y <= levelLimit.position.y)
             Die();
 
@@ -100,14 +106,8 @@ public class PlayerController : MonoBehaviour
         if (wasUnground && onGround)
             Landing();
 
-        if (wasWallJumping)
-            wasWallJumping = false;
-
-        if (!onGround)
-            wasUnground = true;
-
-        if (onGround && !isDashing)
-            canDash = true;
+        if (isCoyoteTime && !isJumping)
+            StartCoroutine(WaitCoyoteTime());
     }
 
     private void FixedUpdate()
@@ -117,7 +117,7 @@ public class PlayerController : MonoBehaviour
         if(canMove && !isClimbing && !isWallJumping)
             Move();
 
-        if (isJumping && onGround && !isClimbing)
+        if (isJumping && (onGround || isCoyoteTime) && !isClimbing)
             Jump(Vector2.up);
 
         if (onWall && isWallJumping)
@@ -152,11 +152,11 @@ public class PlayerController : MonoBehaviour
         verticalMovementDirection = Input.GetAxisRaw("Vertical");
        
         // Jump
-        if (Input.GetButtonDown("Jump") && onGround && canJump)
+        if (Input.GetButtonDown("Jump") && canJump && (onGround || isCoyoteTime))
             isJumping = true;
 
         // Jump Buffering
-        if (Input.GetButton("Jump") && wasUnground && onGround && canJump)
+        //if (Input.GetButton("Jump") && wasUnground && onGround && canJump)
             // TO IMPLEMENT isJumping = 
 
         // Wall Jump
@@ -185,7 +185,9 @@ public class PlayerController : MonoBehaviour
 
     private void Jump(Vector2 jumpDirection)
     {
-        if (onGround)
+        canCoyoteTime = false;
+
+        if (onGround || isCoyoteTime)
             groundDustParticles.Play();
 
         playerRigidbody2D.velocity += jumpDirection * jumpForce;
@@ -331,6 +333,15 @@ public class PlayerController : MonoBehaviour
         isFlipped = !isFlipped;
     }
 
+    private IEnumerator WaitCoyoteTime()
+    {
+        canCoyoteTime = false;
+
+        yield return new WaitForSeconds(coyoteTime);
+
+        isCoyoteTime = false;
+    }
+
     private IEnumerator DisableMovement()
     {
         canMove = false;
@@ -369,13 +380,29 @@ public class PlayerController : MonoBehaviour
 
     private void CheckCollision()
     {
-        if(!isJumping)
-            onGround = playerCollision.CheckGroundCollision();
-
+        onGround = playerCollision.CheckGroundCollision();
         onSpike = playerCollision.CheckSpikeCollision();
         onWall = playerCollision.CheckWallCollistion(facingDirection);
         handOnWall = playerCollision.CheckHandsOnWall(facingDirection);
         feetOnWall = playerCollision.CheckFeetOnWall(facingDirection);
+    }
+
+    private void ControlBooleans()
+    {
+        if (wasWallJumping)
+            wasWallJumping = false;
+
+        if (!onGround)
+            wasUnground = true;
+
+        if (onGround && !isDashing)
+            canDash = true;
+
+        if (!onGround && !isJumping && canCoyoteTime)
+            isCoyoteTime = true;
+
+        if (onGround)
+            canCoyoteTime = true;
     }
 
     private void ResetVerticalVelocity()

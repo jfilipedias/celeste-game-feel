@@ -9890,9 +9890,11 @@ MonoBehaviour:
   disabledClimbTime: 0.3
   disabledWallSlideTime: 0.3
   dashWaitTime: 0.15
+  coyoteTime: 0.1
   dashTrailParticles: {fileID: 7573913424768712667}
   dashSpreadParticles: {fileID: 7573913425653699471}
   groundDustParticles: {fileID: 7573913424245699131}
+  levelLimit: {fileID: 0}
 --- !u!114 &7573913424862654536
 MonoBehaviour:
   m_ObjectHideFlags: 0
