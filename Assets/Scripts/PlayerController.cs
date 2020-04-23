@@ -30,6 +30,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private ParticleSystem dashSpreadParticles;
     [SerializeField] private ParticleSystem groundDustParticles;
 
+    [Space]
+    [Header("Level")]
+    [SerializeField] private Transform levelLimit;
+
     // Game Object Components
     private Rigidbody2D playerRigidbody2D;
     private PlayerCollision playerCollision;
@@ -98,7 +102,7 @@ public class PlayerController : MonoBehaviour
     {
         CheckCollision();
 
-        if (onSpike)
+        if (onSpike || this.transform.position.y <= levelLimit.position.y)
             Die();
 
         if (!onGround)
