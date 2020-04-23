@@ -155,6 +155,10 @@ public class PlayerController : MonoBehaviour
         if (Input.GetButtonDown("Jump") && onGround && canJump)
             isJumping = true;
 
+        // Jump Buffering
+        if (Input.GetButton("Jump") && wasUnground && onGround && canJump)
+            // TO IMPLEMENT isJumping = 
+
         // Wall Jump
         if (Input.GetButtonDown("Jump") && onWall && !onGround && canJump)
             isWallJumping = true;
@@ -188,6 +192,12 @@ public class PlayerController : MonoBehaviour
 
         onGround = false;
         isJumping = false;
+    }
+
+    private bool JumpBuffering()
+    {
+        //TO IMPLEMENT
+        return false;
     }
 
     private void WallJump()
