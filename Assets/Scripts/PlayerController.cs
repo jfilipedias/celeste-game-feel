@@ -88,25 +88,31 @@ public class PlayerController : MonoBehaviour
     {
         HandleInput();
 
+        if (onSpike || this.transform.position.y <= levelLimit.position.y)
+            Die();
+
         if ((horizontalMovementDirection != facingDirection && horizontalMovementDirection != 0) && !isClimbing && !isWallJumping && (canMove || wasWallJumping))
             FlipDirection();
 
         if (isDashing)
             StartCoroutine(Camera.main.GetComponent<CameraShake>().Shake());
 
+        if (wasUnground && onGround)
+            Landing();
+
         if (wasWallJumping)
             wasWallJumping = false;
+
+        if (!onGround)
+            wasUnground = true;
+
+        if (onGround && !isDashing)
+            canDash = true;
     }
 
     private void FixedUpdate()
     {
         CheckCollision();
-
-        if (onSpike || this.transform.position.y <= levelLimit.position.y)
-            Die();
-
-        if (!onGround)
-            wasUnground = true;
 
         if(canMove && !isClimbing && !isWallJumping)
             Move();
@@ -133,12 +139,6 @@ public class PlayerController : MonoBehaviour
 
         if (onGround && !isClimbing && playerRigidbody2D.velocity.y != 0)
             ResetVerticalVelocity();
-
-        if (onGround && !isDashing)
-            canDash = true;
-
-        if (wasUnground && onGround)
-            Landing();
     }
     #endregion
 
@@ -151,7 +151,7 @@ public class PlayerController : MonoBehaviour
         // Vertical Movement
         verticalMovementDirection = Input.GetAxisRaw("Vertical");
        
-        // Jumping
+        // Jump
         if (Input.GetButtonDown("Jump") && onGround && canJump)
             isJumping = true;
 
