@@ -7,6 +7,7 @@ public class SceneLoader : MonoBehaviour
 {
     [SerializeField] private List<string> additiveSceneList = new List<string>();
     [SerializeField] private GameObject playerGameObject;
+    [SerializeField] private float waitTimeToReload = 0.5f;
 
     private void Awake()
     {
@@ -22,7 +23,7 @@ public class SceneLoader : MonoBehaviour
 
     private IEnumerator ReloadScene()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(waitTimeToReload);
 
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
