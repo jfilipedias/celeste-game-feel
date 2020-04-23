@@ -173,8 +173,10 @@ public class PlayerController : MonoBehaviour
     private void Move()
     {
         float newVelocityX = horizontalMovementDirection * moveSpeed;
-
-        playerRigidbody2D.velocity =  new Vector2(newVelocityX, playerRigidbody2D.velocity.y);
+        
+        // Prevent move against wall
+        if (!(onWall && horizontalMovementDirection == facingDirection))
+            playerRigidbody2D.velocity =  new Vector2(newVelocityX, playerRigidbody2D.velocity.y);
     }
 
     private void Jump(Vector2 jumpDirection)
