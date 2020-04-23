@@ -9,7 +9,12 @@ public class PlayerCollision : MonoBehaviour
     [SerializeField] private float groundCollisionDistance;
     [SerializeField] private float wallCollisionDistance;
     [SerializeField] private float sphereGizmoSize;
+    [SerializeField] private float boxShellSize;
+
+    [Space]
+    [Header("Colision Mask")]
     [SerializeField] private LayerMask groundMask;
+    [SerializeField] private LayerMask spikeMask;
 
     [Space]
     [Header("Collision Transform")]
@@ -20,6 +25,8 @@ public class PlayerCollision : MonoBehaviour
 
     private float facingDirection = Vector2.right.x;
 
+    private Vector2 boxColliderSize;
+
     private PlayerController playerController;
     #endregion
 
@@ -27,6 +34,7 @@ public class PlayerCollision : MonoBehaviour
     private void Awake()
     {
         playerController = this.GetComponent<PlayerController>();
+        boxColliderSize = this.GetComponent<BoxCollider2D>().size;
     }
    
     private void Update()
@@ -45,6 +53,9 @@ public class PlayerCollision : MonoBehaviour
         // Hand
         Gizmos.DrawWireSphere(hand.position, sphereGizmoSize);
         Gizmos.DrawLine(hand.position, (hand.position + new Vector3(wallCollisionDistance * facingDirection, 0, 0)));
+
+        // Collision Shell
+        Gizmos.DrawWireCube(this.transform.position, new Vector2(boxColliderSize.x + boxShellSize, boxColliderSize.y + boxShellSize));
 
         // Foot
         Gizmos.DrawWireSphere(rightFoot.position, sphereGizmoSize);
@@ -75,6 +86,13 @@ public class PlayerCollision : MonoBehaviour
 
         return Physics2D.Raycast(feetRayStart, new Vector2(facingDirection, 0), wallCollisionDistance, groundMask) ||
                Physics2D.Raycast(handRayStart, new Vector2(facingDirection, 0), wallCollisionDistance, groundMask);
+    }
+
+    public bool CheckSpikeCollision()
+    {
+        bool collideOnSpike = Physics2D.OverlapBox((Vector2)this.transform.position, new Vector2(boxColliderSize.x + boxShellSize, boxColliderSize.y + boxShellSize), 0, spikeMask);
+
+        return collideOnSpike;
     }
 
     public bool CheckHandsOnWall(float facingDirection)

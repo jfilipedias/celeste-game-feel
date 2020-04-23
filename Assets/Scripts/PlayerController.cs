@@ -44,6 +44,7 @@ public class PlayerController : MonoBehaviour
     // Booleans
     private bool onGround = false;
     private bool onWall = false;
+    private bool onSpike = false;
     
     private bool handOnWall = false;
     private bool feetOnWall = false;
@@ -96,6 +97,9 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         CheckCollision();
+
+        if (onSpike)
+            Die();
 
         if (!onGround)
             wasUnground = true;
@@ -300,6 +304,11 @@ public class PlayerController : MonoBehaviour
         groundDustParticles.Play();
     }
 
+    private void Die()
+    {
+        GameObject.Destroy(this.gameObject);
+    }
+
     private void FlipDirection()
     {
         facingDirection *= -1;
@@ -346,7 +355,8 @@ public class PlayerController : MonoBehaviour
     {
         if(!isJumping)
             onGround = playerCollision.CheckGroundCollision();
-        
+
+        onSpike = playerCollision.CheckSpikeCollision();
         onWall = playerCollision.CheckWallCollistion(facingDirection);
         handOnWall = playerCollision.CheckHandsOnWall(facingDirection);
         feetOnWall = playerCollision.CheckFeetOnWall(facingDirection);
