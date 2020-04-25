@@ -12,3 +12,6 @@ In addition to the basic mechanics, this project implement some little ajust as 
 
 ### Coyote Time
 You can still jump for a short time after leaving a ledge.
+
+### Jump Buffering
+If you press and hold the jump button a short time before landing, you will jump on the exact frame that you land.
