@@ -8,7 +8,7 @@ This project was made to study how to implement a platflormer controller like in
 To learn more about colaboration methods in Unity this project using [Multi-Scene Editing](https://docs.unity3d.com/Manual/MultiSceneEditing.html "Documentation"). To see the complete scene you can need the Master scene and then drag and drop the Enviroment scene to the Hierarchy Panel. 
 
 ## Game Fell
-In addition to the basic mechanics, this project implement some little ajust as explained by [Matt Thorson](https://twitter.com/MattThorson "Twitter Profile") in this [thread](https://twitter.com/MattThorson/status/1238338574220546049 "Game Fell in Celeste")
+In addition to the basic mechanics, this project implement some little ajust as explained by [Matt Thorson](https://twitter.com/MattThorson "Twitter Profile") in this [thread](https://twitter.com/MattThorson/status/1238338574220546049 "Game Fell in Celeste"). Some of the game fell techniques implemented in this project are listed below.
 
 ### Coyote Time
 You can still jump for a short time after leaving a ledge.
