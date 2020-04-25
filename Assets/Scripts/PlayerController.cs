@@ -23,8 +23,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float disabledClimbTime = 0.3f;
     [SerializeField] private float disabledWallSlideTime = 0.3f;
     [SerializeField] private float dashWaitTime = 0.15f;
-    [SerializeField] private float coyoteTime = 0.15f;
-    [SerializeField] private float jumpBufferingtime = 0.15f;
+    [SerializeField] private float coyoteTime = 0.1f;
+    [SerializeField] private float jumpBufferingTime = 0.1f;
 
     [Space]
     [Header("Particles")]
@@ -201,12 +201,13 @@ public class PlayerController : MonoBehaviour
 
     private void ControllJumpBuffering()
     {
-        jumpBufferingElapsed -= Time.deltaTime;
 
-        if (Input.GetButton("Jump") && !isJumpBuffering)
-            jumpBufferingElapsed = jumpBufferingtime;
-
-        if (jumpBufferingElapsed > 0)
+        if (Input.GetButton("Jump"))
+            jumpBufferingElapsed += Time.deltaTime;
+        else
+            jumpBufferingElapsed = 0;
+        
+        if (jumpBufferingElapsed > 0 && jumpBufferingElapsed <= jumpBufferingTime)
             isJumpBuffering = true;
         else
             isJumpBuffering = false;

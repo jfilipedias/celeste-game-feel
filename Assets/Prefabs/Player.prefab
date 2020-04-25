@@ -9891,6 +9891,7 @@ MonoBehaviour:
   disabledWallSlideTime: 0.3
   dashWaitTime: 0.15
   coyoteTime: 0.1
+  jumpBufferingTime: 0.1
   dashTrailParticles: {fileID: 7573913424768712667}
   dashSpreadParticles: {fileID: 7573913425653699471}
   groundDustParticles: {fileID: 7573913424245699131}
