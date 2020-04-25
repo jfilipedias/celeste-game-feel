@@ -23,7 +23,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float disabledClimbTime = 0.3f;
     [SerializeField] private float disabledWallSlideTime = 0.3f;
     [SerializeField] private float dashWaitTime = 0.15f;
-    [SerializeField] private float coyoteTime = 0.2f;
+    [SerializeField] private float coyoteTime = 0.15f;
+    [SerializeField] private float jumpBufferingtime = 0.15f;
 
     [Space]
     [Header("Particles")]
@@ -41,6 +42,8 @@ public class PlayerController : MonoBehaviour
 
     // Default Values
     private float defaultGravityScale;
+
+    private float jumpBufferingElapsed;
 
     // Movement
     private float horizontalMovementDirection;
@@ -61,6 +64,7 @@ public class PlayerController : MonoBehaviour
     private bool isDashing = false;
     private bool isFlipped = false;
     private bool isCoyoteTime = false;
+    private bool isJumpBuffering = false;
 
     private bool wasWallJumping = false;
     private bool wasUnground = false;
@@ -112,12 +116,12 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        CheckCollision();
+        CheckCollisions();
 
         if(canMove && !isClimbing && !isWallJumping)
             Move();
 
-        if (isJumping && (onGround || isCoyoteTime) && !isClimbing)
+        if ((isJumping || isJumpBuffering) && (onGround || isCoyoteTime) && !isClimbing)
             Jump(Vector2.up);
 
         if (onWall && isWallJumping)
@@ -156,8 +160,7 @@ public class PlayerController : MonoBehaviour
             isJumping = true;
 
         // Jump Buffering
-        //if (Input.GetButton("Jump") && wasUnground && onGround && canJump)
-            // TO IMPLEMENT isJumping = 
+        ControllJumpBuffering();
 
         // Wall Jump
         if (Input.GetButtonDown("Jump") && onWall && !onGround && canJump)
@@ -196,10 +199,17 @@ public class PlayerController : MonoBehaviour
         isJumping = false;
     }
 
-    private bool JumpBuffering()
+    private void ControllJumpBuffering()
     {
-        //TO IMPLEMENT
-        return false;
+        jumpBufferingElapsed -= Time.deltaTime;
+
+        if (Input.GetButton("Jump") && !isJumpBuffering)
+            jumpBufferingElapsed = jumpBufferingtime;
+
+        if (jumpBufferingElapsed > 0)
+            isJumpBuffering = true;
+        else
+            isJumpBuffering = false;
     }
 
     private void WallJump()
@@ -217,6 +227,7 @@ public class PlayerController : MonoBehaviour
         if (horizontalMovementDirection != facingDirection && horizontalMovementDirection != 0)
         {
             StartCoroutine(DisableMovement());
+            FlipDirection();
             horizontalDirection = Vector2.right * horizontalMovementDirection;
         }
 
@@ -378,7 +389,7 @@ public class PlayerController : MonoBehaviour
         canSlideOnWall = true;
     }
 
-    private void CheckCollision()
+    private void CheckCollisions()
     {
         onGround = playerCollision.CheckGroundCollision();
         onSpike = playerCollision.CheckSpikeCollision();
