@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerCollision : MonoBehaviour
+public class CollisionChecker : MonoBehaviour
 {
     #region Atributes
     [Header("Check Collision")]
@@ -23,23 +23,23 @@ public class PlayerCollision : MonoBehaviour
     [SerializeField] private Transform rightFoot;
     [SerializeField] private Transform leftFoot;
 
-    private float facingDirection = Vector2.right.x;
+    private float facingDirection;
 
     private Vector2 boxColliderSize;
 
-    private PlayerController playerController;
+    private PlatformController controller;
     #endregion
 
     #region MonoBehaviour Methods
     private void Awake()
     {
-        playerController = this.GetComponent<PlayerController>();
+        controller = this.GetComponent<PlatformController>();
         boxColliderSize = this.GetComponent<BoxCollider2D>().size;
     }
-   
+
     private void Update()
     {
-        facingDirection = playerController.FacingDirection;
+        facingDirection = controller.FacingDirection;
     }
 
     private void OnDrawGizmos()
@@ -67,7 +67,7 @@ public class PlayerCollision : MonoBehaviour
     #endregion
 
     #region Class Methods
-    public bool CheckGroundCollision()
+    public bool GroundCollision()
     {
         Vector2 rightRayStart = (Vector2)rightFoot.position;
         Vector2 leftRayStart = (Vector2)leftFoot.position;
@@ -79,7 +79,7 @@ public class PlayerCollision : MonoBehaviour
 
     }
 
-    public bool CheckWallCollistion(float facingDirection)
+    public bool WallCollistion(float facingDirection)
     {
         Vector2 feetRayStart = (Vector2)feet.position;
         Vector2 handRayStart = (Vector2)hand.position;
@@ -88,25 +88,25 @@ public class PlayerCollision : MonoBehaviour
                Physics2D.Raycast(handRayStart, new Vector2(facingDirection, 0), wallCollisionDistance, groundMask);
     }
 
-    public bool CheckSpikeCollision()
+    public bool SpikeCollision()
     {
         bool collideOnSpike = Physics2D.OverlapBox((Vector2)this.transform.position, new Vector2(boxColliderSize.x + boxShellSize, boxColliderSize.y + boxShellSize), 0, spikeMask);
 
         return collideOnSpike;
     }
 
-    public bool CheckHandsOnWall(float facingDirection)
+    public bool HandsOnWall(float facingDirection)
     {
         Vector2 handRayStart = (Vector2)hand.position;
 
         return Physics2D.Raycast(handRayStart, new Vector2(facingDirection, 0), wallCollisionDistance, groundMask);
     }
 
-    public bool CheckFeetOnWall(float facingDirection)
+    public bool FeetOnWall(float facingDirection)
     {
         Vector2 feetRayStart = (Vector2)feet.position;
 
-        return Physics2D.Raycast(feetRayStart, new Vector2(facingDirection, 0), wallCollisionDistance,groundMask);
+        return Physics2D.Raycast(feetRayStart, new Vector2(facingDirection, 0), wallCollisionDistance, groundMask);
     }
     #endregion
 }

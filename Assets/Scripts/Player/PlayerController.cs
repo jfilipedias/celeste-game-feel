@@ -273,8 +273,6 @@ public class PlayerController : MonoBehaviour
             yield return null;
         }
 
-        ResetVerticalVelocity();
-
         Vector2 foward = playerRigidbody2D.position + (Vector2.right * climbFowardDistance * facingDirection);
 
         playerRigidbody2D.MovePosition(foward);
@@ -392,11 +390,11 @@ public class PlayerController : MonoBehaviour
 
     private void CheckCollisions()
     {
-        onGround = playerCollision.CheckGroundCollision();
-        onSpike = playerCollision.CheckSpikeCollision();
-        onWall = playerCollision.CheckWallCollistion(facingDirection);
-        handOnWall = playerCollision.CheckHandsOnWall(facingDirection);
-        feetOnWall = playerCollision.CheckFeetOnWall(facingDirection);
+        onGround = playerCollision.GroundCollision();
+        onSpike = playerCollision.SpikeCollision();
+        onWall = playerCollision.WallCollistion(facingDirection);
+        handOnWall = playerCollision.HandsOnWall(facingDirection);
+        feetOnWall = playerCollision.FeetOnWall(facingDirection);
     }
 
     private void ControlBooleans()
