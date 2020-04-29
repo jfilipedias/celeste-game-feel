@@ -9,7 +9,7 @@ public class SpriteHandler : MonoBehaviour
     [SerializeField] private Sprite blueSprite;
 
     private SpriteRenderer playerSpriteRenderer;
-    private PlayerController playerController;
+    private PlayerController controller;
 
     private bool canDash = true;
     private bool isFlipped = false;
@@ -19,7 +19,7 @@ public class SpriteHandler : MonoBehaviour
     private void Awake()
     {
         playerSpriteRenderer = this.GetComponent<SpriteRenderer>();
-        playerController = this.GetComponent<PlayerController>();
+        controller = this.GetComponent<PlayerController>();
     }
 
     private void Update()
@@ -31,14 +31,14 @@ public class SpriteHandler : MonoBehaviour
     #region Class Methods
     private void HandleSprite()
     {
-        canDash = playerController.CanDash;
+        canDash = controller.CanDash;
 
         if (canDash)
             SetRedSprite();
         else
             SetBlueSprite();
 
-        if (isFlipped != playerController.IsFlipped)
+        if (isFlipped != controller.IsFlipped)
             FlipSprite();
 
     }
@@ -55,7 +55,7 @@ public class SpriteHandler : MonoBehaviour
 
     private void FlipSprite()
     {
-        isFlipped = playerController.IsFlipped;
+        isFlipped = controller.IsFlipped;
         playerSpriteRenderer.flipX = isFlipped;
     }
     #endregion

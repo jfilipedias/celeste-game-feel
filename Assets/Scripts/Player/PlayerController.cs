@@ -9,22 +9,16 @@ public class PlayerController : MonoBehaviour
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 10f;
     [SerializeField] private float jumpForce = 16f;
-    [SerializeField] private float climbSpeed = 5f;
-    [SerializeField] private float climbDownSpeed = 10f;
-    [SerializeField] private float climbLedgeForce = 10f;
-    [SerializeField] private float climbFowardDistance = 0.3f;
     [SerializeField] private float wallSlideSpeed = 2f;
+    [SerializeField] private float climbUpSpeed = 5f;
+    [SerializeField] private float climbDownSpeed = 10f;
+    [SerializeField] private float climbLedgeForce = 8f;
+    [SerializeField] private int climbLedgeIterations = 12;
     [SerializeField] private float dashSpeed = 22f;
 
-    [Space]
     [Header("Timers")]
-    [SerializeField] private float disabledMoveTime = 0.3f;
-    [SerializeField] private float disabledJumpTime = 0.3f;
-    [SerializeField] private float disabledClimbTime = 0.3f;
-    [SerializeField] private float disabledWallSlideTime = 0.3f;
-    [SerializeField] private float dashWaitTime = 0.15f;
-    [SerializeField] private float coyoteTime = 0.1f;
-    [SerializeField] private float jumpBufferingTime = 0.1f;
+    [SerializeField] private float dashTime = 0.15f;
+    [SerializeField] private float wallJumpTime = 0.3f;
 
     [Space]
     [Header("Particles")]
@@ -36,297 +30,262 @@ public class PlayerController : MonoBehaviour
     [Header("Level")]
     [SerializeField] private Transform levelLimit;
 
-    // Game Object Components
-    private Rigidbody2D playerRigidbody2D;
-    private PlayerCollision playerCollision;
+    // Components
+    private Rigidbody2D rb2D;
+    private CollisionChecker collisionChecker;
 
-    // Default Values
+    private float facingDirection = Vector2.right.x;
+    
+    private float moveDirectionX;
+    private float moveDirectionY;
+    
     private float defaultGravityScale;
 
-    private float jumpBufferingElapsed;
-
-    // Movement
-    private float horizontalMovementDirection;
-    private float verticalMovementDirection;
-    private float facingDirection = Vector2.right.x;
-
     // Booleans
-    private bool onGround = false;
-    private bool onWall = false;
-    private bool onSpike = false;
-    
-    private bool handOnWall = false;
-    private bool feetOnWall = false;
-    
-    private bool isJumping = false;
-    private bool isWallJumping = false;
-    private bool isClimbing = false;
-    private bool isDashing = false;
-    private bool isFlipped = false;
-    private bool isCoyoteTime = false;
-    private bool isJumpBuffering = false;
+    private bool isOnGround;
+    private bool isOnWall;
+    private bool hitSpike;
+    private bool handOnWall;
+    private bool feetOnWall;
 
-    private bool wasWallJumping = false;
+    private bool isJumping;
+    private bool isWallJumping;
+    private bool isClimbingWall;
+    private bool isClimbingLedge;
+    private bool isDashing;
+    private bool isFlipped;
+
     private bool wasUnground = false;
-    
+
     private bool canMove = true;
-    private bool canJump = true;
     private bool canClimb = true;
+    private bool canWallJump = true;
     private bool canDash = true;
-    private bool canSlideOnWall = true;
-    private bool canCoyoteTime = true;
-    #endregion
+    #endregion 
 
-    #region Properties
+    #region Proterties
     public float FacingDirection { get => facingDirection; }
-    public bool CanDash { get => canDash; }
     public bool IsFlipped { get => isFlipped; }
+    public bool CanDash { get => canDash; }
     #endregion
 
-    #region Engine Methods
+    #region MonoBehaviour Methods
     private void Awake()
     {
-        playerRigidbody2D = this.GetComponent<Rigidbody2D>();
-        playerCollision = this.GetComponent<PlayerCollision>();
+        rb2D = this.GetComponent<Rigidbody2D>();
+        collisionChecker = this.GetComponent<CollisionChecker>();
 
-        defaultGravityScale = playerRigidbody2D.gravityScale;
+        defaultGravityScale = rb2D.gravityScale;
     }
 
     private void Update()
     {
+        CheckCollisions();
+
         HandleInput();
 
-        ControlBooleans();
-
-        if (onSpike || this.transform.position.y <= levelLimit.position.y)
+        if (wasUnground && isOnGround)
+            Land();
+        
+        if (hitSpike || this.transform.position.y <= levelLimit.position.y)
             Die();
 
-        if ((horizontalMovementDirection != facingDirection && horizontalMovementDirection != 0) && !isClimbing && !isWallJumping && (canMove || wasWallJumping))
+        if ((moveDirectionX != 0 && moveDirectionX != facingDirection) && !isClimbingWall && !isWallJumping)
             FlipDirection();
 
-        if (isDashing)
-            StartCoroutine(Camera.main.GetComponent<CameraShake>().Shake());
+        if (isClimbingWall && !handOnWall)
+            isClimbingLedge = true;
 
-        if (wasUnground && onGround)
-            Landing();
-
-        if (isCoyoteTime && !isJumping)
-            StartCoroutine(WaitCoyoteTime());
+        if (!isOnGround)
+            wasUnground = true;
     }
 
     private void FixedUpdate()
     {
-        CheckCollisions();
-
-        if(canMove && !isClimbing && !isWallJumping)
+        if (canMove && !isClimbingWall)
             Move();
 
-        if ((isJumping || isJumpBuffering) && (onGround || isCoyoteTime) && !isClimbing)
+        if (isJumping)
             Jump(Vector2.up);
 
-        if (onWall && isWallJumping)
+        if (canWallJump && isWallJumping)
             WallJump();
 
-        if (onWall && canSlideOnWall && !isClimbing && !onGround && horizontalMovementDirection == facingDirection)
+        if (isOnWall && moveDirectionX == facingDirection && !isJumping && !isClimbingWall)
             WallSlide();
-
-        if (isClimbing && !isWallJumping)
-            Climb();
         else
-            SetGravityScaleValue(defaultGravityScale);
+            rb2D.gravityScale = defaultGravityScale;
 
-        if (isClimbing && !handOnWall)
+        if (canClimb && isClimbingWall)
+            ClimbWall();
+        else
+            rb2D.gravityScale = defaultGravityScale;
+
+        if (isClimbingLedge)
             StartCoroutine(ClimbLedge());
 
-        if (isDashing)
+        if (canDash && isDashing)
             Dash();
-
-        if (onGround && !isClimbing && playerRigidbody2D.velocity.y != 0)
-            ResetVerticalVelocity();
     }
     #endregion
 
     #region Controller Methods
     private void HandleInput()
-    {         
-        // Horizontal Movement
-        horizontalMovementDirection = Input.GetAxisRaw("Horizontal");
+    {
+        moveDirectionX = Input.GetAxisRaw("Horizontal");
 
-        // Vertical Movement
-        verticalMovementDirection = Input.GetAxisRaw("Vertical");
-       
-        // Jump
-        if (Input.GetButtonDown("Jump") && canJump && (onGround || isCoyoteTime))
+        moveDirectionY = Input.GetAxisRaw("Vertical");
+
+        if (Input.GetButtonDown("Jump") && isOnGround && !isClimbingWall)
             isJumping = true;
 
-        // Jump Buffering
-        ControllJumpBuffering();
-
-        // Wall Jump
-        if (Input.GetButtonDown("Jump") && onWall && !onGround && canJump)
+        if (Input.GetButtonDown("Jump") && isOnWall && (!isOnGround || isClimbingWall))
             isWallJumping = true;
 
-        // Climb
-        if (Input.GetButton("Hold") && canClimb && onWall && !isWallJumping)
-            isClimbing = true;
+        if (Input.GetButton("Hold") && isOnWall && !isJumping && !isWallJumping)
+            isClimbingWall = true;
         else
-            isClimbing = false;
+            isClimbingWall = false;
 
-        // Dash
-        if (Input.GetButtonDown("Dash") && canDash)
+        if (Input.GetButtonDown("Dash"))
             isDashing = true;
     }
-    
+
     private void Move()
     {
-        float newVelocityX = horizontalMovementDirection * moveSpeed;
-        
-        // Prevent move against wall
-        if (!(onWall && horizontalMovementDirection == facingDirection))
-            playerRigidbody2D.velocity =  new Vector2(newVelocityX, playerRigidbody2D.velocity.y);
+        float newVelocityX = moveDirectionX * moveSpeed;
+
+        if (isWallJumping)
+            rb2D.velocity = Vector2.Lerp(rb2D.velocity, new Vector2(newVelocityX, rb2D.velocity.y), 5 * Time.deltaTime);
+        else
+            rb2D.velocity = new Vector2(newVelocityX, rb2D.velocity.y);
     }
 
-    private void Jump(Vector2 jumpDirection)
+    public void Jump(Vector2 jumpDirection)
     {
-        canCoyoteTime = false;
-
-        if (onGround || isCoyoteTime)
+        if (isOnGround)
             groundDustParticles.Play();
 
-        playerRigidbody2D.velocity += jumpDirection * jumpForce;
+        rb2D.velocity += jumpDirection * jumpForce;
 
-        onGround = false;
         isJumping = false;
     }
 
-    private void ControllJumpBuffering()
+    public void WallJump()
     {
+        StartCoroutine(WaitWallJump());
 
-        if (Input.GetButton("Jump"))
-            jumpBufferingElapsed += Time.deltaTime;
-        else
-            jumpBufferingElapsed = 0;
-        
-        if (jumpBufferingElapsed > 0 && jumpBufferingElapsed <= jumpBufferingTime)
-            isJumpBuffering = true;
-        else
-            isJumpBuffering = false;
-    }
+        Vector2 jumpDirection = Vector2.up;
 
-    private void WallJump()
-    {
-        isWallJumping = false;
+        // If not going against wall
+        if (moveDirectionX != facingDirection && moveDirectionX != 0)
+            jumpDirection += Vector2.right * moveDirectionX;
 
-        StartCoroutine(DisableClimb());
-        StartCoroutine(DisableJump());
-        StartCoroutine(DisableWallSlide());
-        
-        SetGravityScaleValue(defaultGravityScale);
-
-        Vector2 horizontalDirection = Vector2.zero;
-
-        if (horizontalMovementDirection != facingDirection && horizontalMovementDirection != 0)
-        {
-            StartCoroutine(DisableMovement());
-            FlipDirection();
-            horizontalDirection = Vector2.right * horizontalMovementDirection;
-        }
-
-        Vector2 jumpDirection = Vector2.up + (horizontalDirection / 2);
+        rb2D.gravityScale = defaultGravityScale;
 
         Jump(jumpDirection);
-
-        wasWallJumping = true;
     }
 
-    private void WallSlide()
+    private IEnumerator WaitWallJump()
     {
-        SetGravityScaleValue(0);
+        isClimbingWall = false;
+        canClimb = false;
+        canWallJump = false;
 
-        playerRigidbody2D.velocity = new Vector2(0, wallSlideSpeed) * Vector2.down;
+        yield return new WaitForSeconds(wallJumpTime);
+
+        isWallJumping = false;
+        canClimb = true;
+        canWallJump = true;
     }
 
-    private void Climb()
+    public void WallSlide()
     {
-        onGround = false;
+        rb2D.gravityScale = 0;
+        rb2D.velocity = new Vector2(0, -wallSlideSpeed);
+    }
 
-        SetGravityScaleValue(0);
+    public void ClimbWall()
+    {
+        rb2D.gravityScale = 0;
 
-        float newVelocityY = 0f;
-
-        if (verticalMovementDirection > 0)
-            newVelocityY = verticalMovementDirection * climbSpeed;
-        else if (verticalMovementDirection < 0 && !onGround)
-            newVelocityY = verticalMovementDirection * climbDownSpeed;
-
-        playerRigidbody2D.velocity = new Vector2(0, newVelocityY);
+        if (moveDirectionY > 0)
+            rb2D.velocity = new Vector2(0, climbUpSpeed);
+        else if(moveDirectionY < 0)
+            rb2D.velocity = new Vector2(0, -climbDownSpeed);
+        else
+            rb2D.velocity = Vector2.zero;
     }
 
     private IEnumerator ClimbLedge()
     {
-        SetGravityScaleValue(defaultGravityScale);
+        rb2D.gravityScale = defaultGravityScale;
+
+        int iterationCount = 0;
 
         while (feetOnWall)
         {
-            playerRigidbody2D.velocity += Vector2.up * climbLedgeForce;
-
+            rb2D.velocity = new Vector2(rb2D.velocity.x, climbLedgeForce);
             yield return null;
         }
 
-        Vector2 foward = playerRigidbody2D.position + (Vector2.right * climbFowardDistance * facingDirection);
+        while (iterationCount <= climbLedgeIterations)
+        {
+            rb2D.velocity = new Vector2(facingDirection * climbLedgeForce, rb2D.velocity.y);
+            iterationCount++;
+            yield return null;
+        }
 
-        playerRigidbody2D.MovePosition(foward);
+        isClimbingLedge = false;
     }
 
-    private void Dash()
+    public void Dash()
     {
-        canDash = false;
-
+        isDashing = false;
         float horizontalDirection;
 
-        if (horizontalMovementDirection == 0 && (onGround || verticalMovementDirection == 0))
+        // Down dash on ground
+        if (moveDirectionX == 0 && (isOnGround || moveDirectionY == 0))
             horizontalDirection = facingDirection;
         else
-            horizontalDirection = horizontalMovementDirection;
+            horizontalDirection = moveDirectionX;
 
-        Vector2 direction = new Vector2(horizontalDirection, verticalMovementDirection);
+        Vector2 direction = new Vector2(horizontalDirection, moveDirectionY);
 
-        StartCoroutine(WaitDashTime(direction));
+        if (direction.y >= 0)
+            rb2D.gravityScale = 0;
 
-        playerRigidbody2D.velocity = direction * dashSpeed;
+        StartCoroutine(WaitDash());
+        StartCoroutine(Camera.main.GetComponent<CameraShake>().Shake());
+
+        rb2D.velocity = direction * dashSpeed;
     }
 
-    private IEnumerator WaitDashTime(Vector2 direction)
+    public IEnumerator WaitDash()
     {
         canMove = false;
-        canJump = false;
+        canClimb = false;
+        canWallJump = false;
         canDash = false;
 
         dashTrailParticles.Play();
         dashSpreadParticles.Play();
 
-        if (direction.y >= 0)
-            SetGravityScaleValue(0);
-
-        yield return new WaitForSeconds(dashWaitTime);
-
-        if (direction.y >= 0)
-            playerRigidbody2D.velocity *= 0.5f;
-        else
-            playerRigidbody2D.velocity *= 0.8f;
-
-        SetGravityScaleValue(defaultGravityScale);
-
-        canMove = true;
-        canJump = true;
-        isDashing = false;
+        yield return new WaitForSeconds(dashTime);
 
         dashTrailParticles.Stop();
         dashSpreadParticles.Stop();
-        yield return new WaitForFixedUpdate();
+
+        rb2D.velocity *= 0.8f;
+        rb2D.gravityScale = defaultGravityScale;
+
+        canMove = true;
+        canClimb = true;
+        canWallJump = true;
+        canDash = true;
     }
 
-    private void Landing()
+    private void Land()
     {
         wasUnground = false;
         groundDustParticles.Play();
@@ -343,86 +302,13 @@ public class PlayerController : MonoBehaviour
         isFlipped = !isFlipped;
     }
 
-    private IEnumerator WaitCoyoteTime()
-    {
-        canCoyoteTime = false;
-
-        yield return new WaitForSeconds(coyoteTime);
-
-        isCoyoteTime = false;
-    }
-
-    private IEnumerator DisableMovement()
-    {
-        canMove = false;
-
-        yield return new WaitForSeconds(disabledMoveTime);
-
-        canMove = true;
-    }
-    
-    private IEnumerator DisableJump()
-    {
-        canJump = false;
-
-        yield return new WaitForSeconds(disabledJumpTime);
-
-        canJump = true;
-    }
-
-    private IEnumerator DisableClimb()
-    {
-        canClimb = false;
-
-        yield return new WaitForSeconds(disabledClimbTime);
-
-        canClimb = true;
-    }
-
-    private IEnumerator DisableWallSlide()
-    {
-        canSlideOnWall = false;
-
-        yield return new WaitForSeconds(disabledWallSlideTime);
-
-        canSlideOnWall = true;
-    }
-
     private void CheckCollisions()
     {
-        onGround = playerCollision.GroundCollision();
-        onSpike = playerCollision.SpikeCollision();
-        onWall = playerCollision.WallCollistion(facingDirection);
-        handOnWall = playerCollision.HandsOnWall(facingDirection);
-        feetOnWall = playerCollision.FeetOnWall(facingDirection);
-    }
-
-    private void ControlBooleans()
-    {
-        if (wasWallJumping)
-            wasWallJumping = false;
-
-        if (!onGround)
-            wasUnground = true;
-
-        if (onGround && !isDashing)
-            canDash = true;
-
-        if (!onGround && !isJumping && canCoyoteTime)
-            isCoyoteTime = true;
-
-        if (onGround)
-            canCoyoteTime = true;
-    }
-
-    private void ResetVerticalVelocity()
-    {
-        playerRigidbody2D.velocity = new Vector2(playerRigidbody2D.velocity.x, 0);
-    }
-
-    private void SetGravityScaleValue(float newGravityScaleValue)
-    {
-        playerRigidbody2D.gravityScale = newGravityScaleValue;
+        isOnGround = collisionChecker.GroundCollision();
+        hitSpike = collisionChecker.SpikeCollision();
+        isOnWall = collisionChecker.WallCollistion(facingDirection);
+        handOnWall = collisionChecker.HandsOnWall(facingDirection);
+        feetOnWall = collisionChecker.FeetOnWall(facingDirection);
     }
     #endregion
 }

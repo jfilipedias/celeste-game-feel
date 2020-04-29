@@ -23,17 +23,17 @@ public class CollisionChecker : MonoBehaviour
     [SerializeField] private Transform rightFoot;
     [SerializeField] private Transform leftFoot;
 
-    private float facingDirection;
+    private float facingDirection = Vector2.right.x;
 
     private Vector2 boxColliderSize;
 
-    private PlatformController controller;
+    private PlayerController controller;
     #endregion
 
     #region MonoBehaviour Methods
     private void Awake()
     {
-        controller = this.GetComponent<PlatformController>();
+        controller = this.GetComponent<PlayerController>();
         boxColliderSize = this.GetComponent<BoxCollider2D>().size;
     }
 
@@ -44,17 +44,20 @@ public class CollisionChecker : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.magenta;
-
         // Face
+        Gizmos.color = Color.magenta;
         Gizmos.DrawWireSphere(feet.position, sphereGizmoSize);
+        Gizmos.color = Color.yellow;
         Gizmos.DrawLine(feet.position, (feet.position + new Vector3(wallCollisionDistance * facingDirection, 0, 0)));
 
         // Hand
+        Gizmos.color = Color.magenta;
         Gizmos.DrawWireSphere(hand.position, sphereGizmoSize);
+        Gizmos.color = Color.yellow;
         Gizmos.DrawLine(hand.position, (hand.position + new Vector3(wallCollisionDistance * facingDirection, 0, 0)));
 
         // Collision Shell
+        Gizmos.color = Color.magenta;
         Gizmos.DrawWireCube(this.transform.position, new Vector2(boxColliderSize.x + boxShellSize, boxColliderSize.y + boxShellSize));
 
         // Foot
