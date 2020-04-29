@@ -60,7 +60,9 @@ public class PlayerController : MonoBehaviour
     private bool canMove = true;
     private bool canClimb = true;
     private bool canWallJump = true;
+    private bool canSlideOnWall = true;
     private bool canDash = true;
+    private bool canFlip = true;
     #endregion 
 
     #region Proterties
@@ -90,7 +92,7 @@ public class PlayerController : MonoBehaviour
         if (hitSpike || this.transform.position.y <= levelLimit.position.y)
             Die();
 
-        if ((moveDirectionX != 0 && moveDirectionX != facingDirection) && !isClimbingWall && !isWallJumping)
+        if (canFlip && (moveDirectionX != 0 && moveDirectionX != facingDirection))
             FlipDirection();
 
         if (isClimbingWall && !handOnWall)
@@ -111,15 +113,15 @@ public class PlayerController : MonoBehaviour
         if (canWallJump && isWallJumping)
             WallJump();
 
-        if (isOnWall && moveDirectionX == facingDirection && !isJumping && !isClimbingWall)
+        if (canSlideOnWall && (isOnWall && moveDirectionX == facingDirection) && !isJumping)
             WallSlide();
-        else
+        else if(!isDashing)
             rb2D.gravityScale = defaultGravityScale;
 
         if (canClimb && isClimbingWall)
             ClimbWall();
         else
-            rb2D.gravityScale = defaultGravityScale;
+            StopClimbWall();
 
         if (isClimbingLedge)
             StartCoroutine(ClimbLedge());
@@ -173,17 +175,24 @@ public class PlayerController : MonoBehaviour
 
     public void WallJump()
     {
+        canFlip = false;
+
         StartCoroutine(WaitWallJump());
 
         Vector2 jumpDirection = Vector2.up;
 
-        // If not going against wall
+        // If going out from wall
         if (moveDirectionX != facingDirection && moveDirectionX != 0)
+        {
+            FlipDirection();
             jumpDirection += Vector2.right * moveDirectionX;
+        }
 
         rb2D.gravityScale = defaultGravityScale;
 
         Jump(jumpDirection);
+
+        canFlip = true;
     }
 
     private IEnumerator WaitWallJump()
@@ -191,12 +200,14 @@ public class PlayerController : MonoBehaviour
         isClimbingWall = false;
         canClimb = false;
         canWallJump = false;
+        canSlideOnWall = false;
 
-        yield return new WaitForSeconds(wallJumpTime);
+         yield return new WaitForSeconds(wallJumpTime);
 
         isWallJumping = false;
         canClimb = true;
         canWallJump = true;
+        canSlideOnWall = true;
     }
 
     public void WallSlide()
@@ -207,6 +218,8 @@ public class PlayerController : MonoBehaviour
 
     public void ClimbWall()
     {
+        canFlip = false;
+        canSlideOnWall = false;
         rb2D.gravityScale = 0;
 
         if (moveDirectionY > 0)
@@ -215,6 +228,15 @@ public class PlayerController : MonoBehaviour
             rb2D.velocity = new Vector2(0, -climbDownSpeed);
         else
             rb2D.velocity = Vector2.zero;
+    }
+
+    private void StopClimbWall()
+    {
+        canFlip = true;
+        canSlideOnWall = true;
+        
+        if(!isDashing)
+            rb2D.gravityScale = defaultGravityScale;
     }
 
     private IEnumerator ClimbLedge()
@@ -241,7 +263,6 @@ public class PlayerController : MonoBehaviour
 
     public void Dash()
     {
-        isDashing = false;
         float horizontalDirection;
 
         // Down dash on ground
@@ -255,13 +276,13 @@ public class PlayerController : MonoBehaviour
         if (direction.y >= 0)
             rb2D.gravityScale = 0;
 
-        StartCoroutine(WaitDash());
+        StartCoroutine(WaitDash(direction.y)) ;
         StartCoroutine(Camera.main.GetComponent<CameraShake>().Shake());
 
         rb2D.velocity = direction * dashSpeed;
     }
 
-    public IEnumerator WaitDash()
+    public IEnumerator WaitDash(float directionY)
     {
         canMove = false;
         canClimb = false;
@@ -276,9 +297,14 @@ public class PlayerController : MonoBehaviour
         dashTrailParticles.Stop();
         dashSpreadParticles.Stop();
 
-        rb2D.velocity *= 0.8f;
+        if (directionY > 0)
+            rb2D.velocity *= 0.5f;
+        else
+            rb2D.velocity *= 0.8f;
+        
         rb2D.gravityScale = defaultGravityScale;
 
+        isDashing = false;
         canMove = true;
         canClimb = true;
         canWallJump = true;
