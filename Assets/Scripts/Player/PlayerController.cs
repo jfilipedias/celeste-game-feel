@@ -19,6 +19,8 @@ public class PlayerController : MonoBehaviour
     [Header("Timers")]
     [SerializeField] private float dashTime = 0.15f;
     [SerializeField] private float wallJumpTime = 0.3f;
+    [SerializeField] private float jumpBufferingTime = 0.15f;
+    [SerializeField] private float coyoteTime = 0.15f;
 
     [Space]
     [Header("Particles")]
@@ -41,6 +43,10 @@ public class PlayerController : MonoBehaviour
     
     private float defaultGravityScale;
 
+    private float jumpBufferingCounter;
+    private float coyoteTimeCounter;
+
+    private int callingCount;
     // Booleans
     private bool isOnGround;
     private bool isOnWall;
@@ -54,10 +60,12 @@ public class PlayerController : MonoBehaviour
     private bool isClimbingLedge;
     private bool isDashing;
     private bool isFlipped;
+    private bool isCoyoteTime;
 
     private bool wasUnground = false;
 
     private bool canMove = true;
+    private bool canJump = true;
     private bool canClimb = true;
     private bool canWallJump = true;
     private bool canSlideOnWall = true;
@@ -65,11 +73,13 @@ public class PlayerController : MonoBehaviour
     private bool canFlip = true;
     #endregion 
 
+
     #region Proterties
     public float FacingDirection { get => facingDirection; }
     public bool IsFlipped { get => isFlipped; }
     public bool CanDash { get => canDash; }
     #endregion
+
 
     #region MonoBehaviour Methods
     private void Awake()
@@ -86,6 +96,12 @@ public class PlayerController : MonoBehaviour
 
         HandleInput();
 
+        if (isOnGround)
+            coyoteTimeCounter = coyoteTime;
+
+        if (!isOnGround)
+            wasUnground = true;
+
         if (wasUnground && isOnGround)
             Land();
         
@@ -98,8 +114,8 @@ public class PlayerController : MonoBehaviour
         if (isClimbingWall && !handOnWall)
             isClimbingLedge = true;
 
-        if (!isOnGround)
-            wasUnground = true;
+        jumpBufferingCounter -= Time.deltaTime;
+        coyoteTimeCounter -= Time.deltaTime;
     }
 
     private void FixedUpdate()
@@ -107,7 +123,7 @@ public class PlayerController : MonoBehaviour
         if (canMove && !isClimbingWall)
             Move();
 
-        if (isJumping)
+        if (canJump && isJumping)
             Jump(Vector2.up);
 
         if (canWallJump && isWallJumping)
@@ -131,6 +147,7 @@ public class PlayerController : MonoBehaviour
     }
     #endregion
 
+
     #region Controller Methods
     private void HandleInput()
     {
@@ -138,8 +155,18 @@ public class PlayerController : MonoBehaviour
 
         moveDirectionY = Input.GetAxisRaw("Vertical");
 
-        if (Input.GetButtonDown("Jump") && isOnGround && !isClimbingWall)
+        if (Input.GetButtonDown("Jump"))
+            jumpBufferingCounter = jumpBufferingTime;
+
+        if (Input.GetButton("Jump") && (isOnGround && !isClimbingWall && jumpBufferingCounter > 0))    // Jump Buffering
             isJumping = true;
+        else if (Input.GetButton("Jump") && (!isOnGround && !isClimbingWall && coyoteTimeCounter > 0))      // CoyoteTime
+        {
+            isJumping = true;
+            isCoyoteTime = true;
+        }
+        else
+            isJumping = false;
 
         if (Input.GetButtonDown("Jump") && isOnWall && (!isOnGround || isClimbingWall))
             isWallJumping = true;
@@ -165,12 +192,24 @@ public class PlayerController : MonoBehaviour
 
     public void Jump(Vector2 jumpDirection)
     {
-        if (isOnGround)
+        callingCount++;
+        if (isOnGround || isCoyoteTime)
             groundDustParticles.Play();
 
-        rb2D.velocity += jumpDirection * jumpForce;
+        isCoyoteTime = false;
 
-        isJumping = false;
+        rb2D.velocity += jumpDirection * jumpForce;
+        
+        StartCoroutine(WaitJump());
+    }
+
+    private IEnumerator WaitJump()
+    {
+        canJump = false;
+
+        yield return new WaitForSeconds(coyoteTime);
+
+        canJump = true;
     }
 
     public void WallJump()
@@ -308,11 +347,11 @@ public class PlayerController : MonoBehaviour
         canMove = true;
         canClimb = true;
         canWallJump = true;
-        canDash = true;
     }
 
     private void Land()
     {
+        canDash = true;
         wasUnground = false;
         groundDustParticles.Play();
     }

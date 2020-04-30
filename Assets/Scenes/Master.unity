@@ -370,6 +370,16 @@ PrefabInstance:
       propertyPath: levelLimit
       value: 
       objectReference: {fileID: 547069283}
+    - target: {fileID: 4637232163391894807, guid: f68f7639de80b0e438e8a50019e623ac,
+        type: 3}
+      propertyPath: jumpBufferingTime
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 4637232163391894807, guid: f68f7639de80b0e438e8a50019e623ac,
+        type: 3}
+      propertyPath: coyoteTime
+      value: 0.15
+      objectReference: {fileID: 0}
     - target: {fileID: 7501705849834277451, guid: f68f7639de80b0e438e8a50019e623ac,
         type: 3}
       propertyPath: m_Name
