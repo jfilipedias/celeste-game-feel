@@ -6,10 +6,11 @@ public class CollisionChecker : MonoBehaviour
 {
     #region Atributes
     [Header("Check Collision")]
-    [SerializeField] private float groundCollisionDistance;
-    [SerializeField] private float wallCollisionDistance;
-    [SerializeField] private float sphereGizmoSize;
-    [SerializeField] private float boxShellSize;
+    [SerializeField] private float groundCollisionDistance = 0.02f;
+    [SerializeField] private float wallCollisionDistance = 0.52f;
+    [SerializeField] private float sphereGizmoSize = 0.1f;
+    [SerializeField] private float boxShellSize = 0.02f;
+    [SerializeField] private Vector2 cornerBoxSize = new Vector2(0.45f, 0.15f);
 
     [Space]
     [Header("Colision Mask")]
@@ -22,10 +23,12 @@ public class CollisionChecker : MonoBehaviour
     [SerializeField] private Transform feet;
     [SerializeField] private Transform rightFoot;
     [SerializeField] private Transform leftFoot;
+    [SerializeField] private Transform rightHeadSide;
+    [SerializeField] private Transform leftHeadSide;
 
     private float facingDirection = Vector2.right.x;
 
-    private Vector2 boxColliderSize;
+    private Vector2 boxColliderSize = new Vector2(1, 2);
 
     private PlayerController controller;
     #endregion
@@ -57,10 +60,15 @@ public class CollisionChecker : MonoBehaviour
         Gizmos.DrawLine(hand.position, (hand.position + new Vector3(wallCollisionDistance * facingDirection, 0, 0)));
 
         // Collision Shell
-        Gizmos.color = Color.magenta;
+        Gizmos.color = Color.cyan;
         Gizmos.DrawWireCube(this.transform.position, new Vector2(boxColliderSize.x + boxShellSize, boxColliderSize.y + boxShellSize));
 
+        // Head Sides
+        Gizmos.DrawWireCube(rightHeadSide.position, cornerBoxSize);
+        Gizmos.DrawWireCube(leftHeadSide.position, cornerBoxSize);
+
         // Foot
+        Gizmos.color = Color.magenta;
         Gizmos.DrawWireSphere(rightFoot.position, sphereGizmoSize);
         Gizmos.DrawWireSphere(leftFoot.position, sphereGizmoSize);
         Gizmos.color = Color.yellow;
@@ -82,7 +90,7 @@ public class CollisionChecker : MonoBehaviour
 
     }
 
-    public bool WallCollistion(float facingDirection)
+    public bool WallCollision()
     {
         Vector2 feetRayStart = (Vector2)feet.position;
         Vector2 handRayStart = (Vector2)hand.position;
@@ -92,24 +100,33 @@ public class CollisionChecker : MonoBehaviour
     }
 
     public bool SpikeCollision()
-    {
-        bool collideOnSpike = Physics2D.OverlapBox((Vector2)this.transform.position, new Vector2(boxColliderSize.x + boxShellSize, boxColliderSize.y + boxShellSize), 0, spikeMask);
-
-        return collideOnSpike;
+    {   
+        return Physics2D.OverlapBox((Vector2)this.transform.position, new Vector2(boxColliderSize.x + boxShellSize, boxColliderSize.y + boxShellSize), 0, spikeMask);
     }
 
-    public bool HandsOnWall(float facingDirection)
+    public bool HandsOnWall()
     {
         Vector2 handRayStart = (Vector2)hand.position;
 
         return Physics2D.Raycast(handRayStart, new Vector2(facingDirection, 0), wallCollisionDistance, groundMask);
     }
 
-    public bool FeetOnWall(float facingDirection)
+    public bool FeetOnWall()
     {
         Vector2 feetRayStart = (Vector2)feet.position;
 
         return Physics2D.Raycast(feetRayStart, new Vector2(facingDirection, 0), wallCollisionDistance, groundMask);
+    }
+
+    public bool RightHeadSideCollision()
+    {
+        return Physics2D.OverlapBox((Vector2)rightHeadSide.position, cornerBoxSize, 0, groundMask);
+    }
+
+    public bool LeftHeadSideCollision()
+    {
+        return Physics2D.OverlapBox((Vector2)leftHeadSide.position, cornerBoxSize, 0, groundMask);
+
     }
     #endregion
 }

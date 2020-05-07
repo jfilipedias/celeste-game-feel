@@ -365,6 +365,11 @@ PrefabInstance:
       propertyPath: levelLimit
       value: 
       objectReference: {fileID: 547069283}
+    - target: {fileID: 4010422187686649405, guid: f68f7639de80b0e438e8a50019e623ac,
+        type: 3}
+      propertyPath: cornerCorrectionBoxSize
+      value: 0.4
+      objectReference: {fileID: 0}
     - target: {fileID: 4637232163391894807, guid: f68f7639de80b0e438e8a50019e623ac,
         type: 3}
       propertyPath: levelLimit
@@ -439,6 +444,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7501705851842619366, guid: f68f7639de80b0e438e8a50019e623ac,
+        type: 3}
+      propertyPath: m_Name
+      value: Collisions Positions
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f68f7639de80b0e438e8a50019e623ac, type: 3}

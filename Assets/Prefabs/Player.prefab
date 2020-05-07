@@ -1,5 +1,65 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6359061221218184895
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3536827194582747459}
+  m_Layer: 8
+  m_Name: Head Left Position
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3536827194582747459
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6359061221218184895}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.25, y: 0.95, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 7501705851842619365}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7135667051360419972
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1433177472160947548}
+  m_Layer: 8
+  m_Name: Head Right Position
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1433177472160947548
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7135667051360419972}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.25, y: 0.95, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 7501705851842619365}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7501705849834277451
 GameObject:
   m_ObjectHideFlags: 0
@@ -194,8 +254,10 @@ MonoBehaviour:
   dashSpeed: 22
   dashTime: 0.15
   wallJumpTime: 0.3
-  dashSpreadParticles: {fileID: 7501705850446721472}
+  jumpBufferingTime: 0.15
+  coyoteTime: 0.15
   dashTrailParticles: {fileID: 7501705851778393456}
+  dashSpreadParticles: {fileID: 7501705850446721472}
   groundDustParticles: {fileID: 7501705850705279247}
   levelLimit: {fileID: 0}
 --- !u!114 &4010422187686649405
@@ -214,6 +276,7 @@ MonoBehaviour:
   wallCollisionDistance: 0.52
   sphereGizmoSize: 0.1
   boxShellSize: 0.02
+  cornerBoxSize: {x: 0.45, y: 0.15}
   groundMask:
     serializedVersion: 2
     m_Bits: 512
@@ -224,6 +287,8 @@ MonoBehaviour:
   feet: {fileID: 7501705850916735888}
   rightFoot: {fileID: 7501705851059811481}
   leftFoot: {fileID: 7501705850698018007}
+  rightHeadSide: {fileID: 1433177472160947548}
+  leftHeadSide: {fileID: 3536827194582747459}
 --- !u!114 &3870131351485398040
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14721,7 +14786,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7501705851842619365}
   m_Layer: 8
-  m_Name: Raycast Positions
+  m_Name: Collisions Positions
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14742,6 +14807,8 @@ Transform:
   - {fileID: 7501705850916735888}
   - {fileID: 7501705851059811481}
   - {fileID: 7501705850698018007}
+  - {fileID: 1433177472160947548}
+  - {fileID: 3536827194582747459}
   m_Father: {fileID: 7501705849834277452}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

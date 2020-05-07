@@ -51,7 +51,9 @@ public class PlayerController : MonoBehaviour
     private bool isOnGround;
     private bool isOnWall;
     private bool hitSpike;
-    private bool handOnWall;
+    private bool hitRightHeadSide;
+    private bool hitLeftHeadSide;
+    private bool handsOnWall;
     private bool feetOnWall;
 
     private bool isJumping;
@@ -78,6 +80,11 @@ public class PlayerController : MonoBehaviour
     public float FacingDirection { get => facingDirection; }
     public bool IsFlipped { get => isFlipped; }
     public bool CanDash { get => canDash; }
+    public bool IsOnGround { set => isOnGround = value; }
+    public bool IsOnWall { set => isOnWall = value; }
+    public bool HitSpike { set => hitSpike = value; }
+    public bool HandOnwall { set => handsOnWall = value; }
+    public bool FeetOnWall { set => feetOnWall = value; }
     #endregion
 
 
@@ -111,7 +118,7 @@ public class PlayerController : MonoBehaviour
         if (canFlip && (moveDirectionX != 0 && moveDirectionX != facingDirection))
             FlipDirection();
 
-        if (isClimbingWall && !handOnWall)
+        if (isClimbingWall && !handsOnWall)
             isClimbingLedge = true;
 
         jumpBufferingCounter -= Time.deltaTime;
@@ -371,9 +378,16 @@ public class PlayerController : MonoBehaviour
     {
         isOnGround = collisionChecker.GroundCollision();
         hitSpike = collisionChecker.SpikeCollision();
-        isOnWall = collisionChecker.WallCollistion(facingDirection);
-        handOnWall = collisionChecker.HandsOnWall(facingDirection);
-        feetOnWall = collisionChecker.FeetOnWall(facingDirection);
+        isOnWall = collisionChecker.WallCollision();
+        handsOnWall = collisionChecker.HandsOnWall();
+        feetOnWall = collisionChecker.FeetOnWall();
+
+        if (rb2D.velocity.y > 0.01f)
+        {
+            hitRightHeadSide = collisionChecker.RightHeadSideCollision();
+            hitLeftHeadSide = collisionChecker.LeftHeadSideCollision();
+        }
+             
     }
     #endregion
 }
