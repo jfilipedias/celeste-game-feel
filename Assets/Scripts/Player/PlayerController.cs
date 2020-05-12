@@ -420,8 +420,7 @@ public class PlayerController : MonoBehaviour
         hitHeadLeftSide = collisionChecker.LeftHeadSideCollision();
         hitHeadCenter = collisionChecker.HeadCenterCollision();
 
-        if (hitHeadLeftSide || hitHeadRightSide)
-            Debug.Log("hitLeftHeadSide: " + hitHeadLeftSide + " hitRightHeadSide: " + hitHeadRightSide + " hitHeadCenter: " + hitHeadCenter);
+        Debug.Log("hitLeftHeadSide: " + hitHeadLeftSide + " hitRightHeadSide: " + hitHeadRightSide + " hitHeadCenter: " + hitHeadCenter);
 
         if ((hitHeadRightSide || hitHeadLeftSide) && !hitHeadCenter)
             Debug.Log("Hit Corner");

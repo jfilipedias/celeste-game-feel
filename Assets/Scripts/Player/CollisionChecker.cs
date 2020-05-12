@@ -79,60 +79,59 @@ public class CollisionChecker : MonoBehaviour
     #region Collision Methods
     public bool GroundCollision()
     {
-        RaycastHit2D feetOnGround = Physics2D.BoxCast((Vector2)feet.position, feetBoxSize, 0f, Vector2.zero, 0, groundMask);
+        Collider2D feetOnGround = Physics2D.OverlapBox((Vector2)feet.position, feetBoxSize, 0, groundMask);
 
-        return feetOnGround;
-    }
-
-    public bool WallCollision()
-    {
-        RaycastHit2D feetOnWall = Physics2D.Raycast((Vector2)feet.position, new Vector2(facingDirection, 0), (boxColliderSize.x / 2) + collisionDistance, groundMask);
-        RaycastHit2D handOnWall = Physics2D.Raycast((Vector2)hand.position, new Vector2(facingDirection, 0), (boxColliderSize.x / 2) + collisionDistance, groundMask);
-
-        return feetOnWall || handOnWall;     
-                    
+        return feetOnGround != null;
     }
 
     public bool SpikeCollision()
     {
-        RaycastHit2D hitSpike = Physics2D.BoxCast((Vector2)this.transform.position, new Vector2(boxColliderSize.x + boxShellSize, boxColliderSize.y + boxShellSize), 0, Vector2.zero, 0, spikeMask);
-        
-        return hitSpike;
+        Collider2D hitSpike = Physics2D.OverlapBox((Vector2)this.transform.position, new Vector2(boxColliderSize.x + boxShellSize, boxColliderSize.y + boxShellSize), 0, spikeMask);
+
+        return hitSpike != null;
+    }
+
+    public bool WallCollision()
+    {
+        bool feetOnWall = HandsOnWall();
+        bool handOnWall = FeetOnWall();
+
+        return feetOnWall || handOnWall;                  
     }
 
     public bool HandsOnWall()
     {
         RaycastHit2D handOnWall = Physics2D.Raycast((Vector2)hand.position, new Vector2(facingDirection, 0), (boxColliderSize.x / 2) + collisionDistance, groundMask);
 
-        return handOnWall;
+        return handOnWall.collider != null;
     }
 
     public bool FeetOnWall()
     {
         RaycastHit2D feetOnWall = Physics2D.Raycast((Vector2)feet.position, new Vector2(facingDirection, 0), (boxColliderSize.x / 2) + collisionDistance, groundMask);
 
-        return feetOnWall;    
+        return feetOnWall.collider != null;    
     }
 
     public bool RightHeadSideCollision()
     {
-        RaycastHit2D hitRightCorner = Physics2D.BoxCast((Vector2)headRightSide.position, headCornerBoxSize, 0, Vector2.zero, 0, groundMask);
+        Collider2D hitRightCorner = Physics2D.OverlapBox((Vector2)headRightSide.position, headCornerBoxSize, 0, groundMask);
 
-        return hitRightCorner;
+        return hitRightCorner != null;
     }
 
     public bool LeftHeadSideCollision()
     {
-        RaycastHit2D hitLeftCorner = Physics2D.BoxCast((Vector2)headLeftSide.position, headCornerBoxSize, 0, Vector2.zero, 0, groundMask);
+        Collider2D hitLeftCorner = Physics2D.OverlapBox((Vector2)headLeftSide.position, headCornerBoxSize, 0, groundMask);
         
-        return hitLeftCorner;
+        return hitLeftCorner != null;
     }
 
     public bool HeadCenterCollision()
     {
-        RaycastHit2D hitHeadCenter = Physics2D.BoxCast((Vector2)headCenter.position, headCenterBoxSize, 0, Vector2.zero, 0, groundMask);
+        Collider2D hitHeadCenter = Physics2D.OverlapBox((Vector2)headCenter.position, headCenterBoxSize, 0, groundMask);
         
-        return hitHeadCenter;
+        return hitHeadCenter != null;
     }
     #endregion
 }
