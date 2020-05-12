@@ -6,11 +6,12 @@ public class CollisionChecker : MonoBehaviour
 {
     #region Atributes
     [Header("Check Collision")]
-    [SerializeField] private float groundCollisionDistance = 0.02f;
-    [SerializeField] private float wallCollisionDistance = 0.52f;
+    [SerializeField] private float collisionDistance = 0.02f;
     [SerializeField] private float sphereGizmoSize = 0.1f;
     [SerializeField] private float boxShellSize = 0.02f;
-    [SerializeField] private Vector2 cornerBoxSize = new Vector2(0.45f, 0.15f);
+    [SerializeField] private Vector2 feetBoxSize = new Vector2(0.98f, 0.05f);
+    [SerializeField] private Vector2 headCornerBoxSize = new Vector2(0.28f, 0.05f);
+    [SerializeField] private Vector2 headCenterBoxSize = new Vector2(0.4f, 0.05f);
 
     [Space]
     [Header("Colision Mask")]
@@ -21,10 +22,9 @@ public class CollisionChecker : MonoBehaviour
     [Header("Collision Transform")]
     [SerializeField] private Transform hand;
     [SerializeField] private Transform feet;
-    [SerializeField] private Transform rightFoot;
-    [SerializeField] private Transform leftFoot;
-    [SerializeField] private Transform rightHeadSide;
-    [SerializeField] private Transform leftHeadSide;
+    [SerializeField] private Transform headRightSide;
+    [SerializeField] private Transform headLeftSide;
+    [SerializeField] private Transform headCenter;
 
     private float facingDirection = Vector2.right.x;
 
@@ -51,82 +51,88 @@ public class CollisionChecker : MonoBehaviour
         Gizmos.color = Color.magenta;
         Gizmos.DrawWireSphere(feet.position, sphereGizmoSize);
         Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(feet.position, (feet.position + new Vector3(wallCollisionDistance * facingDirection, 0, 0)));
+        Gizmos.DrawLine(feet.position, (feet.position + new Vector3((boxColliderSize.x/2) + collisionDistance * facingDirection, 0, 0)));
 
         // Hand
         Gizmos.color = Color.magenta;
         Gizmos.DrawWireSphere(hand.position, sphereGizmoSize);
         Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(hand.position, (hand.position + new Vector3(wallCollisionDistance * facingDirection, 0, 0)));
+        Gizmos.DrawLine(hand.position, (hand.position + new Vector3((boxColliderSize.x / 2) + collisionDistance * facingDirection, 0, 0)));
 
         // Collision Shell
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireCube(this.transform.position, new Vector2(boxColliderSize.x + boxShellSize, boxColliderSize.y + boxShellSize));
 
         // Head Sides
-        Gizmos.DrawWireCube(rightHeadSide.position, cornerBoxSize);
-        Gizmos.DrawWireCube(leftHeadSide.position, cornerBoxSize);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireCube(headRightSide.position, headCornerBoxSize);
+        Gizmos.DrawWireCube(headLeftSide.position, headCornerBoxSize);
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawWireCube(headCenter.position, headCenterBoxSize);
 
         // Foot
-        Gizmos.color = Color.magenta;
-        Gizmos.DrawWireSphere(rightFoot.position, sphereGizmoSize);
-        Gizmos.DrawWireSphere(leftFoot.position, sphereGizmoSize);
         Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(rightFoot.position, (rightFoot.position + new Vector3(0, groundCollisionDistance * -1, 0)));
-        Gizmos.DrawLine(leftFoot.position, (leftFoot.position + new Vector3(0, groundCollisionDistance * -1, 0)));
+        Gizmos.DrawWireCube(feet.position, feetBoxSize);
     }
     #endregion
 
-    #region Class Methods
+    #region Collision Methods
     public bool GroundCollision()
     {
-        Vector2 rightRayStart = (Vector2)rightFoot.position;
-        Vector2 leftRayStart = (Vector2)leftFoot.position;
+        RaycastHit2D feetOnGround = Physics2D.BoxCast((Vector2)feet.position, feetBoxSize, 0f, Vector2.zero, 0, groundMask);
 
-        bool rightFootOnGround = Physics2D.Raycast(rightRayStart, Vector2.down, groundCollisionDistance, groundMask);
-        bool leftFootOnGround = Physics2D.Raycast(leftRayStart, Vector2.down, groundCollisionDistance, groundMask);
-
-        return rightFootOnGround || leftFootOnGround;
-
+        return feetOnGround;
     }
 
     public bool WallCollision()
     {
-        Vector2 feetRayStart = (Vector2)feet.position;
-        Vector2 handRayStart = (Vector2)hand.position;
+        RaycastHit2D feetOnWall = Physics2D.Raycast((Vector2)feet.position, new Vector2(facingDirection, 0), (boxColliderSize.x / 2) + collisionDistance, groundMask);
+        RaycastHit2D handOnWall = Physics2D.Raycast((Vector2)hand.position, new Vector2(facingDirection, 0), (boxColliderSize.x / 2) + collisionDistance, groundMask);
 
-        return Physics2D.Raycast(feetRayStart, new Vector2(facingDirection, 0), wallCollisionDistance, groundMask) ||
-               Physics2D.Raycast(handRayStart, new Vector2(facingDirection, 0), wallCollisionDistance, groundMask);
+        return feetOnWall || handOnWall;     
+                    
     }
 
     public bool SpikeCollision()
-    {   
-        return Physics2D.OverlapBox((Vector2)this.transform.position, new Vector2(boxColliderSize.x + boxShellSize, boxColliderSize.y + boxShellSize), 0, spikeMask);
+    {
+        RaycastHit2D hitSpike = Physics2D.BoxCast((Vector2)this.transform.position, new Vector2(boxColliderSize.x + boxShellSize, boxColliderSize.y + boxShellSize), 0, Vector2.zero, 0, spikeMask);
+        
+        return hitSpike;
     }
 
     public bool HandsOnWall()
     {
-        Vector2 handRayStart = (Vector2)hand.position;
+        RaycastHit2D handOnWall = Physics2D.Raycast((Vector2)hand.position, new Vector2(facingDirection, 0), (boxColliderSize.x / 2) + collisionDistance, groundMask);
 
-        return Physics2D.Raycast(handRayStart, new Vector2(facingDirection, 0), wallCollisionDistance, groundMask);
+        return handOnWall;
     }
 
     public bool FeetOnWall()
     {
-        Vector2 feetRayStart = (Vector2)feet.position;
+        RaycastHit2D feetOnWall = Physics2D.Raycast((Vector2)feet.position, new Vector2(facingDirection, 0), (boxColliderSize.x / 2) + collisionDistance, groundMask);
 
-        return Physics2D.Raycast(feetRayStart, new Vector2(facingDirection, 0), wallCollisionDistance, groundMask);
+        return feetOnWall;    
     }
 
     public bool RightHeadSideCollision()
     {
-        return Physics2D.OverlapBox((Vector2)rightHeadSide.position, cornerBoxSize, 0, groundMask);
+        RaycastHit2D hitRightCorner = Physics2D.BoxCast((Vector2)headRightSide.position, headCornerBoxSize, 0, Vector2.zero, 0, groundMask);
+
+        return hitRightCorner;
     }
 
     public bool LeftHeadSideCollision()
     {
-        return Physics2D.OverlapBox((Vector2)leftHeadSide.position, cornerBoxSize, 0, groundMask);
+        RaycastHit2D hitLeftCorner = Physics2D.BoxCast((Vector2)headLeftSide.position, headCornerBoxSize, 0, Vector2.zero, 0, groundMask);
+        
+        return hitLeftCorner;
+    }
 
+    public bool HeadCenterCollision()
+    {
+        RaycastHit2D hitHeadCenter = Physics2D.BoxCast((Vector2)headCenter.position, headCenterBoxSize, 0, Vector2.zero, 0, groundMask);
+        
+        return hitHeadCenter;
     }
     #endregion
 }

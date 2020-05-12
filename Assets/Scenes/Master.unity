@@ -257,7 +257,7 @@ GameObject:
   - component: {fileID: 547069283}
   m_Layer: 0
   m_Name: Level Limit
-  m_TagString: Untagged
+  m_TagString: Level Limit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -274,7 +274,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1031944736
 GameObject:
@@ -305,7 +305,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1031944738
 MonoBehaviour:
@@ -361,30 +361,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 0}
-      propertyPath: levelLimit
-      value: 
-      objectReference: {fileID: 547069283}
-    - target: {fileID: 4010422187686649405, guid: f68f7639de80b0e438e8a50019e623ac,
-        type: 3}
-      propertyPath: cornerCorrectionBoxSize
-      value: 0.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 4637232163391894807, guid: f68f7639de80b0e438e8a50019e623ac,
-        type: 3}
-      propertyPath: levelLimit
-      value: 
-      objectReference: {fileID: 547069283}
-    - target: {fileID: 4637232163391894807, guid: f68f7639de80b0e438e8a50019e623ac,
-        type: 3}
-      propertyPath: jumpBufferingTime
-      value: 0.15
-      objectReference: {fileID: 0}
-    - target: {fileID: 4637232163391894807, guid: f68f7639de80b0e438e8a50019e623ac,
-        type: 3}
-      propertyPath: coyoteTime
-      value: 0.15
-      objectReference: {fileID: 0}
     - target: {fileID: 7501705849834277451, guid: f68f7639de80b0e438e8a50019e623ac,
         type: 3}
       propertyPath: m_Name
@@ -393,12 +369,12 @@ PrefabInstance:
     - target: {fileID: 7501705849834277452, guid: f68f7639de80b0e438e8a50019e623ac,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -16.45
+      value: 12.5
       objectReference: {fileID: 0}
     - target: {fileID: 7501705849834277452, guid: f68f7639de80b0e438e8a50019e623ac,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -8.997
+      value: -4
       objectReference: {fileID: 0}
     - target: {fileID: 7501705849834277452, guid: f68f7639de80b0e438e8a50019e623ac,
         type: 3}
@@ -444,11 +420,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7501705851842619366, guid: f68f7639de80b0e438e8a50019e623ac,
-        type: 3}
-      propertyPath: m_Name
-      value: Collisions Positions
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f68f7639de80b0e438e8a50019e623ac, type: 3}

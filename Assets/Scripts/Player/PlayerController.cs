@@ -28,13 +28,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private ParticleSystem dashSpreadParticles;
     [SerializeField] private ParticleSystem groundDustParticles;
 
-    [Space]
-    [Header("Level")]
-    [SerializeField] private Transform levelLimit;
-
     // Components
     private Rigidbody2D rb2D;
     private CollisionChecker collisionChecker;
+
+    private Vector3 levelLimit;
 
     private float facingDirection = Vector2.right.x;
     
@@ -47,12 +45,14 @@ public class PlayerController : MonoBehaviour
     private float coyoteTimeCounter;
 
     private int callingCount;
+    
     // Booleans
     private bool isOnGround;
     private bool isOnWall;
     private bool hitSpike;
-    private bool hitRightHeadSide;
-    private bool hitLeftHeadSide;
+    private bool hitHeadRightSide;
+    private bool hitHeadLeftSide;
+    private bool hitHeadCenter;
     private bool handsOnWall;
     private bool feetOnWall;
 
@@ -94,6 +94,8 @@ public class PlayerController : MonoBehaviour
         rb2D = this.GetComponent<Rigidbody2D>();
         collisionChecker = this.GetComponent<CollisionChecker>();
 
+        levelLimit = GameObject.FindGameObjectWithTag("Level Limit").transform.position;
+
         defaultGravityScale = rb2D.gravityScale;
     }
 
@@ -112,7 +114,7 @@ public class PlayerController : MonoBehaviour
         if (wasUnground && isOnGround)
             Land();
         
-        if (hitSpike || this.transform.position.y <= levelLimit.position.y)
+        if (hitSpike || this.transform.position.y <= levelLimit.y)
             Die();
 
         if (canFlip && (moveDirectionX != 0 && moveDirectionX != facingDirection))
@@ -127,6 +129,9 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if ((hitHeadLeftSide || hitHeadRightSide) && !hitHeadCenter && !isClimbingLedge)
+            StartCoroutine(CornerCorrection());
+
         if (canMove && !isClimbingWall)
             Move();
 
@@ -356,6 +361,27 @@ public class PlayerController : MonoBehaviour
         canWallJump = true;
     }
 
+    public IEnumerator CornerCorrection()
+    {
+        Debug.Log("Start corner correction");
+        rb2D.bodyType = RigidbodyType2D.Kinematic;
+
+        float direction = 1f;
+
+        if (hitHeadRightSide)
+            direction = -1f;
+
+        while (hitHeadLeftSide || hitHeadRightSide)
+        {
+            rb2D.velocity = new Vector2(direction * 2, rb2D.velocity.y);
+
+            yield return null;
+        }
+
+        rb2D.bodyType = RigidbodyType2D.Dynamic;
+        rb2D.gravityScale = defaultGravityScale;
+    }
+
     private void Land()
     {
         canDash = true;
@@ -382,12 +408,24 @@ public class PlayerController : MonoBehaviour
         handsOnWall = collisionChecker.HandsOnWall();
         feetOnWall = collisionChecker.FeetOnWall();
 
-        if (rb2D.velocity.y > 0.01f)
-        {
-            hitRightHeadSide = collisionChecker.RightHeadSideCollision();
-            hitLeftHeadSide = collisionChecker.LeftHeadSideCollision();
-        }
-             
+        if (rb2D.velocity.y > 0)
+            CheckHeadCollision();
+    }
+
+    private void CheckHeadCollision()
+    {
+        Debug.Log("Check Head Hit");
+
+        hitHeadRightSide = collisionChecker.RightHeadSideCollision();
+        hitHeadLeftSide = collisionChecker.LeftHeadSideCollision();
+        hitHeadCenter = collisionChecker.HeadCenterCollision();
+
+        if (hitHeadLeftSide || hitHeadRightSide)
+            Debug.Log("hitLeftHeadSide: " + hitHeadLeftSide + " hitRightHeadSide: " + hitHeadRightSide + " hitHeadCenter: " + hitHeadCenter);
+
+        if ((hitHeadRightSide || hitHeadLeftSide) && !hitHeadCenter)
+            Debug.Log("Hit Corner");
+
     }
     #endregion
 }
