@@ -129,7 +129,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if ((hitHeadLeftSide || hitHeadRightSide) && !hitHeadCenter && !isClimbingLedge)
+        if (((hitHeadLeftSide || hitHeadRightSide) && !hitHeadCenter) && !isClimbingWall && !isOnWall)
             StartCoroutine(CornerCorrection());
 
         if (canMove && !isClimbingWall)
@@ -373,13 +373,22 @@ public class PlayerController : MonoBehaviour
 
         while (hitHeadLeftSide || hitHeadRightSide)
         {
-            rb2D.velocity = new Vector2(direction * 2, rb2D.velocity.y);
+            Debug.Log("Loop through");
+
+            rb2D.velocity = new Vector2(direction * moveSpeed, jumpForce);
+
+            CheckHeadCollision();
 
             yield return null;
         }
 
-        rb2D.bodyType = RigidbodyType2D.Dynamic;
-        rb2D.gravityScale = defaultGravityScale;
+        if(!(hitHeadLeftSide && hitHeadRightSide))
+        {
+            rb2D.velocity = Vector2.zero;
+            rb2D.bodyType = RigidbodyType2D.Dynamic;
+
+            Debug.Log("Stop correction");
+        }
     }
 
     private void Land()
@@ -408,23 +417,14 @@ public class PlayerController : MonoBehaviour
         handsOnWall = collisionChecker.HandsOnWall();
         feetOnWall = collisionChecker.FeetOnWall();
 
-        if (rb2D.velocity.y > 0)
-            CheckHeadCollision();
+        CheckHeadCollision();
     }
 
     private void CheckHeadCollision()
     {
-        Debug.Log("Check Head Hit");
-
         hitHeadRightSide = collisionChecker.RightHeadSideCollision();
         hitHeadLeftSide = collisionChecker.LeftHeadSideCollision();
         hitHeadCenter = collisionChecker.HeadCenterCollision();
-
-        Debug.Log("hitLeftHeadSide: " + hitHeadLeftSide + " hitRightHeadSide: " + hitHeadRightSide + " hitHeadCenter: " + hitHeadCenter);
-
-        if ((hitHeadRightSide || hitHeadLeftSide) && !hitHeadCenter)
-            Debug.Log("Hit Corner");
-
     }
     #endregion
 }
