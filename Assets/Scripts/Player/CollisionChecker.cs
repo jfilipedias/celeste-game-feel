@@ -47,17 +47,17 @@ public class CollisionChecker : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        // Face
+        // Feet
         Gizmos.color = Color.magenta;
         Gizmos.DrawWireSphere(feet.position, sphereGizmoSize);
         Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(feet.position, (feet.position + new Vector3((boxColliderSize.x/2) + collisionDistance * facingDirection, 0, 0)));
+        Gizmos.DrawLine(feet.position, (feet.position + new Vector3(((boxColliderSize.x / 2) + collisionDistance) * facingDirection, 0, 0)));
 
         // Hand
         Gizmos.color = Color.magenta;
         Gizmos.DrawWireSphere(hand.position, sphereGizmoSize);
         Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(hand.position, (hand.position + new Vector3((boxColliderSize.x / 2) + collisionDistance * facingDirection, 0, 0)));
+        Gizmos.DrawLine(hand.position, (hand.position + new Vector3(((boxColliderSize.x / 2) + collisionDistance) * facingDirection, 0, 0)));
 
         // Collision Shell
         Gizmos.color = Color.cyan;
