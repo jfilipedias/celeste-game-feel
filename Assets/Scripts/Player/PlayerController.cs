@@ -375,7 +375,9 @@ public class PlayerController : MonoBehaviour
         {
             Debug.Log("Loop through");
 
-            rb2D.velocity = new Vector2(direction * moveSpeed, jumpForce);
+            Vector2 targetPosition = new Vector2(direction, jumpForce) * Time.deltaTime;
+           
+            rb2D.MovePosition(rb2D.position + targetPosition);
 
             CheckHeadCollision();
 
@@ -384,11 +386,12 @@ public class PlayerController : MonoBehaviour
 
         if(!(hitHeadLeftSide && hitHeadRightSide))
         {
-            rb2D.velocity = Vector2.zero;
             rb2D.bodyType = RigidbodyType2D.Dynamic;
+            //rb2D.velocity = new Vector2(rb2D.velocity.x, jumpForce);
 
             Debug.Log("Stop correction");
         }
+
     }
 
     private void Land()

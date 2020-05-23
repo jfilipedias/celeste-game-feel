@@ -54,7 +54,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6359061221218184895}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.35, y: 1, z: 0}
+  m_LocalPosition: {x: -0.38, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7501705851842619365}
@@ -84,7 +84,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7135667051360419972}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.35, y: 1, z: 0}
+  m_LocalPosition: {x: 0.38, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7501705851842619365}
@@ -305,8 +305,8 @@ MonoBehaviour:
   sphereGizmoSize: 0.1
   boxShellSize: 0.02
   feetBoxSize: {x: 0.98, y: 0.05}
-  headCornerBoxSize: {x: 0.28, y: 0.05}
-  headCenterBoxSize: {x: 0.4, y: 0.05}
+  headCornerBoxSize: {x: 0.22, y: 0.05}
+  headCenterBoxSize: {x: 0.52, y: 0.05}
   groundMask:
     serializedVersion: 2
     m_Bits: 512
