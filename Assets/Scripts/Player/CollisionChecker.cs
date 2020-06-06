@@ -10,8 +10,6 @@ public class CollisionChecker : MonoBehaviour
     [SerializeField] private float sphereGizmoSize = 0.1f;
     [SerializeField] private float boxShellSize = 0.02f;
     [SerializeField] private Vector2 feetBoxSize = new Vector2(0.98f, 0.05f);
-    [SerializeField] private Vector2 headCornerBoxSize = new Vector2(0.28f, 0.05f);
-    [SerializeField] private Vector2 headCenterBoxSize = new Vector2(0.4f, 0.05f);
 
     [Space]
     [Header("Colision Mask")]
@@ -22,9 +20,6 @@ public class CollisionChecker : MonoBehaviour
     [Header("Collision Transform")]
     [SerializeField] private Transform hand;
     [SerializeField] private Transform feet;
-    [SerializeField] private Transform headRightSide;
-    [SerializeField] private Transform headLeftSide;
-    [SerializeField] private Transform headCenter;
 
     private float facingDirection = Vector2.right.x;
 
@@ -62,13 +57,6 @@ public class CollisionChecker : MonoBehaviour
         // Collision Shell
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireCube(this.transform.position, new Vector2(boxColliderSize.x + boxShellSize, boxColliderSize.y + boxShellSize));
-
-        // Head Sides
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireCube(headRightSide.position, headCornerBoxSize);
-        Gizmos.DrawWireCube(headLeftSide.position, headCornerBoxSize);
-        Gizmos.color = Color.magenta;
-        Gizmos.DrawWireCube(headCenter.position, headCenterBoxSize);
 
         // Foot
         Gizmos.color = Color.yellow;
@@ -111,27 +99,6 @@ public class CollisionChecker : MonoBehaviour
         RaycastHit2D feetOnWall = Physics2D.Raycast((Vector2)feet.position, new Vector2(facingDirection, 0), (boxColliderSize.x / 2) + collisionDistance, groundMask);
 
         return feetOnWall.collider != null;    
-    }
-
-    public bool RightHeadSideCollision()
-    {
-        Collider2D hitRightCorner = Physics2D.OverlapBox((Vector2)headRightSide.position, headCornerBoxSize, 0, groundMask);
-
-        return hitRightCorner != null;
-    }
-
-    public bool LeftHeadSideCollision()
-    {
-        Collider2D hitLeftCorner = Physics2D.OverlapBox((Vector2)headLeftSide.position, headCornerBoxSize, 0, groundMask);
-        
-        return hitLeftCorner != null;
-    }
-
-    public bool HeadCenterCollision()
-    {
-        Collider2D hitHeadCenter = Physics2D.OverlapBox((Vector2)headCenter.position, headCenterBoxSize, 0, groundMask);
-        
-        return hitHeadCenter != null;
     }
     #endregion
 }
