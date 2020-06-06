@@ -5,15 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class SceneLoader : MonoBehaviour
 {
-    [SerializeField] private List<string> additiveSceneList = new List<string>();
     [SerializeField] private GameObject playerGameObject;
     [SerializeField] private float waitTimeToReload = 0.5f;
-
-    private void Awake()
-    {
-        foreach (string scene in additiveSceneList)
-            SceneManager.LoadScene(scene, LoadSceneMode.Additive);
-    }
 
     private void Update()
     {
