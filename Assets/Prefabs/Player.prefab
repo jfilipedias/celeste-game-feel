@@ -167,7 +167,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 5
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: fc2263f613b9f4e498bbb37f99c5e495, type: 2}
   m_Interpolate: 1
   m_SleepingMode: 0
   m_CollisionDetection: 1
@@ -215,8 +215,6 @@ MonoBehaviour:
   sphereGizmoSize: 0.1
   boxShellSize: 0.02
   feetBoxSize: {x: 0.98, y: 0.05}
-  headCornerBoxSize: {x: 0.22, y: 0.05}
-  headCenterBoxSize: {x: 0.52, y: 0.05}
   groundMask:
     serializedVersion: 2
     m_Bits: 512
@@ -225,9 +223,6 @@ MonoBehaviour:
     m_Bits: 2048
   hand: {fileID: 7501705850920270056}
   feet: {fileID: 7501705850916735888}
-  headRightSide: {fileID: 0}
-  headLeftSide: {fileID: 0}
-  headCenter: {fileID: 0}
 --- !u!114 &3870131351485398040
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9892,7 +9887,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7501705850920270057}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7501705851842619365}
