@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float climbUpSpeed = 5f;
     [SerializeField] private float climbDownSpeed = 10f;
     [SerializeField] private float climbLedgeForce = 8f;
-    [SerializeField] private int climbLedgeIterations = 12;
+    [SerializeField] private int climbLedgeIterations = 15;
     [SerializeField] private float dashSpeed = 22f;
 
     [Header("Timers")]

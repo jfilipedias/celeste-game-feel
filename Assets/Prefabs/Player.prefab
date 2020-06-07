@@ -190,7 +190,7 @@ MonoBehaviour:
   climbUpSpeed: 5
   climbDownSpeed: 10
   climbLedgeForce: 8
-  climbLedgeIterations: 12
+  climbLedgeIterations: 15
   dashSpeed: 22
   dashTime: 0.15
   wallJumpTime: 0.3
