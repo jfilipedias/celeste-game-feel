@@ -10,6 +10,7 @@ public class CollisionChecker : MonoBehaviour
     [SerializeField] private float sphereGizmoSize = 0.1f;
     [SerializeField] private float boxShellSize = 0.02f;
     [SerializeField] private Vector2 feetBoxSize = new Vector2(0.98f, 0.05f);
+    [SerializeField] private Vector2 headBoxSize = new Vector2(0.5f, 0.05f);
 
     [Space]
     [Header("Colision Mask")]
@@ -18,6 +19,7 @@ public class CollisionChecker : MonoBehaviour
 
     [Space]
     [Header("Collision Transform")]
+    [SerializeField] private Transform head;
     [SerializeField] private Transform hand;
     [SerializeField] private Transform feet;
 
@@ -42,11 +44,10 @@ public class CollisionChecker : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        // Feet
-        Gizmos.color = Color.magenta;
-        Gizmos.DrawWireSphere(feet.position, sphereGizmoSize);
+        // Head
         Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(feet.position, (feet.position + new Vector3(((boxColliderSize.x / 2) + collisionDistance) * facingDirection, 0, 0)));
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawWireCube(head.position, headBoxSize);
 
         // Hand
         Gizmos.color = Color.magenta;
@@ -54,13 +55,19 @@ public class CollisionChecker : MonoBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawLine(hand.position, (hand.position + new Vector3(((boxColliderSize.x / 2) + collisionDistance) * facingDirection, 0, 0)));
 
-        // Collision Shell
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireCube(this.transform.position, new Vector2(boxColliderSize.x + boxShellSize, boxColliderSize.y + boxShellSize));
+        // Feet
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawWireSphere(feet.position, sphereGizmoSize);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawLine(feet.position, (feet.position + new Vector3(((boxColliderSize.x / 2) + collisionDistance) * facingDirection, 0, 0)));
 
         // Foot
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireCube(feet.position, feetBoxSize);
+
+        // Collision Shell
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireCube(this.transform.position, new Vector2(boxColliderSize.x + boxShellSize, boxColliderSize.y + boxShellSize));
     }
     #endregion
 
