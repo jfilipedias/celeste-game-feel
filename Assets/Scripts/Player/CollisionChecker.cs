@@ -8,9 +8,9 @@ public class CollisionChecker : MonoBehaviour
     [Header("Check Collision")]
     [SerializeField] private float collisionDistance = 0.02f;
     [SerializeField] private float sphereGizmoSize = 0.1f;
-    [SerializeField] private float boxShellSize = 0.02f;
-    [SerializeField] private float cornerDistance = 0.75f;
-    [SerializeField] private Vector2 headBoxSize = new Vector2(0.5f, 0.05f);
+    [SerializeField] private float shellBoxSize = 0.02f;
+    [SerializeField] private float cornerDistance = 0.38f;
+    [SerializeField] private Vector2 headBoxSize = new Vector2(0.54f, 0.05f);
     [SerializeField] private Vector2 cornerBoxSize = new Vector2(0.22f, 0.05f);
     [SerializeField] private Vector2 feetBoxSize = new Vector2(0.98f, 0.05f);
 
@@ -71,7 +71,7 @@ public class CollisionChecker : MonoBehaviour
 
         // Collision Shell
         Gizmos.color = Color.cyan;
-        Gizmos.DrawWireCube(this.transform.position, new Vector2(boxColliderSize.x + boxShellSize, boxColliderSize.y + boxShellSize));
+        Gizmos.DrawWireCube(this.transform.position, new Vector2(boxColliderSize.x + shellBoxSize, boxColliderSize.y + shellBoxSize));
     }
     #endregion
 
@@ -85,7 +85,7 @@ public class CollisionChecker : MonoBehaviour
 
     public bool SpikeCollision()
     {
-        Collider2D hitSpike = Physics2D.OverlapBox((Vector2)this.transform.position, new Vector2(boxColliderSize.x + boxShellSize, boxColliderSize.y + boxShellSize), 0, spikeMask);
+        Collider2D hitSpike = Physics2D.OverlapBox((Vector2)this.transform.position, new Vector2(boxColliderSize.x + shellBoxSize, boxColliderSize.y + shellBoxSize), 0, spikeMask);
 
         return hitSpike != null;
     }

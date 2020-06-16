@@ -243,10 +243,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   collisionDistance: 0.02
   sphereGizmoSize: 0.1
-  boxShellSize: 0.02
-  cornerDistance: 0.36
-  headBoxSize: {x: 0.45, y: 0.05}
-  cornerBoxSize: {x: 0.27, y: 0.05}
+  shellBoxSize: 0.02
+  cornerDistance: 0.38
+  headBoxSize: {x: 0.54, y: 0.05}
+  cornerBoxSize: {x: 0.22, y: 0.05}
   feetBoxSize: {x: 0.98, y: 0.05}
   groundMask:
     serializedVersion: 2

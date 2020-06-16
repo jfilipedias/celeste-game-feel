@@ -356,11 +356,13 @@ public class PlayerController : MonoBehaviour
         canMove = true;
         canClimb = true;
         canWallJump = true;
+    
+        if(isOnGround)
+            canDash = true;
     }
 
     private void Land()
     {
-        canDash = true;
         wasUnground = false;
         groundDustParticles.Play();
     }
@@ -378,14 +380,13 @@ public class PlayerController : MonoBehaviour
 
     private void CheckCollisions()
     {
+        CheckHeadCollisions();
+     
         isOnGround = collisionChecker.GroundCollision();
         hitSpike = collisionChecker.SpikeCollision();
         isOnWall = collisionChecker.WallCollision();
         handsOnWall = collisionChecker.HandsOnWall();
         feetOnWall = collisionChecker.FeetOnWall();
-
-        if (!isOnGround)
-            CheckHeadCollisions();
     }
 
     private void CheckHeadCollisions()
