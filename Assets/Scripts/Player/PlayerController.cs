@@ -29,6 +29,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private ParticleSystem groundDustParticles;
 
     // Components
+    private BoxCollider2D boxCollider;
     private Rigidbody2D rb2D;
     private CollisionChecker collisionChecker;
 
@@ -43,6 +44,7 @@ public class PlayerController : MonoBehaviour
 
     private float jumpBufferingCounter;
     private float coyoteTimeCounter;
+    private float storedVelocityY;
 
     private int callingCount;
     
@@ -63,6 +65,7 @@ public class PlayerController : MonoBehaviour
     private bool isDashing;
     private bool isFlipped;
     private bool isCoyoteTime;
+    private bool isCornerCorrection;
 
     private bool wasUnground = false;
 
@@ -91,6 +94,7 @@ public class PlayerController : MonoBehaviour
     #region MonoBehaviour Methods
     private void Awake()
     {
+        boxCollider = this.GetComponent<BoxCollider2D>();
         rb2D = this.GetComponent<Rigidbody2D>();
         collisionChecker = this.GetComponent<CollisionChecker>();
 
@@ -101,6 +105,9 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if (!isOnGround && rb2D.velocity.y > 0)
+            storedVelocityY = rb2D.velocity.y;
+
         CheckCollisions();
 
         HandleInput();
@@ -129,7 +136,10 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (canMove && !isClimbingWall)
+        if (((hitLeftCorner || hitRightCorner) && !hitHead) && !isClimbingWall && !isOnWall && !isCornerCorrection)
+            StartCoroutine(CornerCorrection());
+
+        if (canMove && !isClimbingWall && !isCornerCorrection)
             Move();
 
         if (canJump && isJumping)
@@ -361,6 +371,32 @@ public class PlayerController : MonoBehaviour
             canDash = true;
     }
 
+    public IEnumerator CornerCorrection()
+    {
+        boxCollider.enabled = false;
+        isCornerCorrection = true;
+
+        rb2D.velocity = new Vector2(rb2D.velocity.x, storedVelocityY);
+
+        float direction = 1f;
+
+        if (hitRightCorner)
+            direction = -1f;
+
+        while (hitLeftCorner || hitRightCorner)
+        {
+            rb2D.velocity = new Vector2(direction, rb2D.velocity.y);
+
+            CheckHeadCollisions();
+
+            yield return new WaitForFixedUpdate(); // Should wait fixed time?
+        }
+
+        rb2D.velocity = new Vector2(0, rb2D.velocity.y);
+        boxCollider.enabled = true;
+        isCornerCorrection = false;
+    }
+
     private void Land()
     {
         wasUnground = false;
@@ -380,9 +416,11 @@ public class PlayerController : MonoBehaviour
 
     private void CheckCollisions()
     {
-        CheckHeadCollisions();
-     
         isOnGround = collisionChecker.GroundCollision();
+        
+        if(!isOnGround && !isCornerCorrection)
+            CheckHeadCollisions();
+     
         hitSpike = collisionChecker.SpikeCollision();
         isOnWall = collisionChecker.WallCollision();
         handsOnWall = collisionChecker.HandsOnWall();
@@ -391,7 +429,6 @@ public class PlayerController : MonoBehaviour
 
     private void CheckHeadCollisions()
     {
-        Debug.Log("Checking head collisions");
         hitRightCorner = collisionChecker.RightCornerOnWall();
         hitLeftCorner = collisionChecker.LeftCornerOnWall();
         hitHead = collisionChecker.HeadOnWall();

@@ -100,7 +100,6 @@ public class CollisionChecker : MonoBehaviour
 
     public bool RightCornerOnWall()
     {
-        Debug.Log("Check Right");
         Vector2 rightConerPosition = new Vector2(head.position.x + cornerDistance, head.position.y);
         Collider2D hitRightCorner = Physics2D.OverlapBox(rightConerPosition, cornerBoxSize, 0, groundMask);
         
@@ -109,7 +108,6 @@ public class CollisionChecker : MonoBehaviour
 
     public bool LeftCornerOnWall()
     {
-        Debug.Log("Check Left");
         Vector2 leftConerPosition = new Vector2(head.position.x - cornerDistance, head.position.y);
         Collider2D hitLeftCorner = Physics2D.OverlapBox(leftConerPosition, cornerBoxSize, 0, groundMask);
         
@@ -118,7 +116,6 @@ public class CollisionChecker : MonoBehaviour
 
     public bool HeadOnWall()
     {
-        Debug.Log("Check Head");
         Collider2D hitHead = Physics2D.OverlapBox((Vector2)head.position, headBoxSize, 0, groundMask);
         
         return hitHead != null;
