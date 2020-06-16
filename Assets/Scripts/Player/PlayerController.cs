@@ -50,9 +50,9 @@ public class PlayerController : MonoBehaviour
     private bool isOnGround;
     private bool isOnWall;
     private bool hitSpike;
-    private bool hitHeadRightSide;
-    private bool hitHeadLeftSide;
-    private bool hitHeadCenter;
+    private bool hitRightCorner;
+    private bool hitLeftCorner;
+    private bool hitHead;
     private bool handsOnWall;
     private bool feetOnWall;
 
@@ -383,6 +383,17 @@ public class PlayerController : MonoBehaviour
         isOnWall = collisionChecker.WallCollision();
         handsOnWall = collisionChecker.HandsOnWall();
         feetOnWall = collisionChecker.FeetOnWall();
+
+        if (!isOnGround)
+            CheckHeadCollisions();
+    }
+
+    private void CheckHeadCollisions()
+    {
+        Debug.Log("Checking head collisions");
+        hitRightCorner = collisionChecker.RightCornerOnWall();
+        hitLeftCorner = collisionChecker.LeftCornerOnWall();
+        hitHead = collisionChecker.HeadOnWall();
     }
     #endregion
 }

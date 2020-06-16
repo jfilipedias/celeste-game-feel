@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6220285228009238468}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.98, z: 0}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7501705851842619365}
@@ -244,8 +244,10 @@ MonoBehaviour:
   collisionDistance: 0.02
   sphereGizmoSize: 0.1
   boxShellSize: 0.02
+  cornerDistance: 0.36
+  headBoxSize: {x: 0.45, y: 0.05}
+  cornerBoxSize: {x: 0.27, y: 0.05}
   feetBoxSize: {x: 0.98, y: 0.05}
-  headBoxSize: {x: 0.5, y: 0.05}
   groundMask:
     serializedVersion: 2
     m_Bits: 512

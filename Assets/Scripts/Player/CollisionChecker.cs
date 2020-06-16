@@ -9,8 +9,10 @@ public class CollisionChecker : MonoBehaviour
     [SerializeField] private float collisionDistance = 0.02f;
     [SerializeField] private float sphereGizmoSize = 0.1f;
     [SerializeField] private float boxShellSize = 0.02f;
-    [SerializeField] private Vector2 feetBoxSize = new Vector2(0.98f, 0.05f);
+    [SerializeField] private float cornerDistance = 0.75f;
     [SerializeField] private Vector2 headBoxSize = new Vector2(0.5f, 0.05f);
+    [SerializeField] private Vector2 cornerBoxSize = new Vector2(0.22f, 0.05f);
+    [SerializeField] private Vector2 feetBoxSize = new Vector2(0.98f, 0.05f);
 
     [Space]
     [Header("Colision Mask")]
@@ -46,17 +48,19 @@ public class CollisionChecker : MonoBehaviour
     {
         // Head
         Gizmos.color = Color.yellow;
-        Gizmos.color = Color.magenta;
+        Gizmos.DrawWireCube(new Vector2(head.position.x + cornerDistance, head.position.y), cornerBoxSize);     // Right Corner
+        Gizmos.DrawWireCube(new Vector2(head.position.x - cornerDistance, head.position.y), cornerBoxSize);     // Left Corner
+        Gizmos.color = Color.black;
         Gizmos.DrawWireCube(head.position, headBoxSize);
 
         // Hand
-        Gizmos.color = Color.magenta;
+        Gizmos.color = Color.black;
         Gizmos.DrawWireSphere(hand.position, sphereGizmoSize);
         Gizmos.color = Color.yellow;
         Gizmos.DrawLine(hand.position, (hand.position + new Vector3(((boxColliderSize.x / 2) + collisionDistance) * facingDirection, 0, 0)));
 
         // Feet
-        Gizmos.color = Color.magenta;
+        Gizmos.color = Color.black;
         Gizmos.DrawWireSphere(feet.position, sphereGizmoSize);
         Gizmos.color = Color.yellow;
         Gizmos.DrawLine(feet.position, (feet.position + new Vector3(((boxColliderSize.x / 2) + collisionDistance) * facingDirection, 0, 0)));
@@ -92,6 +96,32 @@ public class CollisionChecker : MonoBehaviour
         bool handOnWall = FeetOnWall();
 
         return feetOnWall || handOnWall;                  
+    }
+
+    public bool RightCornerOnWall()
+    {
+        Debug.Log("Check Right");
+        Vector2 rightConerPosition = new Vector2(head.position.x + cornerDistance, head.position.y);
+        Collider2D hitRightCorner = Physics2D.OverlapBox(rightConerPosition, cornerBoxSize, 0, groundMask);
+        
+        return hitRightCorner != null;
+    }
+
+    public bool LeftCornerOnWall()
+    {
+        Debug.Log("Check Left");
+        Vector2 leftConerPosition = new Vector2(head.position.x - cornerDistance, head.position.y);
+        Collider2D hitLeftCorner = Physics2D.OverlapBox(leftConerPosition, cornerBoxSize, 0, groundMask);
+        
+        return hitLeftCorner != null;
+    }
+
+    public bool HeadOnWall()
+    {
+        Debug.Log("Check Head");
+        Collider2D hitHead = Physics2D.OverlapBox((Vector2)head.position, headBoxSize, 0, groundMask);
+        
+        return hitHead != null;
     }
 
     public bool HandsOnWall()
