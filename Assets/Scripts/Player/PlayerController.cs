@@ -389,7 +389,7 @@ public class PlayerController : MonoBehaviour
 
             CheckHeadCollisions();
 
-            yield return new WaitForFixedUpdate(); // Should wait fixed time?
+            yield return new WaitForFixedUpdate();
         }
 
         rb2D.velocity = new Vector2(0, rb2D.velocity.y);
@@ -399,6 +399,7 @@ public class PlayerController : MonoBehaviour
 
     private void Land()
     {
+        canDash = true;
         wasUnground = false;
         groundDustParticles.Play();
     }
