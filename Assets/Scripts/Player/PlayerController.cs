@@ -168,6 +168,8 @@ public class PlayerController : MonoBehaviour
 
 
     #region Controller Methods
+    // TODO: Add xbox controller support
+
     private void HandleInput()
     {
         moveDirectionX = Input.GetAxisRaw("Horizontal");
@@ -274,6 +276,8 @@ public class PlayerController : MonoBehaviour
         rb2D.velocity = new Vector2(0, -wallSlideSpeed);
     }
 
+    // TODO: Implement stamina to wall climb
+
     public void ClimbWall()
     {
         canFlip = false;
@@ -318,6 +322,10 @@ public class PlayerController : MonoBehaviour
 
         isClimbingLedge = false;
     }
+
+    // TODO: Fix Wall Climb after dash and press arrow left and arrow up
+
+    // TODO: Fix dash that suddenly stop
 
     public void Dash()
     {
