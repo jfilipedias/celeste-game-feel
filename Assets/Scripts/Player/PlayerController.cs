@@ -17,7 +17,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float dashSpeed = 22f;
 
     [Header("Timers")]
-    [SerializeField] private float dashTime = 0.15f;
+    [SerializeField] private float dashTime = 0.2f;
+    [SerializeField] private float dashElapsedTime = 0.1f;
     [SerializeField] private float wallJumpTime = 0.3f;
     [SerializeField] private float jumpBufferingTime = 0.15f;
     [SerializeField] private float coyoteTime = 0.15f;
@@ -45,6 +46,7 @@ public class PlayerController : MonoBehaviour
     private float jumpBufferingCounter;
     private float coyoteTimeCounter;
     private float storedVelocityY;
+    private float dashElapsedCounter;
 
     private int callingCount;
     
@@ -68,6 +70,7 @@ public class PlayerController : MonoBehaviour
     private bool isCornerCorrection;
 
     private bool wasUnground = false;
+    private bool wasDashing = false;
 
     private bool canMove = true;
     private bool canJump = true;
@@ -132,6 +135,7 @@ public class PlayerController : MonoBehaviour
 
         jumpBufferingCounter -= Time.deltaTime;
         coyoteTimeCounter -= Time.deltaTime;
+        dashElapsedCounter -= Time.deltaTime;
     }
 
     private void FixedUpdate()
@@ -207,6 +211,8 @@ public class PlayerController : MonoBehaviour
 
         if (isWallJumping)
             rb2D.velocity = Vector2.Lerp(rb2D.velocity, new Vector2(newVelocityX, rb2D.velocity.y), 5 * Time.deltaTime);
+        else if(dashElapsedCounter > 0)     // Just finish dash
+            rb2D.velocity = Vector2.Lerp(rb2D.velocity, new Vector2(newVelocityX, rb2D.velocity.y), 10 * Time.deltaTime);
         else
             rb2D.velocity = new Vector2(newVelocityX, rb2D.velocity.y);
     }
@@ -331,13 +337,17 @@ public class PlayerController : MonoBehaviour
     {
         float horizontalDirection;
 
-        // Down dash on ground
-        if (moveDirectionX == 0 && (isOnGround || moveDirectionY == 0))
+        if (moveDirectionX == 0 && (isOnGround || moveDirectionY == 0))     // Dash on ground
             horizontalDirection = facingDirection;
         else
             horizontalDirection = moveDirectionX;
 
-        Vector2 direction = new Vector2(horizontalDirection, moveDirectionY);
+        Vector2 direction;
+
+        if (horizontalDirection != 0 && moveDirectionY != 0)        // Dash diagonaly
+            direction = new Vector2(horizontalDirection * 0.75f, moveDirectionY * 0.75f);
+        else
+            direction = new Vector2(horizontalDirection, moveDirectionY);
 
         if (direction.y >= 0)
             rb2D.gravityScale = 0;
@@ -365,15 +375,16 @@ public class PlayerController : MonoBehaviour
 
         if (directionY > 0)
             rb2D.velocity *= 0.5f;
-        else
-            rb2D.velocity *= 0.8f;
-        
+
         rb2D.gravityScale = defaultGravityScale;
+
+        dashElapsedCounter = dashElapsedTime;
 
         isDashing = false;
         canMove = true;
         canClimb = true;
         canWallJump = true;
+        wasDashing = true;
     
         if(isOnGround)
             canDash = true;
