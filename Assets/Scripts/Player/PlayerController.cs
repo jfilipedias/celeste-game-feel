@@ -17,7 +17,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float dashSpeed = 22f;
 
     [Header("Timers")]
-    [SerializeField] private float dashTime = 0.15f;
+    [SerializeField] private float dashTime = 0.2f;
     [SerializeField] private float wallJumpTime = 0.3f;
     [SerializeField] private float jumpBufferingTime = 0.15f;
     [SerializeField] private float coyoteTime = 0.15f;
@@ -331,13 +331,17 @@ public class PlayerController : MonoBehaviour
     {
         float horizontalDirection;
 
-        // Down dash on ground
-        if (moveDirectionX == 0 && (isOnGround || moveDirectionY == 0))
+        if (moveDirectionX == 0 && (isOnGround || moveDirectionY == 0))     // Dash on ground
             horizontalDirection = facingDirection;
         else
             horizontalDirection = moveDirectionX;
 
-        Vector2 direction = new Vector2(horizontalDirection, moveDirectionY);
+        Vector2 direction;
+
+        if (horizontalDirection != 0 && moveDirectionY != 0)        // Dash diagonaly
+            direction = new Vector2(horizontalDirection * 0.75f, moveDirectionY * 0.75f);
+        else
+            direction = new Vector2(horizontalDirection, moveDirectionY);
 
         if (direction.y >= 0)
             rb2D.gravityScale = 0;

@@ -222,7 +222,7 @@ MonoBehaviour:
   climbLedgeForce: 8
   climbLedgeIterations: 15
   dashSpeed: 22
-  dashTime: 0.15
+  dashTime: 0.2
   wallJumpTime: 0.3
   jumpBufferingTime: 0.15
   coyoteTime: 0.15
