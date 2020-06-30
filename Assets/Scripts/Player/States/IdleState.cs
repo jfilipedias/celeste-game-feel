@@ -1,17 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class IdleState : PlayerState
+namespace CelesteGameFeel.Player.States
 {
-    public IdleState(PlayerController controller) : base(controller)
+    public class IdleState : PlayerState
     {
+        public IdleState(PlayerController controller) : base(controller)
+        {
 
-    }
+        }
 
 
-    public override PlayerState HandleInput()
-    {
-        return null;
+        public override PlayerState HandleInput()
+        {
+            return null;
+        }
     }
 }

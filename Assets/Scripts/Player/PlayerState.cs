@@ -1,15 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public abstract class PlayerState : MonoBehaviour
+namespace CelesteGameFeel.Player
 {
-    protected PlayerController controller;
-
-    public PlayerState(PlayerController controller)
+    public abstract class PlayerState : MonoBehaviour
     {
-        this.controller = controller;
-    }
+        protected PlayerController controller;
 
-    public abstract PlayerState HandleInput();
+        public PlayerState(PlayerController controller)
+        {
+            this.controller = controller;
+        }
+
+        public abstract PlayerState HandleInput();
+    }
 }
