@@ -30,13 +30,13 @@ public class CollisionHandler : MonoBehaviour
 
     private Vector2 boxColliderSize = new Vector2(1, 2);
 
-    private PlayerController controller;
+    private Controller controller;
     #endregion
 
     #region MonoBehaviour Methods
     private void Awake()
     {
-        controller = this.GetComponent<PlayerController>();
+        controller = this.GetComponent<Controller>();
         boxColliderSize = this.GetComponent<BoxCollider2D>().size;
     }
 

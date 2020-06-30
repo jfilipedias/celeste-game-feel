@@ -2,15 +2,14 @@
 
 namespace CelesteGameFeel.Player.States
 {
-    public class IdleState : PlayerState
+    public class IdleState : State
     {
-        public IdleState(PlayerController controller) : base(controller)
+        public IdleState(Controller controller) : base(controller)
         {
 
         }
 
-
-        public override PlayerState HandleInput()
+        public override State HandleInput()
         {
             return null;
         }

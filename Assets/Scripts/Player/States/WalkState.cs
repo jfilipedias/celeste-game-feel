@@ -2,9 +2,9 @@
 
 namespace CelesteGameFeel.Player.States
 {
-    public class WalkState : PlayerState
+    public class WalkState : State
     {
-        public WalkState(PlayerController controller) : base(controller)
+        public WalkState(Controller controller) : base(controller)
         {
 
         }
@@ -14,7 +14,7 @@ namespace CelesteGameFeel.Player.States
             Walk();
         }
 
-        public override PlayerState HandleInput()
+        public override State HandleInput()
         {
             if (Input.GetAxisRaw("Horizontal") == 0)
                 return new IdleState(controller);

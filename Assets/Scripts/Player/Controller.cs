@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CelesteGameFeel.Player
 {
-    public class PlayerController : MonoBehaviour
+    public class Controller : MonoBehaviour
     {
         #region Attributes
         // Show in Inspector
