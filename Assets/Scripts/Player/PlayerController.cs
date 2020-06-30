@@ -32,7 +32,10 @@ public class PlayerController : MonoBehaviour
     // Components
     private BoxCollider2D boxCollider;
     private Rigidbody2D rb2D;
-    private CollisionChecker collisionChecker;
+    private CollisionHandler collisionHandler;
+
+    // Player Classes
+
 
     private Vector3 levelLimit;
 
@@ -99,7 +102,7 @@ public class PlayerController : MonoBehaviour
     {
         boxCollider = this.GetComponent<BoxCollider2D>();
         rb2D = this.GetComponent<Rigidbody2D>();
-        collisionChecker = this.GetComponent<CollisionChecker>();
+        collisionHandler = this.GetComponent<CollisionHandler>();
 
         levelLimit = GameObject.FindGameObjectWithTag("Level Limit").transform.position;
 
@@ -436,22 +439,22 @@ public class PlayerController : MonoBehaviour
 
     private void CheckCollisions()
     {
-        isOnGround = collisionChecker.GroundCollision();
+        isOnGround = collisionHandler.GroundCollision();
         
         if(!isOnGround && !isCornerCorrection)
             CheckHeadCollisions();
      
-        hitSpike = collisionChecker.SpikeCollision();
-        isOnWall = collisionChecker.WallCollision();
-        handsOnWall = collisionChecker.HandsOnWall();
-        feetOnWall = collisionChecker.FeetOnWall();
+        hitSpike = collisionHandler.SpikeCollision();
+        isOnWall = collisionHandler.WallCollision();
+        handsOnWall = collisionHandler.HandsOnWall();
+        feetOnWall = collisionHandler.FeetOnWall();
     }
 
     private void CheckHeadCollisions()
     {
-        hitRightCorner = collisionChecker.RightCornerOnWall();
-        hitLeftCorner = collisionChecker.LeftCornerOnWall();
-        hitHead = collisionChecker.HeadOnWall();
+        hitRightCorner = collisionHandler.RightCornerOnWall();
+        hitLeftCorner = collisionHandler.LeftCornerOnWall();
+        hitHead = collisionHandler.HeadOnWall();
     }
     #endregion
 }

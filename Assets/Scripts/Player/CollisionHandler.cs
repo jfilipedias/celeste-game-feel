@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CollisionChecker : MonoBehaviour
+public class CollisionHandler : MonoBehaviour
 {
     #region Atributes
     [Header("Check Collision")]
