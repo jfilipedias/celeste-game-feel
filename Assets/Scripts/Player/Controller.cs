@@ -37,7 +37,7 @@ namespace CelesteGameFeel.Player
         private CollisionHandler collisionHandler;
 
         // Player Classes
-
+        private State currentState;
 
         private Vector3 levelLimit;
 
@@ -88,6 +88,7 @@ namespace CelesteGameFeel.Player
 
 
         #region Proterties
+        public State CurrentState { set => currentState = value; }
         public float FacingDirection { get => facingDirection; }
         public bool IsFlipped { get => isFlipped; }
         public bool CanDash { get => canDash; }
@@ -118,7 +119,7 @@ namespace CelesteGameFeel.Player
 
             CheckCollisions();
 
-            HandleInput();
+            //HandleInput();
 
             if (isOnGround)
                 coyoteTimeCounter = coyoteTime;
@@ -145,33 +146,33 @@ namespace CelesteGameFeel.Player
 
         private void FixedUpdate()
         {
-            if ((hitLeftCorner || hitRightCorner) && !hitHead && !isClimbingWall && !isOnWall && !isCornerCorrection)
-                StartCoroutine(CornerCorrection());
+            //if ((hitLeftCorner || hitRightCorner) && !hitHead && !isClimbingWall && !isOnWall && !isCornerCorrection)
+            //    StartCoroutine(CornerCorrection());
 
-            if (canMove && !isClimbingWall && !isCornerCorrection)
-                Move();
+            //if (canMove && !isClimbingWall && !isCornerCorrection)
+            //    Move();
 
-            if (canJump && isJumping)
-                Jump(Vector2.up);
+            //if (canJump && isJumping)
+            //    Jump(Vector2.up);
 
-            if (canWallJump && isWallJumping)
-                WallJump();
+            //if (canWallJump && isWallJumping)
+            //    WallJump();
 
-            if (canSlideOnWall && isOnWall && moveDirectionX == facingDirection && !isJumping)
-                WallSlide();
-            else if (!isDashing)
-                rb2D.gravityScale = defaultGravityScale;
+            //if (canSlideOnWall && isOnWall && moveDirectionX == facingDirection && !isJumping)
+            //    WallSlide();
+            //else if (!isDashing)
+            //    rb2D.gravityScale = defaultGravityScale;
 
-            if (canClimb && isClimbingWall)
-                ClimbWall();
-            else
-                StopClimbWall();
+            //if (canClimb && isClimbingWall)
+            //    ClimbWall();
+            //else
+            //    StopClimbWall();
 
-            if (isClimbingLedge)
-                StartCoroutine(ClimbLedge());
+            //if (isClimbingLedge)
+            //    StartCoroutine(ClimbLedge());
 
-            if (canDash && isDashing)
-                Dash();
+            //if (canDash && isDashing)
+            //    Dash();
         }
         #endregion
 
@@ -179,247 +180,247 @@ namespace CelesteGameFeel.Player
         #region Controller Methods
         // TODO: Add xbox controller support
 
-        private void HandleInput()
-        {
-            moveDirectionX = Input.GetAxisRaw("Horizontal");
+        //private void HandleInput()
+        //{
+        //    moveDirectionX = Input.GetAxisRaw("Horizontal");
 
-            moveDirectionY = Input.GetAxisRaw("Vertical");
+        //    moveDirectionY = Input.GetAxisRaw("Vertical");
 
-            if (Input.GetButtonDown("Jump"))
-                jumpBufferingCounter = jumpBufferingTime;
+        //    if (Input.GetButtonDown("Jump"))
+        //        jumpBufferingCounter = jumpBufferingTime;
 
-            if (Input.GetButton("Jump") && isOnGround && !isClimbingWall && jumpBufferingCounter > 0)    // Jump Buffering
-                isJumping = true;
-            else if (Input.GetButton("Jump") && !isOnGround && !isClimbingWall && coyoteTimeCounter > 0)      // CoyoteTime
-            {
-                isJumping = true;
-                isCoyoteTime = true;
-            }
-            else
-                isJumping = false;
+        //    if (Input.GetButton("Jump") && isOnGround && !isClimbingWall && jumpBufferingCounter > 0)    // Jump Buffering
+        //        isJumping = true;
+        //    else if (Input.GetButton("Jump") && !isOnGround && !isClimbingWall && coyoteTimeCounter > 0)      // CoyoteTime
+        //    {
+        //        isJumping = true;
+        //        isCoyoteTime = true;
+        //    }
+        //    else
+        //        isJumping = false;
 
-            if (Input.GetButtonDown("Jump") && isOnWall && (!isOnGround || isClimbingWall))
-                isWallJumping = true;
+        //    if (Input.GetButtonDown("Jump") && isOnWall && (!isOnGround || isClimbingWall))
+        //        isWallJumping = true;
 
-            if (Input.GetButton("Hold") && isOnWall && !isJumping && !isWallJumping)
-                isClimbingWall = true;
-            else
-                isClimbingWall = false;
+        //    if (Input.GetButton("Hold") && isOnWall && !isJumping && !isWallJumping)
+        //        isClimbingWall = true;
+        //    else
+        //        isClimbingWall = false;
 
-            if (Input.GetButtonDown("Dash"))
-                isDashing = true;
-        }
+        //    if (Input.GetButtonDown("Dash"))
+        //        isDashing = true;
+        //}
 
-        private void Move()
-        {
-            float newVelocityX = moveDirectionX * moveSpeed;
+        //private void Move()
+        //{
+        //    float newVelocityX = moveDirectionX * moveSpeed;
 
-            if (isWallJumping)
-                rb2D.velocity = Vector2.Lerp(rb2D.velocity, new Vector2(newVelocityX, rb2D.velocity.y), 5 * Time.deltaTime);
-            else if (dashElapsedCounter > 0)     // Just finish dash
-                rb2D.velocity = Vector2.Lerp(rb2D.velocity, new Vector2(newVelocityX, rb2D.velocity.y), 10 * Time.deltaTime);
-            else
-                rb2D.velocity = new Vector2(newVelocityX, rb2D.velocity.y);
-        }
+        //    if (isWallJumping)
+        //        rb2D.velocity = Vector2.Lerp(rb2D.velocity, new Vector2(newVelocityX, rb2D.velocity.y), 5 * Time.deltaTime);
+        //    else if (dashElapsedCounter > 0)     // Just finish dash
+        //        rb2D.velocity = Vector2.Lerp(rb2D.velocity, new Vector2(newVelocityX, rb2D.velocity.y), 10 * Time.deltaTime);
+        //    else
+        //        rb2D.velocity = new Vector2(newVelocityX, rb2D.velocity.y);
+        //}
 
-        public void Jump(Vector2 jumpDirection)
-        {
-            callingCount++;
-            if (isOnGround || isCoyoteTime)
-                groundDustParticles.Play();
+        //public void Jump(Vector2 jumpDirection)
+        //{
+        //    callingCount++;
+        //    if (isOnGround || isCoyoteTime)
+        //        groundDustParticles.Play();
 
-            isCoyoteTime = false;
+        //    isCoyoteTime = false;
 
-            rb2D.velocity += jumpDirection * jumpForce;
+        //    rb2D.velocity += jumpDirection * jumpForce;
 
-            StartCoroutine(WaitJump());
-        }
+        //    StartCoroutine(WaitJump());
+        //}
 
-        private IEnumerator WaitJump()
-        {
-            canJump = false;
+        //private IEnumerator WaitJump()
+        //{
+        //    canJump = false;
 
-            yield return new WaitForSeconds(coyoteTime);
+        //    yield return new WaitForSeconds(coyoteTime);
 
-            canJump = true;
-        }
+        //    canJump = true;
+        //}
 
-        public void WallJump()
-        {
-            canFlip = false;
+        //public void WallJump()
+        //{
+        //    canFlip = false;
 
-            StartCoroutine(WaitWallJump());
+        //    StartCoroutine(WaitWallJump());
 
-            Vector2 jumpDirection = Vector2.up;
+        //    Vector2 jumpDirection = Vector2.up;
 
-            // If going out from wall
-            if (moveDirectionX != facingDirection && moveDirectionX != 0)
-            {
-                FlipDirection();
-                jumpDirection += Vector2.right * moveDirectionX;
-            }
+        //    // If going out from wall
+        //    if (moveDirectionX != facingDirection && moveDirectionX != 0)
+        //    {
+        //        FlipDirection();
+        //        jumpDirection += Vector2.right * moveDirectionX;
+        //    }
 
-            rb2D.gravityScale = defaultGravityScale;
+        //    rb2D.gravityScale = defaultGravityScale;
 
-            Jump(jumpDirection);
+        //    Jump(jumpDirection);
 
-            canFlip = true;
-        }
+        //    canFlip = true;
+        //}
 
-        private IEnumerator WaitWallJump()
-        {
-            isClimbingWall = false;
-            canClimb = false;
-            canWallJump = false;
-            canSlideOnWall = false;
+        //private IEnumerator WaitWallJump()
+        //{
+        //    isClimbingWall = false;
+        //    canClimb = false;
+        //    canWallJump = false;
+        //    canSlideOnWall = false;
 
-            yield return new WaitForSeconds(wallJumpTime);
+        //    yield return new WaitForSeconds(wallJumpTime);
 
-            isWallJumping = false;
-            canClimb = true;
-            canWallJump = true;
-            canSlideOnWall = true;
-        }
+        //    isWallJumping = false;
+        //    canClimb = true;
+        //    canWallJump = true;
+        //    canSlideOnWall = true;
+        //}
 
-        public void WallSlide()
-        {
-            rb2D.gravityScale = 0;
-            rb2D.velocity = new Vector2(0, -wallSlideSpeed);
-        }
+        //public void WallSlide()
+        //{
+        //    rb2D.gravityScale = 0;
+        //    rb2D.velocity = new Vector2(0, -wallSlideSpeed);
+        //}
 
-        // TODO: Implement stamina to wall climb
+        //// TODO: Implement stamina to wall climb
 
-        public void ClimbWall()
-        {
-            canFlip = false;
-            canSlideOnWall = false;
-            rb2D.gravityScale = 0;
+        //public void ClimbWall()
+        //{
+        //    canFlip = false;
+        //    canSlideOnWall = false;
+        //    rb2D.gravityScale = 0;
 
-            if (moveDirectionY > 0)
-                rb2D.velocity = new Vector2(0, climbUpSpeed);
-            else if (moveDirectionY < 0)
-                rb2D.velocity = new Vector2(0, -climbDownSpeed);
-            else
-                rb2D.velocity = Vector2.zero;
-        }
+        //    if (moveDirectionY > 0)
+        //        rb2D.velocity = new Vector2(0, climbUpSpeed);
+        //    else if (moveDirectionY < 0)
+        //        rb2D.velocity = new Vector2(0, -climbDownSpeed);
+        //    else
+        //        rb2D.velocity = Vector2.zero;
+        //}
 
-        private void StopClimbWall()
-        {
-            canFlip = true;
-            canSlideOnWall = true;
+        //private void StopClimbWall()
+        //{
+        //    canFlip = true;
+        //    canSlideOnWall = true;
 
-            if (!isDashing)
-                rb2D.gravityScale = defaultGravityScale;
-        }
+        //    if (!isDashing)
+        //        rb2D.gravityScale = defaultGravityScale;
+        //}
 
-        private IEnumerator ClimbLedge()
-        {
-            rb2D.gravityScale = defaultGravityScale;
+        //private IEnumerator ClimbLedge()
+        //{
+        //    rb2D.gravityScale = defaultGravityScale;
 
-            int iterationCount = 0;
+        //    int iterationCount = 0;
 
-            while (feetOnWall)
-            {
-                rb2D.velocity = new Vector2(rb2D.velocity.x, climbLedgeForce);
-                yield return null;
-            }
+        //    while (feetOnWall)
+        //    {
+        //        rb2D.velocity = new Vector2(rb2D.velocity.x, climbLedgeForce);
+        //        yield return null;
+        //    }
 
-            while (iterationCount <= climbLedgeIterations)
-            {
-                rb2D.velocity = new Vector2(facingDirection * climbLedgeForce, rb2D.velocity.y);
-                iterationCount++;
-                yield return null;
-            }
+        //    while (iterationCount <= climbLedgeIterations)
+        //    {
+        //        rb2D.velocity = new Vector2(facingDirection * climbLedgeForce, rb2D.velocity.y);
+        //        iterationCount++;
+        //        yield return null;
+        //    }
 
-            isClimbingLedge = false;
-        }
+        //    isClimbingLedge = false;
+        //}
 
-        // TODO: Fix Wall Climb after dash and press arrow left and arrow up
+        //// TODO: Fix Wall Climb after dash and press arrow left and arrow up
 
-        // TODO: Fix dash that suddenly stop
+        //// TODO: Fix dash that suddenly stop
 
-        public void Dash()
-        {
-            float horizontalDirection;
+        //public void Dash()
+        //{
+        //    float horizontalDirection;
 
-            if (moveDirectionX == 0 && (isOnGround || moveDirectionY == 0))     // Dash on ground
-                horizontalDirection = facingDirection;
-            else
-                horizontalDirection = moveDirectionX;
+        //    if (moveDirectionX == 0 && (isOnGround || moveDirectionY == 0))     // Dash on ground
+        //        horizontalDirection = facingDirection;
+        //    else
+        //        horizontalDirection = moveDirectionX;
 
-            Vector2 direction;
+        //    Vector2 direction;
 
-            if (horizontalDirection != 0 && moveDirectionY != 0)        // Dash diagonaly
-                direction = new Vector2(horizontalDirection * 0.75f, moveDirectionY * 0.75f);
-            else
-                direction = new Vector2(horizontalDirection, moveDirectionY);
+        //    if (horizontalDirection != 0 && moveDirectionY != 0)        // Dash diagonaly
+        //        direction = new Vector2(horizontalDirection * 0.75f, moveDirectionY * 0.75f);
+        //    else
+        //        direction = new Vector2(horizontalDirection, moveDirectionY);
 
-            if (direction.y >= 0)
-                rb2D.gravityScale = 0;
+        //    if (direction.y >= 0)
+        //        rb2D.gravityScale = 0;
 
-            StartCoroutine(WaitDash(direction.y));
-            StartCoroutine(Camera.main.GetComponent<CameraShake>().Shake());
+        //    StartCoroutine(WaitDash(direction.y));
+        //    StartCoroutine(Camera.main.GetComponent<CameraShake>().Shake());
 
-            rb2D.velocity = direction * dashSpeed;
-        }
+        //    rb2D.velocity = direction * dashSpeed;
+        //}
 
-        public IEnumerator WaitDash(float directionY)
-        {
-            canMove = false;
-            canClimb = false;
-            canWallJump = false;
-            canDash = false;
+        //public IEnumerator WaitDash(float directionY)
+        //{
+        //    canMove = false;
+        //    canClimb = false;
+        //    canWallJump = false;
+        //    canDash = false;
 
-            dashTrailParticles.Play();
-            dashSpreadParticles.Play();
+        //    dashTrailParticles.Play();
+        //    dashSpreadParticles.Play();
 
-            yield return new WaitForSeconds(dashTime);
+        //    yield return new WaitForSeconds(dashTime);
 
-            dashTrailParticles.Stop();
-            dashSpreadParticles.Stop();
+        //    dashTrailParticles.Stop();
+        //    dashSpreadParticles.Stop();
 
-            if (directionY > 0)
-                rb2D.velocity *= 0.5f;
+        //    if (directionY > 0)
+        //        rb2D.velocity *= 0.5f;
 
-            rb2D.gravityScale = defaultGravityScale;
+        //    rb2D.gravityScale = defaultGravityScale;
 
-            dashElapsedCounter = dashElapsedTime;
+        //    dashElapsedCounter = dashElapsedTime;
 
-            isDashing = false;
-            canMove = true;
-            canClimb = true;
-            canWallJump = true;
-            wasDashing = true;
+        //    isDashing = false;
+        //    canMove = true;
+        //    canClimb = true;
+        //    canWallJump = true;
+        //    wasDashing = true;
 
-            if (isOnGround)
-                canDash = true;
-        }
+        //    if (isOnGround)
+        //        canDash = true;
+        //}
 
-        public IEnumerator CornerCorrection()
-        {
-            boxCollider.enabled = false;
-            isCornerCorrection = true;
+        //public IEnumerator CornerCorrection()
+        //{
+        //    boxCollider.enabled = false;
+        //    isCornerCorrection = true;
 
-            rb2D.velocity = new Vector2(rb2D.velocity.x, storedVelocityY);
+        //    rb2D.velocity = new Vector2(rb2D.velocity.x, storedVelocityY);
 
-            float direction = 1f;
+        //    float direction = 1f;
 
-            if (hitRightCorner)
-                direction = -1f;
+        //    if (hitRightCorner)
+        //        direction = -1f;
 
-            while (hitLeftCorner || hitRightCorner)
-            {
-                rb2D.velocity = new Vector2(direction, rb2D.velocity.y);
+        //    while (hitLeftCorner || hitRightCorner)
+        //    {
+        //        rb2D.velocity = new Vector2(direction, rb2D.velocity.y);
 
-                CheckHeadCollisions();
+        //        CheckHeadCollisions();
 
-                yield return new WaitForFixedUpdate();
-            }
+        //        yield return new WaitForFixedUpdate();
+        //    }
 
-            rb2D.velocity = new Vector2(0, rb2D.velocity.y);
-            boxCollider.enabled = true;
-            isCornerCorrection = false;
-        }
+        //    rb2D.velocity = new Vector2(0, rb2D.velocity.y);
+        //    boxCollider.enabled = true;
+        //    isCornerCorrection = false;
+        //}
 
         private void Land()
         {
