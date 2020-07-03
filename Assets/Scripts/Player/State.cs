@@ -2,7 +2,7 @@
 
 namespace CelesteGameFeel.Player
 {
-    public abstract class State : MonoBehaviour
+    public abstract class State
     {
         protected Controller controller;
             
@@ -13,7 +13,16 @@ namespace CelesteGameFeel.Player
             this.controller = controller;
         }
 
-        public virtual void BeginState()
+        public virtual void Start()
+        {
+        }
+
+        public virtual void Update()
+        {
+            HandleInput();
+        }
+
+        public virtual void FixedUpdate()
         {
         }
 

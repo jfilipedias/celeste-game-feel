@@ -45,7 +45,6 @@ GameObject:
   - component: {fileID: 7501705849834277448}
   - component: {fileID: 4637232163391894807}
   - component: {fileID: 4010422187686649405}
-  - component: {fileID: 3870131351485398040}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -211,7 +210,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7501705849834277451}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d2128e3612b90454e9eeb7c09d686884, type: 3}
+  m_Script: {fileID: 11500000, guid: 0ca82ed5e149d3f42abe1eed601a6ea2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 10
@@ -223,12 +222,13 @@ MonoBehaviour:
   climbLedgeIterations: 15
   dashSpeed: 22
   dashTime: 0.2
+  dashElapsedTime: 0.1
   wallJumpTime: 0.3
   jumpBufferingTime: 0.15
   coyoteTime: 0.15
-  dashTrailParticles: {fileID: 7501705851778393456}
-  dashSpreadParticles: {fileID: 7501705850446721472}
-  groundDustParticles: {fileID: 7501705850705279247}
+  dashTrailParticles: {fileID: 0}
+  dashSpreadParticles: {fileID: 0}
+  groundDustParticles: {fileID: 0}
 --- !u!114 &4010422187686649405
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -257,20 +257,6 @@ MonoBehaviour:
   head: {fileID: 379022739930949726}
   hand: {fileID: 7501705850920270056}
   feet: {fileID: 7501705850916735888}
---- !u!114 &3870131351485398040
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7501705849834277451}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3cb08185955078d4fbca47fb8e9919cc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  redSprite: {fileID: 21300000, guid: afff83e7484671e46af612ed6f8592fb, type: 3}
-  blueSprite: {fileID: 21300000, guid: f14b6dff48c1aab41833327c44e2e4c2, type: 3}
 --- !u!1 &7501705850446721475
 GameObject:
   m_ObjectHideFlags: 0

@@ -4,29 +4,33 @@ namespace CelesteGameFeel.Player.States
 {
     public class WalkState : State
     {
+        private float walkDirection;
+
         public WalkState(Controller controller) : base(controller)
         {
-
         }
 
-        public void FixedUpdate()
+        public override void FixedUpdate()
         {
             Walk();
         }
 
         public override void HandleInput()
         {
+            walkDirection = Input.GetAxisRaw("Horizontal");
+
             if (Input.GetAxisRaw("Horizontal") == 0)
-                controller.CurrentState = new StandState(controller);
+                controller.SetState(new StandState(controller));
 
             if (Input.GetButton("Jump"))
-                controller.CurrentState = new JumpState(controller);
+                controller.SetState(new JumpState(controller));
         }
 
         private void Walk()
         {
-            // TODO: Create properties to get some fields values
-            //controller.rb2D.velocity = new Vector2(newVelocityX, rb2D.velocity.y);
+            float velocityX = walkDirection * 10; 
+
+            controller.PlayerRigidbody.velocity = new Vector2(velocityX, controller.PlayerRigidbody.velocity.y);
         }
     }
 }
