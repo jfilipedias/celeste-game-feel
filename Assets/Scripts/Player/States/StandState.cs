@@ -15,11 +15,11 @@ namespace CelesteGameFeel.Player.States
 
         public override void HandleInput()
         {
-            if (Input.GetAxisRaw("Horizontal") != 0)
-                controller.SetState(new WalkState(controller));
-
             if (Input.GetButton("Jump"))
                 controller.SetState(new JumpState(controller));
+         
+            if (Input.GetAxisRaw("Horizontal") != 0)
+                controller.SetState(new WalkState(controller));
         }
     }
 }

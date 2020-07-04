@@ -19,6 +19,9 @@ namespace CelesteGameFeel.Player
         [SerializeField] private int climbLedgeIterations = 15;
         [SerializeField] private float dashSpeed = 22f;
 
+        [Header("Timers")]
+        [SerializeField] private float waitJump = 0.3f;
+
         // Components
         private BoxCollider2D boxCollider;
         private Rigidbody2D playerRigidbody;
@@ -61,6 +64,8 @@ namespace CelesteGameFeel.Player
         #region Proterties
         public Rigidbody2D PlayerRigidbody { get => playerRigidbody; }
         public float FacingDirection { get => facingDirection; }
+        public float JumpForce { get => jumpForce; }
+        public bool IsOnGround { get => isOnGround; }
         public bool IsFlipped { get => isFlipped; }
         public bool CanDash { get => canDash; }
         #endregion
@@ -82,7 +87,8 @@ namespace CelesteGameFeel.Player
 
         private void Update()
         {
-            currentState.HandleInput();
+            CheckCollisions();
+            currentState.Update();
         }
 
         private void FixedUpdate()
@@ -105,6 +111,8 @@ namespace CelesteGameFeel.Player
         {
             previousState = currentState;
             currentState = newState;
+
+            Debug.Log($"Change to {newState.GetType()}");
 
             currentState.Start();
         }
