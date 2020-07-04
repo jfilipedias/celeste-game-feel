@@ -13,8 +13,7 @@ namespace CelesteGameFeel.Player
         [SerializeField] private float moveSpeed = 10f;
         [SerializeField] private float jumpForce = 16f;
         [SerializeField] private float wallSlideSpeed = 2f;
-        [SerializeField] private float climbUpSpeed = 5f;
-        [SerializeField] private float climbDownSpeed = 10f;
+        [SerializeField] private float climbSpeed = 5f;
         [SerializeField] private float climbLedgeForce = 8f;
         [SerializeField] private int climbLedgeIterations = 15;
         [SerializeField] private float dashSpeed = 22f;
@@ -27,13 +26,14 @@ namespace CelesteGameFeel.Player
         private Rigidbody2D playerRigidbody;
         private CollisionHandler collisionHandler;
 
-        // Player Classes
+        // States
         private State currentState;
         private State previousState;
 
         private Vector3 levelLimit;
 
         private float facingDirection = Vector2.right.x;
+        private float moveDirection;
 
         private float defaultGravityScale;
 
@@ -41,8 +41,6 @@ namespace CelesteGameFeel.Player
         private float coyoteTimeCounter;
         private float storedVelocityY;
         private float dashElapsedCounter;
-
-        private int callingCount;
 
         // Booleans
         private bool isOnGround;
@@ -57,17 +55,30 @@ namespace CelesteGameFeel.Player
         private bool isFlipped;
         private bool isCornerCorrection;
 
+        private bool canFlipDirection = true;
         private bool canDash = true;
         #endregion
 
 
         #region Proterties
+        // Components
         public Rigidbody2D PlayerRigidbody { get => playerRigidbody; }
-        public float FacingDirection { get => facingDirection; }
+
+        // Movement
+        public float MoveSpeed { get => moveSpeed; }
         public float JumpForce { get => jumpForce; }
+        public float ClimbSpeed { get => climbSpeed; }
+
+        public float FacingDirection { get => facingDirection; }
+        public float DefaultGravityScale { get => defaultGravityScale; }
+
+        // Bools
         public bool IsOnGround { get => isOnGround; }
+        public bool IsOnWall { get => isOnWall; }
         public bool IsFlipped { get => isFlipped; }
-        public bool CanDash { get => canDash; }
+        
+        public bool CanFlipDirection { get => canFlipDirection; set => canFlipDirection = value; }
+        public bool CanDash { get => canDash; set => canDash = value; }
         #endregion
 
 
@@ -80,7 +91,7 @@ namespace CelesteGameFeel.Player
 
             //levelLimit = GameObject.FindGameObjectWithTag("Level Limit").transform.position;
 
-            //defaultGravityScale = rb2D.gravityScale;
+            defaultGravityScale = playerRigidbody.gravityScale;
 
             currentState = new StandState(this);
         }
@@ -88,7 +99,13 @@ namespace CelesteGameFeel.Player
         private void Update()
         {
             CheckCollisions();
+
+            HandleInput();
+
             currentState.Update();
+
+            if (canFlipDirection && (moveDirection != 0 && moveDirection != facingDirection))
+                FlipDirection();
         }
 
         private void FixedUpdate()
@@ -100,19 +117,21 @@ namespace CelesteGameFeel.Player
 
         #region Controller Methods
         // TODO: Add xbox controller support
-        
         // TODO: Implement stamina to wall climb
-
         // TODO: Fix Wall Climb after dash and press arrow left and arrow up
-
         // TODO: Fix dash that suddenly stop
+
+        public void HandleInput()
+        {
+            moveDirection = Input.GetAxisRaw("Horizontal");
+        }
 
         public void SetState(State newState)
         {
+            currentState.Finish();
+
             previousState = currentState;
             currentState = newState;
-
-            Debug.Log($"Change to {newState.GetType()}");
 
             currentState.Start();
         }

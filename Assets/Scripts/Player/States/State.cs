@@ -26,7 +26,11 @@ namespace CelesteGameFeel.Player
         {
         }
 
-        public virtual void HandleInput()
+        protected virtual void HandleInput()
+        {
+        }
+
+        public virtual void Finish()
         {
         }
     }

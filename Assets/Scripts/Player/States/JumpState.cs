@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Scripting.APIUpdating;
+﻿using UnityEngine;
 
 namespace CelesteGameFeel.Player.States
 {
@@ -25,15 +22,20 @@ namespace CelesteGameFeel.Player.States
             Move();
         }
 
-        public override void HandleInput()
+        protected override void HandleInput()
         {
             horizontalMovement = Input.GetAxisRaw("Horizontal");
 
+            // Stand State
             if (Input.GetAxisRaw("Horizontal") == 0 && controller.IsOnGround)
                 controller.SetState(new StandState(controller));
 
-            if (Input.GetAxisRaw("Horizontal") != 0 && controller.IsOnGround)
-                controller.SetState(new WalkState(controller));
+            // Climb State
+            if (Input.GetButton("Hold") && controller.IsOnWall)
+                controller.SetState(new ClimbState(controller));
+
+            //if (Input.GetAxisRaw("Horizontal") != 0 && controller.IsOnGround)
+            //    controller.SetState(new WalkState(controller));
         }
 
         private void Jump()
@@ -43,7 +45,7 @@ namespace CelesteGameFeel.Player.States
 
         private void Move()
         {
-            float velocityX = horizontalMovement * 10;
+            float velocityX = horizontalMovement * controller.MoveSpeed;
             controller.PlayerRigidbody.velocity = new Vector2(velocityX, controller.PlayerRigidbody.velocity.y);
         }
     }

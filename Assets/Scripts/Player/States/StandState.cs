@@ -13,13 +13,19 @@ namespace CelesteGameFeel.Player.States
             controller.PlayerRigidbody.velocity = Vector2.zero;
         }
 
-        public override void HandleInput()
+        protected override void HandleInput()
         {
-            if (Input.GetButton("Jump"))
+            // Jump State
+            if (Input.GetButtonDown("Jump"))
                 controller.SetState(new JumpState(controller));
-         
+
+            // Walk State
             if (Input.GetAxisRaw("Horizontal") != 0)
                 controller.SetState(new WalkState(controller));
+
+            // Climb State
+            if (Input.GetButton("Hold") && controller.IsOnWall)
+                controller.SetState(new ClimbState(controller));
         }
     }
 }
