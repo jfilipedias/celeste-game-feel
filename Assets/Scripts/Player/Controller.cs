@@ -19,9 +19,10 @@ namespace CelesteGameFeel.Player
         [SerializeField] private float dashSpeed = 22f;
 
         [Header("Timers")]
-        [SerializeField] private float waitJump = 0.3f;
+        [SerializeField] private float waitJump = 0.4f;
 
         // Components
+        private SpriteRenderer sprite;
         private BoxCollider2D boxCollider;
         private Rigidbody2D playerRigidbody;
         private CollisionHandler collisionHandler;
@@ -89,6 +90,7 @@ namespace CelesteGameFeel.Player
         #region MonoBehaviour Methods
         private void Awake()
         {
+            sprite = GetComponent<SpriteRenderer>();
             boxCollider = GetComponent<BoxCollider2D>();
             playerRigidbody = GetComponent<Rigidbody2D>();
             collisionHandler = GetComponent<CollisionHandler>();
@@ -139,13 +141,14 @@ namespace CelesteGameFeel.Player
 
             currentState.Start();
 
-            Debug.Log($"Current State: {currentState}");
+            //Debug.Log($"Current State: {currentState}");
         }
 
         private void FlipDirection()
         {
             facingDirection *= -1;
             isFlipped = !isFlipped;
+            sprite.flipX = isFlipped;
         }
 
         private void CheckCollisions()
