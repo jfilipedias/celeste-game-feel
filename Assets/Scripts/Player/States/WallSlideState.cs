@@ -21,7 +21,7 @@ namespace CelesteGameFeel.Player.States
             base.Update();
 
             // Fall State
-            if (controller.FacingDirection != horizontalMovement)
+            if (!controller.IsOnGround || (controller.FacingDirection != horizontalMovement))
                 controller.SetState(new FallState(controller));
         }
 

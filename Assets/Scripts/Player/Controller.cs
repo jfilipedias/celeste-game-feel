@@ -73,6 +73,9 @@ namespace CelesteGameFeel.Player
         public float FacingDirection { get => facingDirection; }
         public float DefaultGravityScale { get => defaultGravityScale; }
 
+        // Timers
+        public float WaitJump { get => waitJump; }
+
         // Bools
         public bool IsOnGround { get => isOnGround; }
         public bool IsOnWall { get => isOnWall; }
@@ -135,6 +138,8 @@ namespace CelesteGameFeel.Player
             currentState = newState;
 
             currentState.Start();
+
+            Debug.Log($"Current State: {currentState}");
         }
 
         private void FlipDirection()

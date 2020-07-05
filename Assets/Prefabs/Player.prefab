@@ -216,19 +216,11 @@ MonoBehaviour:
   moveSpeed: 10
   jumpForce: 16
   wallSlideSpeed: 2
-  climbUpSpeed: 5
-  climbDownSpeed: 10
+  climbSpeed: 5
   climbLedgeForce: 8
   climbLedgeIterations: 15
   dashSpeed: 22
-  dashTime: 0.2
-  dashElapsedTime: 0.1
-  wallJumpTime: 0.3
-  jumpBufferingTime: 0.15
-  coyoteTime: 0.15
-  dashTrailParticles: {fileID: 0}
-  dashSpreadParticles: {fileID: 0}
-  groundDustParticles: {fileID: 0}
+  waitJump: 0.4
 --- !u!114 &4010422187686649405
 MonoBehaviour:
   m_ObjectHideFlags: 0

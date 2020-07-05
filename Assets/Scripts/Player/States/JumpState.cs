@@ -5,16 +5,19 @@ namespace CelesteGameFeel.Player.States
     public class JumpState : State
     {
         private float horizontalMovement;
+        private float elapsedTime;
+        private bool canChangeState;
 
         public JumpState(Controller controller) : base(controller)
         {
+            elapsedTime = 0;
+            canChangeState = false;
         }
 
         #region Base Methods
         public override void Start()
         {
             controller.PlayerRigidbody.velocity = Vector2.zero;
-
             Jump();
         }
 
@@ -22,8 +25,13 @@ namespace CelesteGameFeel.Player.States
         {
             base.Update();
 
+            elapsedTime += Time.deltaTime;
+
+            if (elapsedTime >= controller.WaitJump)
+                canChangeState = true;
+
             // Wall Slide State
-            if (controller.IsOnWall && horizontalMovement == controller.FacingDirection)
+            if (controller.IsOnWall && horizontalMovement == controller.FacingDirection && canChangeState)
                 controller.SetState(new WallSlideState(controller));
         }
 
@@ -37,14 +45,15 @@ namespace CelesteGameFeel.Player.States
             horizontalMovement = Input.GetAxisRaw("Horizontal");
 
             // Stand State
-            if (Input.GetAxisRaw("Horizontal") == 0 && controller.IsOnGround)
+            if (Input.GetAxisRaw("Horizontal") == 0 && controller.IsOnGround && canChangeState)
                 controller.SetState(new StandState(controller));
 
             // Climb State
-            if (Input.GetButton("Hold") && controller.IsOnWall)
+            if (Input.GetButton("Hold") && controller.IsOnWall && canChangeState)
                 controller.SetState(new ClimbState(controller));
 
-            if (Input.GetAxisRaw("Horizontal") != 0 && controller.IsOnGround)
+            // Walk State
+            if (Input.GetAxisRaw("Horizontal") != 0 && controller.IsOnGround && canChangeState)
                 controller.SetState(new WalkState(controller));
         }
         #endregion
