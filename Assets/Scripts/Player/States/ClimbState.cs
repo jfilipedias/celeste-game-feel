@@ -6,11 +6,13 @@ namespace CelesteGameFeel.Player.States
     public class ClimbState : State
     {
         private float verticalMovement;
+        private float horizontalMovement;
 
         public ClimbState(Controller controller) : base(controller)
         {
         }
 
+        #region Base Methods
         public override void Start()
         {
             controller.PlayerRigidbody.gravityScale = 0;
@@ -24,6 +26,7 @@ namespace CelesteGameFeel.Player.States
 
         protected override void HandleInput()
         {
+            horizontalMovement = Input.GetAxisRaw("Horizontal");
             verticalMovement = Input.GetAxisRaw("Vertical");
 
             // Stand State
@@ -33,7 +36,19 @@ namespace CelesteGameFeel.Player.States
             // Fall State
             if (!Input.GetButton("Hold") && !controller.IsOnGround)
                 controller.SetState(new FallState (controller));
+
+            // Wall Slide State
+            if (!Input.GetButton("Hold") && horizontalMovement == controller.FacingDirection)
+                controller.SetState(new WallSlideState(controller));
+
         }
+
+        public override void Finish()
+        {
+            controller.PlayerRigidbody.gravityScale = controller.DefaultGravityScale;
+            controller.CanFlipDirection = true;
+        }
+        #endregion
 
         private void Climb()
         {
@@ -45,12 +60,6 @@ namespace CelesteGameFeel.Player.States
                 controller.PlayerRigidbody.velocity = new Vector2(0, -controller.ClimbSpeed * 2);
             else
                 controller.PlayerRigidbody.velocity = Vector2.zero;
-        }
-
-        public override void Finish()
-        {
-            controller.PlayerRigidbody.gravityScale = controller.DefaultGravityScale;
-            controller.CanFlipDirection = true;
         }
     }
 }

@@ -67,6 +67,7 @@ namespace CelesteGameFeel.Player
         // Movement
         public float MoveSpeed { get => moveSpeed; }
         public float JumpForce { get => jumpForce; }
+        public float WallSlideSpeed { get => wallSlideSpeed; }
         public float ClimbSpeed { get => climbSpeed; }
 
         public float FacingDirection { get => facingDirection; }

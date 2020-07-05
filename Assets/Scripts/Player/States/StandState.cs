@@ -8,6 +8,7 @@ namespace CelesteGameFeel.Player.States
         {
         }
 
+        #region Base Methods
         public override void Start()
         {
             controller.PlayerRigidbody.velocity = Vector2.zero;
@@ -27,5 +28,6 @@ namespace CelesteGameFeel.Player.States
             if (Input.GetButton("Hold") && controller.IsOnWall)
                 controller.SetState(new ClimbState(controller));
         }
+        #endregion
     }
 }

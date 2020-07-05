@@ -10,6 +10,7 @@ namespace CelesteGameFeel.Player.States
         {
         }
 
+        #region Base Methods
         public override void FixedUpdate()
         {
             Move();
@@ -31,6 +32,7 @@ namespace CelesteGameFeel.Player.States
             if (Input.GetButton("Hold") && controller.IsOnWall)
                 controller.SetState(new ClimbState(controller));
         }
+        #endregion
 
         private void Move()
         {

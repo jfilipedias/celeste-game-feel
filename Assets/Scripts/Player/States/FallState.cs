@@ -4,10 +4,20 @@ namespace CelesteGameFeel.Player.States
 {
     public class FallState : State
     {
-        private float horizontalDirection;
+        private float horizontalMovement;
 
         public FallState(Controller controller) : base(controller)
         {
+        }
+
+        #region Base Methods
+        public override void Update()
+        {
+            base.Update();
+
+            // Wall Slide State
+            if (controller.IsOnWall && horizontalMovement == controller.FacingDirection)
+                controller.SetState(new WallSlideState(controller));
         }
 
         public override void FixedUpdate()
@@ -17,7 +27,7 @@ namespace CelesteGameFeel.Player.States
 
         protected override void HandleInput()
         {
-            horizontalDirection = Input.GetAxisRaw("Horizontal");
+            horizontalMovement = Input.GetAxisRaw("Horizontal");
 
             // Stand State
             if (controller.IsOnGround && !(Input.GetButton("Hold") && controller.IsOnWall))
@@ -27,10 +37,11 @@ namespace CelesteGameFeel.Player.States
             if (Input.GetButton("Hold") && controller.IsOnWall)
                 controller.SetState(new ClimbState(controller));
         }
+        #endregion
 
         private void Move()
         {
-            float velocityX = horizontalDirection * controller.MoveSpeed;
+            float velocityX = horizontalMovement * controller.MoveSpeed;
             controller.PlayerRigidbody.velocity = new Vector2(velocityX, controller.PlayerRigidbody.velocity.y);
         }
     }
