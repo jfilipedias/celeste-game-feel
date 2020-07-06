@@ -18,7 +18,7 @@ namespace CelesteGameFeel.Player
 
         [Header("Timers")]
         [SerializeField] private float waitJump = 0.4f;
-        [SerializeField] private float waitWallJump = 0.3f;
+        [SerializeField] private float waitWallJump = 0.4f;
 
         // Components
         private SpriteRenderer sprite;

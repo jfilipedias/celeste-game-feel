@@ -221,6 +221,7 @@ MonoBehaviour:
   climbLedgeIterations: 15
   dashSpeed: 22
   waitJump: 0.4
+  waitWallJump: 0.4
 --- !u!114 &4010422187686649405
 MonoBehaviour:
   m_ObjectHideFlags: 0

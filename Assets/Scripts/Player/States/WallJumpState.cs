@@ -7,7 +7,9 @@ namespace CelesteGameFeel.Player.States
         private float horizontalMovement;
         private float jumpHorizontalDirection;
         private float elapsedTime;
+
         private bool canChangeState;
+        private bool canFlipDirection;
 
         public WallJumpState(Controller controller) : base(controller)
         {
@@ -24,7 +26,9 @@ namespace CelesteGameFeel.Player.States
 
             if (jumpHorizontalDirection == -controller.FacingDirection)
                 controller.FlipDirection();
-            
+            else
+                controller.CanFlipDirection = true;
+
             Jump();
         }
 
@@ -35,10 +39,7 @@ namespace CelesteGameFeel.Player.States
             elapsedTime += Time.deltaTime;
 
             if (elapsedTime >= controller.WaitWallJump)
-            {
-                controller.CanFlipDirection = true;
-                canChangeState = true;
-            }
+                controller.SetState(new FallState(controller));
         }
 
         public override void FixedUpdate()
@@ -88,11 +89,8 @@ namespace CelesteGameFeel.Player.States
         private void Move()
         {
             float velocityX = horizontalMovement * controller.MoveSpeed;
-
-            if (controller.CanFlipDirection)
-                controller.PlayerRigidbody.velocity = Vector2.Lerp(controller.PlayerRigidbody.velocity, new Vector2(velocityX, controller.PlayerRigidbody.velocity.y), 5 * Time.deltaTime);
-            else
-                controller.PlayerRigidbody.velocity = new Vector2(velocityX, controller.PlayerRigidbody.velocity.y);
+           
+            controller.PlayerRigidbody.velocity = Vector2.Lerp(controller.PlayerRigidbody.velocity, new Vector2(velocityX, controller.PlayerRigidbody.velocity.y), 5 * Time.deltaTime);
         }
     }
 }
