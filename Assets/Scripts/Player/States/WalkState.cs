@@ -20,13 +20,13 @@ namespace CelesteGameFeel.Player.States
         {
             horizontalMovement = Input.GetAxisRaw("Horizontal");
 
+            // Stand State
+            if (horizontalMovement == 0)
+                controller.SetState(new StandState(controller));
+
             // Jump State
             if (Input.GetButtonDown("Jump"))
                 controller.SetState(new JumpState(controller));
-
-            // Stand State
-            if (Input.GetAxisRaw("Horizontal") == 0)
-                controller.SetState(new StandState(controller));
 
             // Climb State
             if (Input.GetButton("Hold") && controller.IsOnWall)

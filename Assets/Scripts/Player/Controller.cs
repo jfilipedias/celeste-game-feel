@@ -1,6 +1,4 @@
 ﻿using CelesteGameFeel.Player.States;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace CelesteGameFeel.Player
@@ -20,6 +18,7 @@ namespace CelesteGameFeel.Player
 
         [Header("Timers")]
         [SerializeField] private float waitJump = 0.4f;
+        [SerializeField] private float waitWallJump = 0.3f;
 
         // Components
         private SpriteRenderer sprite;
@@ -29,7 +28,6 @@ namespace CelesteGameFeel.Player
 
         // States
         private State currentState;
-        private State previousState;
 
         private Vector3 levelLimit;
 
@@ -76,6 +74,7 @@ namespace CelesteGameFeel.Player
 
         // Timers
         public float WaitJump { get => waitJump; }
+        public float WaitWallJump { get => waitWallJump; }
 
         // Bools
         public bool IsOnGround { get => isOnGround; }
@@ -125,7 +124,6 @@ namespace CelesteGameFeel.Player
         // TODO: Add xbox controller support
         // TODO: Implement stamina to wall climb
         // TODO: Fix Wall Climb after dash and press arrow left and arrow up
-        // TODO: Fix dash that suddenly stop
 
         public void HandleInput()
         {
@@ -135,16 +133,13 @@ namespace CelesteGameFeel.Player
         public void SetState(State newState)
         {
             currentState.Finish();
-
-            previousState = currentState;
             currentState = newState;
-
             currentState.Start();
 
-            //Debug.Log($"Current State: {currentState}");
+            Debug.Log($"Current State: {currentState}");
         }
 
-        private void FlipDirection()
+        public void FlipDirection()
         {
             facingDirection *= -1;
             isFlipped = !isFlipped;

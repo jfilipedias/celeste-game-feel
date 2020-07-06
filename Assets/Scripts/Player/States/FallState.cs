@@ -11,15 +11,6 @@ namespace CelesteGameFeel.Player.States
         }
 
         #region Base Methods
-        public override void Update()
-        {
-            base.Update();
-
-            // Wall Slide State
-            if (controller.IsOnWall && horizontalMovement == controller.FacingDirection)
-                controller.SetState(new WallSlideState(controller));
-        }
-
         public override void FixedUpdate()
         {
             Move();
@@ -32,6 +23,10 @@ namespace CelesteGameFeel.Player.States
             // Stand State
             if (controller.IsOnGround && !(Input.GetButton("Hold") && controller.IsOnWall))
                 controller.SetState(new StandState(controller));
+
+            // Wall Slide State
+            if (controller.IsOnWall && horizontalMovement == controller.FacingDirection)
+                controller.SetState(new WallSlideState(controller));
 
             // Climb State
             if (Input.GetButton("Hold") && controller.IsOnWall)

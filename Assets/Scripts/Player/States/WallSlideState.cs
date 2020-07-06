@@ -16,15 +16,6 @@ namespace CelesteGameFeel.Player.States
             controller.PlayerRigidbody.gravityScale = 0;
         }
 
-        public override void Update()
-        {
-            base.Update();
-
-            // Fall State
-            if (!controller.IsOnGround || (controller.FacingDirection != horizontalMovement))
-                controller.SetState(new FallState(controller));
-        }
-
         public override void FixedUpdate()
         {
             Slide();
@@ -34,9 +25,19 @@ namespace CelesteGameFeel.Player.States
         {
             horizontalMovement = Input.GetAxisRaw("Horizontal");
 
+            bool isClimbing = Input.GetButton("Hold");
+
+            // Stand State
+            if (controller.IsOnGround && !isClimbing)
+                controller.SetState(new StandState(controller));
+
             // Climb State
-            if (Input.GetButton("Hold"))
+            if (isClimbing)
                 controller.SetState(new ClimbState(controller));
+
+            // Fall State
+            if (!controller.IsOnGround || (controller.FacingDirection != horizontalMovement))
+                controller.SetState(new FallState(controller));
         }
 
         public override void Finish()

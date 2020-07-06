@@ -29,10 +29,6 @@ namespace CelesteGameFeel.Player.States
 
             if (elapsedTime >= controller.WaitJump)
                 canChangeState = true;
-
-            // Wall Slide State
-            if (controller.IsOnWall && horizontalMovement == controller.FacingDirection && canChangeState)
-                controller.SetState(new WallSlideState(controller));
         }
 
         public override void FixedUpdate()
@@ -45,16 +41,20 @@ namespace CelesteGameFeel.Player.States
             horizontalMovement = Input.GetAxisRaw("Horizontal");
 
             // Stand State
-            if (Input.GetAxisRaw("Horizontal") == 0 && controller.IsOnGround && canChangeState)
+            if (horizontalMovement == 0 && controller.IsOnGround && canChangeState)
                 controller.SetState(new StandState(controller));
+
+            // Walk State
+            if (horizontalMovement != 0 && controller.IsOnGround && canChangeState)
+                controller.SetState(new WalkState(controller));
+
+            // Wall Slide State
+            if (controller.IsOnWall && horizontalMovement == controller.FacingDirection && canChangeState)
+                controller.SetState(new WallSlideState(controller));
 
             // Climb State
             if (Input.GetButton("Hold") && controller.IsOnWall && canChangeState)
                 controller.SetState(new ClimbState(controller));
-
-            // Walk State
-            if (Input.GetAxisRaw("Horizontal") != 0 && controller.IsOnGround && canChangeState)
-                controller.SetState(new WalkState(controller));
         }
         #endregion
 

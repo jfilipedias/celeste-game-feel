@@ -1,12 +1,12 @@
-﻿using System.Runtime.InteropServices.ComTypes;
+﻿    using System.Runtime.InteropServices.ComTypes;
 using UnityEngine;
 
 namespace CelesteGameFeel.Player.States
 {
     public class ClimbState : State
     {
-        private float verticalMovement;
         private float horizontalMovement;
+        private float verticalMovement;
 
         public ClimbState(Controller controller) : base(controller)
         {
@@ -29,16 +29,22 @@ namespace CelesteGameFeel.Player.States
             horizontalMovement = Input.GetAxisRaw("Horizontal");
             verticalMovement = Input.GetAxisRaw("Vertical");
 
+            bool isClimbing = Input.GetButton("Hold");
+
             // Stand State
-            if (!Input.GetButton("Hold") && controller.IsOnGround)
+            if (!isClimbing && controller.IsOnGround)
                 controller.SetState(new StandState(controller));
 
             // Fall State
-            if (!Input.GetButton("Hold") && !controller.IsOnGround)
+            if (!isClimbing && !controller.IsOnGround)
                 controller.SetState(new FallState (controller));
 
+            // Wall Jump State
+            if (Input.GetButtonDown("Jump"))
+                controller.SetState(new WallJumpState(controller));
+
             // Wall Slide State
-            if (!Input.GetButton("Hold") && horizontalMovement == controller.FacingDirection)
+            if (!isClimbing && horizontalMovement == controller.FacingDirection)
                 controller.SetState(new WallSlideState(controller));
 
         }
