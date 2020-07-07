@@ -5,8 +5,8 @@ namespace CelesteGameFeel.Player
     public abstract class State
     {
         protected Controller controller;
-            
-        protected State actualState;
+
+        // TODO: Put some common variables
 
         public State(Controller controller)
         {

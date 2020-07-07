@@ -27,7 +27,7 @@ namespace CelesteGameFeel.Player.States
         protected override void HandleInput()
         {
             horizontalDirection = Input.GetAxisRaw("Horizontal");
-            verticalMovement = Input.GetAxisRaw("Vertical");
+            verticalDirection = Input.GetAxisRaw("Vertical");
 
             bool isClimbing = Input.GetButton("Hold");
 
@@ -58,11 +58,11 @@ namespace CelesteGameFeel.Player.States
 
         private void Climb()
         {
-            float velocityY = verticalMovement * controller.ClimbSpeed;
+            float velocityY = verticalDirection * controller.ClimbSpeed;
 
-            if (verticalMovement > 0)
+            if (verticalDirection > 0)
                 controller.PlayerRigidbody.velocity = new Vector2(0, controller.ClimbSpeed);
-            else if (verticalMovement < 0)
+            else if (verticalDirection < 0)
                 controller.PlayerRigidbody.velocity = new Vector2(0, -controller.ClimbSpeed * 2);
             else
                 controller.PlayerRigidbody.velocity = Vector2.zero;

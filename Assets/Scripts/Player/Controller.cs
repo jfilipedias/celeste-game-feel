@@ -68,6 +68,7 @@ namespace CelesteGameFeel.Player
         public float JumpForce { get => jumpForce; }
         public float WallSlideSpeed { get => wallSlideSpeed; }
         public float ClimbSpeed { get => climbSpeed; }
+        public float DashSpeed { get => dashSpeed; }
 
         public float FacingDirection { get => facingDirection; }
         public float DefaultGravityScale { get => defaultGravityScale; }
