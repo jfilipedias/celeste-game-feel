@@ -4,7 +4,7 @@ namespace CelesteGameFeel.Player.States
 {
     public class WalkState : State
     {
-        private float horizontalMovement;
+        private float horizontalDirection;
 
         public WalkState(Controller controller) : base(controller)
         {
@@ -18,10 +18,10 @@ namespace CelesteGameFeel.Player.States
 
         protected override void HandleInput()
         {
-            horizontalMovement = Input.GetAxisRaw("Horizontal");
+            horizontalDirection = Input.GetAxisRaw("Horizontal");
 
             // Stand State
-            if (horizontalMovement == 0)
+            if (horizontalDirection == 0)
                 controller.SetState(new StandState(controller));
 
             // Jump State
@@ -36,7 +36,7 @@ namespace CelesteGameFeel.Player.States
 
         private void Move()
         {
-            float velocityX = horizontalMovement * controller.MoveSpeed; 
+            float velocityX = horizontalDirection * controller.MoveSpeed; 
             controller.PlayerRigidbody.velocity = new Vector2(velocityX, controller.PlayerRigidbody.velocity.y);
         }
     }

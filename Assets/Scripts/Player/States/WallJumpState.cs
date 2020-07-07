@@ -4,12 +4,11 @@ namespace CelesteGameFeel.Player.States
 {
     public class WallJumpState : State
     {
-        private float horizontalMovement;
+        private float horizontalDirection;
         private float jumpHorizontalDirection;
-        private float elapsedTime;
 
+        private float elapsedTime;
         private bool canChangeState;
-        private bool canFlipDirection;
 
         public WallJumpState(Controller controller) : base(controller)
         {
@@ -49,18 +48,18 @@ namespace CelesteGameFeel.Player.States
 
         protected override void HandleInput()
         {
-            horizontalMovement = Input.GetAxisRaw("Horizontal");
+            horizontalDirection = Input.GetAxisRaw("Horizontal");
             
             // Stand State
-            if (horizontalMovement == 0 && controller.IsOnGround && canChangeState)
+            if (horizontalDirection == 0 && controller.IsOnGround && canChangeState)
                 controller.SetState(new StandState(controller));
 
             // Walk State
-            if (horizontalMovement != 0 && controller.IsOnGround && canChangeState)
+            if (horizontalDirection != 0 && controller.IsOnGround && canChangeState)
                 controller.SetState(new WalkState(controller));
 
             // Wall Slide State
-            if (controller.IsOnWall && horizontalMovement == controller.FacingDirection && canChangeState)
+            if (controller.IsOnWall && horizontalDirection == controller.FacingDirection && canChangeState)
                 controller.SetState(new WallSlideState(controller));
 
             // Climb State
@@ -81,14 +80,14 @@ namespace CelesteGameFeel.Player.States
             if (jumpHorizontalDirection == controller.FacingDirection || jumpHorizontalDirection == 0)
                 jumpDirection = Vector2.up;
             else
-                jumpDirection = new Vector2(horizontalMovement, 1);
+                jumpDirection = new Vector2(horizontalDirection, 1);
 
             controller.PlayerRigidbody.velocity += jumpDirection * controller.JumpForce;
         }
 
         private void Move()
         {
-            float velocityX = horizontalMovement * controller.MoveSpeed;
+            float velocityX = horizontalDirection * controller.MoveSpeed;
            
             controller.PlayerRigidbody.velocity = Vector2.Lerp(controller.PlayerRigidbody.velocity, new Vector2(velocityX, controller.PlayerRigidbody.velocity.y), 5 * Time.deltaTime);
         }
