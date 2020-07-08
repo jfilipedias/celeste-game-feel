@@ -1,7 +1,6 @@
-﻿using CelesteGameFeel.Player;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace Assets.Scripts.Player.States
+namespace CelesteGameFeel.Player.States
 {
     public class DashState : State
     {
@@ -15,18 +14,19 @@ namespace Assets.Scripts.Player.States
 
         public DashState(Controller controller) : base(controller)
         {
-            elapsedTime = 0;
-            canChangeState = false;
         }
 
         #region Base Methods
         public override void Start()
         {
+            elapsedTime = 0;
+            canChangeState = false;
             bool getFirstInput = false;
 
             controller.PlayerRigidbody.gravityScale = 0;
+            controller.CanDash = false;
 
-            while(getFirstInput)
+            while (!getFirstInput)
                 getFirstInput = HandleFirstInput();
 
             Dash();
@@ -35,14 +35,22 @@ namespace Assets.Scripts.Player.States
         public override void Update()
         {
             base.Update();
+
+            elapsedTime += Time.deltaTime;
+
+            // Fall State
+            if (elapsedTime >= controller.DashTime)
+                controller.SetState(new FallState(controller));
         }
 
         public override void Finish()
         {
             controller.PlayerRigidbody.gravityScale = controller.DefaultGravityScale;
-            
+
             if (dashDirection.y > 0)
                 controller.PlayerRigidbody.velocity *= 0.5f;
+
+            // TODO: Stop particles
         }
         #endregion
 
@@ -50,7 +58,7 @@ namespace Assets.Scripts.Player.States
         {
             float directionX = Input.GetAxisRaw("Horizontal");
             float directionY = Input.GetAxisRaw("Vertical");
-            
+
             if (directionX == 0 && (controller.IsOnGround || directionY == 0))
                 horizontalDirection = controller.FacingDirection;
             else
@@ -67,7 +75,7 @@ namespace Assets.Scripts.Player.States
         public void Dash()
         {
             controller.PlayerRigidbody.velocity = dashDirection * controller.DashSpeed;
-        
+
             // TODO: Shake camera
             // TODO: Play particles
         }

@@ -31,6 +31,10 @@ namespace CelesteGameFeel.Player.States
             // Climb State
             if (Input.GetButton("Hold") && controller.IsOnWall)
                 controller.SetState(new ClimbState(controller));
+
+            // Dash State
+            if (Input.GetButtonDown("Dash") && controller.CanDash)
+                controller.SetState(new DashState(controller));
         }
         #endregion
 

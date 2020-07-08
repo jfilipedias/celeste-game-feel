@@ -38,6 +38,10 @@ namespace CelesteGameFeel.Player.States
             // Fall State
             if (!controller.IsOnGround || (controller.FacingDirection != horizontalDirection))
                 controller.SetState(new FallState(controller));
+
+            // Dash State
+            if (Input.GetButtonDown("Dash") && controller.CanDash)
+                controller.SetState(new DashState(controller));
         }
 
         public override void Finish()

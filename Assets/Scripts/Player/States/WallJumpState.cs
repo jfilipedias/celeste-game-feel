@@ -37,7 +37,7 @@ namespace CelesteGameFeel.Player.States
 
             elapsedTime += Time.deltaTime;
 
-            if (elapsedTime >= controller.WaitWallJump)
+            if (elapsedTime >= controller.WallJumpTime)
                 controller.SetState(new FallState(controller));
         }
 
@@ -65,6 +65,10 @@ namespace CelesteGameFeel.Player.States
             // Climb State
             if (Input.GetButton("Hold") && controller.IsOnWall && canChangeState)
                 controller.SetState(new ClimbState(controller));
+
+            // Dash State
+            if (Input.GetButtonDown("Dash") && controller.CanDash)
+                controller.SetState(new DashState(controller));
         }
 
         public override void Finish()

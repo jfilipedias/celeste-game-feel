@@ -17,8 +17,9 @@ namespace CelesteGameFeel.Player
         [SerializeField] private float dashSpeed = 22f;
 
         [Header("Timers")]
-        [SerializeField] private float waitJump = 0.4f;
-        [SerializeField] private float waitWallJump = 0.4f;
+        [SerializeField] private float jumpTime = 0.4f;
+        [SerializeField] private float wallJumpTime = 0.4f;
+        [SerializeField] private float dashTime = 0.2f;
 
         // Components
         private SpriteRenderer sprite;
@@ -28,6 +29,7 @@ namespace CelesteGameFeel.Player
 
         // States
         private State currentState;
+        private State previousState;
 
         private Vector3 levelLimit;
 
@@ -63,6 +65,8 @@ namespace CelesteGameFeel.Player
         // Components
         public Rigidbody2D PlayerRigidbody { get => playerRigidbody; }
 
+        public State PreviousState { get => previousState; }
+
         // Movement
         public float MoveSpeed { get => moveSpeed; }
         public float JumpForce { get => jumpForce; }
@@ -74,8 +78,9 @@ namespace CelesteGameFeel.Player
         public float DefaultGravityScale { get => defaultGravityScale; }
 
         // Timers
-        public float WaitJump { get => waitJump; }
-        public float WaitWallJump { get => waitWallJump; }
+        public float JumpTime { get => jumpTime; }
+        public float WallJumpTime { get => wallJumpTime; }
+        public float DashTime { get => dashTime; }
 
         // Bools
         public bool IsOnGround { get => isOnGround; }
@@ -112,6 +117,9 @@ namespace CelesteGameFeel.Player
 
             if (canFlipDirection && (moveDirection != 0 && moveDirection != facingDirection))
                 FlipDirection();
+
+            if (!canDash && isOnGround)
+                canDash = true;
         }
 
         private void FixedUpdate()

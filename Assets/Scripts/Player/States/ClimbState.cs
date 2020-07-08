@@ -1,4 +1,4 @@
-﻿    using System.Runtime.InteropServices.ComTypes;
+﻿using System.Runtime.InteropServices.ComTypes;
 using UnityEngine;
 
 namespace CelesteGameFeel.Player.States
@@ -17,6 +17,13 @@ namespace CelesteGameFeel.Player.States
         {
             controller.PlayerRigidbody.gravityScale = 0;
             controller.CanFlipDirection = false;
+        }
+
+        public override void Update()
+        {
+            base.Update();
+
+            // TODO: Fix climb if isn't in wall
         }
 
         public override void FixedUpdate()
@@ -46,6 +53,10 @@ namespace CelesteGameFeel.Player.States
             // Wall Slide State
             if (!isClimbing && horizontalDirection == controller.FacingDirection)
                 controller.SetState(new WallSlideState(controller));
+
+            // Dash State
+            if (Input.GetButtonDown("Dash") && controller.CanDash)
+                controller.SetState(new DashState(controller));
 
         }
 
