@@ -141,10 +141,9 @@ namespace CelesteGameFeel.Player
         public void SetState(State newState)
         {
             currentState.Finish();
+            previousState = currentState;
             currentState = newState;
             currentState.Start();
-
-            Debug.Log($"Current State: {currentState}");
         }
 
         public void FlipDirection()

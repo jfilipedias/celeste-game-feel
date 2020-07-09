@@ -4,14 +4,20 @@ namespace CelesteGameFeel.Player.States
 {
     public class StandState : State
     {
+        private ParticleController particleController;
+
         public StandState(Controller controller) : base(controller)
         {
+            particleController = controller.GetComponentInChildren<ParticleController>();
         }
 
         #region Base Methods
         public override void Start()
         {
             controller.PlayerRigidbody.velocity = Vector2.zero;
+         
+            if (controller.PreviousState.GetType() != typeof(WalkState) && controller.PreviousState.GetType() != typeof(ClimbState))
+                particleController.PlayGroundParticles();
         }
 
         protected override void HandleInput()
