@@ -4,10 +4,12 @@ namespace CelesteGameFeel.Player.States
 {
     public class DashState : State
     {
+        private ParticleController particleController;
         private Vector2 dashDirection;
 
         public DashState(Controller controller) : base(controller)
         {
+            particleController = controller.GetComponentInChildren<ParticleController>();
         }
 
         #region Base Methods
@@ -40,6 +42,7 @@ namespace CelesteGameFeel.Player.States
         public override void Finish()
         {
             controller.PlayerRigidbody.gravityScale = controller.DefaultGravityScale;
+            particleController.StopDashParticles();
 
             if (dashDirection.y > 0)
                 controller.PlayerRigidbody.velocity *= 0.5f;
@@ -69,9 +72,9 @@ namespace CelesteGameFeel.Player.States
         public void Dash()
         {
             controller.PlayerRigidbody.velocity = dashDirection * controller.DashSpeed;
+            particleController.PlayDashParticles();
 
             // TODO: Shake camera
-            // TODO: Play particles
         }
     }
 }

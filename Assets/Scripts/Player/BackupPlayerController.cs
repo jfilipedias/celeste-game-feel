@@ -179,7 +179,6 @@ public class BackupPlayerController : MonoBehaviour
 
 
    // #region Controller Methods
-   // TODO: Add xbox controller support
 
    // private void HandleInput()
    // {
@@ -289,7 +288,6 @@ public class BackupPlayerController : MonoBehaviour
    //     rb2D.velocity = new Vector2(0, -wallSlideSpeed);
    // }
 
-   // // TODO: Implement stamina to wall climb
 
    // public void ClimbWall()
    // {
@@ -335,10 +333,6 @@ public class BackupPlayerController : MonoBehaviour
 
    //     isClimbingLedge = false;
    // }
-
-   // // TODO: Fix Wall Climb after dash and press arrow left and arrow up
-
-   // // TODO: Fix dash that suddenly stop
 
    // public void Dash()
    // {

@@ -36,6 +36,7 @@ namespace CelesteGameFeel.Player.States
         }
         #endregion
 
+        // TODO: Lerp movement after dash
         private void Move()
         {
             float velocityX = horizontalDirection * controller.MoveSpeed;

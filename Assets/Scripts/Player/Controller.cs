@@ -132,7 +132,6 @@ namespace CelesteGameFeel.Player
         #region Controller Methods
         // TODO: Add xbox controller support
         // TODO: Implement stamina to wall climb
-        // TODO: Fix Wall Climb after dash and press arrow left and arrow up
 
         public void HandleInput()
         {
