@@ -21,6 +21,7 @@ namespace CelesteGameFeel.Player.States
             base.Update();
 
             // TODO: Fix climb if isn't in wall
+            // TODO: Implement ledge climb
         }
 
         public override void FixedUpdate()

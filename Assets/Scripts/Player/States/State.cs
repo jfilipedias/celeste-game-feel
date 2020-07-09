@@ -17,6 +17,7 @@ namespace CelesteGameFeel.Player
             this.controller = controller;
         }
 
+        // TODO: Review states trasitions
         public virtual void Start()
         {
         }
