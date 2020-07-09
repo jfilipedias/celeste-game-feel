@@ -5,9 +5,6 @@ namespace CelesteGameFeel.Player.States
 {
     public class ClimbState : State
     {
-        private float horizontalDirection;
-        private float verticalDirection;
-
         public ClimbState(Controller controller) : base(controller)
         {
         }

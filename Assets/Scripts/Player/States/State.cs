@@ -6,7 +6,11 @@ namespace CelesteGameFeel.Player
     {
         protected Controller controller;
 
-        // TODO: Put some common variables
+        protected float horizontalDirection;
+        protected float verticalDirection;
+
+        protected float elapsedTime;
+        protected bool canChangeState;
 
         public State(Controller controller)
         {

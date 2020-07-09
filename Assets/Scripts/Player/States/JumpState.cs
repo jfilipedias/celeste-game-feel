@@ -4,10 +4,6 @@ namespace CelesteGameFeel.Player.States
 {
     public class JumpState : State
     {
-        private float horizontalMovement;
-        private float elapsedTime;
-        private bool canChangeState;
-
         public JumpState(Controller controller) : base(controller)
         {
             elapsedTime = 0;
@@ -38,18 +34,18 @@ namespace CelesteGameFeel.Player.States
 
         protected override void HandleInput()
         {
-            horizontalMovement = Input.GetAxisRaw("Horizontal");
+            horizontalDirection = Input.GetAxisRaw("Horizontal");
 
             // Stand State
-            if (horizontalMovement == 0 && controller.IsOnGround && canChangeState)
+            if (horizontalDirection == 0 && controller.IsOnGround && canChangeState)
                 controller.SetState(new StandState(controller));
 
             // Walk State
-            if (horizontalMovement != 0 && controller.IsOnGround && canChangeState)
+            if (horizontalDirection != 0 && controller.IsOnGround && canChangeState)
                 controller.SetState(new WalkState(controller));
 
             // Wall Slide State
-            if (controller.IsOnWall && horizontalMovement == controller.FacingDirection && canChangeState)
+            if (controller.IsOnWall && horizontalDirection == controller.FacingDirection && canChangeState)
                 controller.SetState(new WallSlideState(controller));
 
             // Climb State
@@ -69,7 +65,7 @@ namespace CelesteGameFeel.Player.States
 
         private void Move()
         {
-            float velocityX = horizontalMovement * controller.MoveSpeed;
+            float velocityX = horizontalDirection * controller.MoveSpeed;
             controller.PlayerRigidbody.velocity = new Vector2(velocityX, controller.PlayerRigidbody.velocity.y);
         }
     }

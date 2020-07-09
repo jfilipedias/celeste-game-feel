@@ -4,8 +4,6 @@ namespace CelesteGameFeel.Player.States
 {
     public class WallSlideState : State
     {
-        private float horizontalDirection;
-
         public WallSlideState(Controller controller) : base(controller)
         {
         }

@@ -4,13 +4,7 @@ namespace CelesteGameFeel.Player.States
 {
     public class DashState : State
     {
-        private float horizontalDirection;
-        private float verticalDirection;
-
         private Vector2 dashDirection;
-
-        private float elapsedTime;
-        private bool canChangeState;
 
         public DashState(Controller controller) : base(controller)
         {

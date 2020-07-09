@@ -4,8 +4,6 @@ namespace CelesteGameFeel.Player.States
 {
     public class FallState : State
     {
-        private float horizontalDirection;
-
         public FallState(Controller controller) : base(controller)
         {
         }

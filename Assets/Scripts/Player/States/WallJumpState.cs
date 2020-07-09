@@ -4,11 +4,7 @@ namespace CelesteGameFeel.Player.States
 {
     public class WallJumpState : State
     {
-        private float horizontalDirection;
         private float jumpHorizontalDirection;
-
-        private float elapsedTime;
-        private bool canChangeState;
 
         public WallJumpState(Controller controller) : base(controller)
         {
