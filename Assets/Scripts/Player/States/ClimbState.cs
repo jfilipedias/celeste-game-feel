@@ -12,6 +12,8 @@ namespace CelesteGameFeel.Player.States
         #region Base Methods
         public override void Start()
         {
+            base.Start();
+
             controller.PlayerRigidbody.gravityScale = 0;
             controller.CanFlipDirection = false;
         }

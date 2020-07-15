@@ -11,6 +11,8 @@ namespace CelesteGameFeel.Player.States
         #region Base Methods
         public override void Start()
         {
+            base.Start();
+
             controller.PlayerRigidbody.gravityScale = 0;
         }
 
@@ -28,6 +30,10 @@ namespace CelesteGameFeel.Player.States
             // Stand State
             if (controller.IsOnGround && !isClimbing)
                 controller.SetState(new StandState(controller));
+
+            // Wall Jump State
+            if (controller.IsOnWall && Input.GetButtonDown("Jump"))
+                controller.SetState(new WallJumpState(controller));
 
             // Climb State
             if (isClimbing)

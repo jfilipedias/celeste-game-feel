@@ -15,8 +15,8 @@ namespace CelesteGameFeel.Player.States
         #region Base Methods
         public override void Start()
         {
-            elapsedTime = 0;
-            canChangeState = false;
+            base.Start();
+
             bool getFirstInput = false;
 
             controller.PlayerRigidbody.gravityScale = 0;
@@ -32,8 +32,6 @@ namespace CelesteGameFeel.Player.States
         {
             base.Update();
 
-            elapsedTime += Time.deltaTime;
-
             // Fall State
             if (elapsedTime >= controller.DashTime)
                 controller.SetState(new FallState(controller));
@@ -46,8 +44,6 @@ namespace CelesteGameFeel.Player.States
 
             if (dashDirection.y > 0)
                 controller.PlayerRigidbody.velocity *= 0.5f;
-
-            // TODO: Stop particles
         }
         #endregion
 

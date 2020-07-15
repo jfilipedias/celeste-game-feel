@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace CelesteGameFeel.Player.States
 {
@@ -22,6 +23,14 @@ namespace CelesteGameFeel.Player.States
             if (controller.IsOnGround && !(Input.GetButton("Hold") && controller.IsOnWall))
                 controller.SetState(new StandState(controller));
 
+            // Walk State
+            if (horizontalDirection != 0 && controller.IsOnGround && canChangeState)
+                controller.SetState(new WalkState(controller));
+
+            // Wall Jump State
+            if (controller.IsOnWall && Input.GetButtonDown("Jump"))
+                controller.SetState(new WallJumpState(controller));
+
             // Wall Slide State
             if (controller.IsOnWall && horizontalDirection == controller.FacingDirection)
                 controller.SetState(new WallSlideState(controller));
@@ -36,10 +45,10 @@ namespace CelesteGameFeel.Player.States
         }
         #endregion
 
-        // TODO: Lerp movement after dash
         private void Move()
         {
             float velocityX = horizontalDirection * controller.MoveSpeed;
+
             controller.PlayerRigidbody.velocity = new Vector2(velocityX, controller.PlayerRigidbody.velocity.y);
         }
     }

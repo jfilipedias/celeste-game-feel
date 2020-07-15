@@ -26,6 +26,10 @@ namespace CelesteGameFeel.Player.States
             if (Input.GetButtonDown("Jump"))
                 controller.SetState(new JumpState(controller));
 
+            // Wall Jump State
+            if (controller.IsOnWall && Input.GetButtonDown("Jump"))
+                controller.SetState(new WallJumpState(controller));
+
             // Climb State
             if (Input.GetButton("Hold") && controller.IsOnWall)
                 controller.SetState(new ClimbState(controller));

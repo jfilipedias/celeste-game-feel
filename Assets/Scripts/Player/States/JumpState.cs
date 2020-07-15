@@ -6,13 +6,13 @@ namespace CelesteGameFeel.Player.States
     {
         public JumpState(Controller controller) : base(controller)
         {
-            elapsedTime = 0;
-            canChangeState = false;
         }
 
         #region Base Methods
         public override void Start()
         {
+            base.Start();
+
             controller.PlayerRigidbody.velocity = Vector2.zero;
             Jump();
         }
@@ -20,8 +20,6 @@ namespace CelesteGameFeel.Player.States
         public override void Update()
         {
             base.Update();
-
-            elapsedTime += Time.deltaTime;
 
             if (elapsedTime >= controller.JumpTime)
                 canChangeState = true;
@@ -47,6 +45,10 @@ namespace CelesteGameFeel.Player.States
             // Wall Slide State
             if (controller.IsOnWall && horizontalDirection == controller.FacingDirection && canChangeState)
                 controller.SetState(new WallSlideState(controller));
+            
+            // Wall Jump State
+            if (controller.IsOnWall && Input.GetButtonDown("Jump"))
+                controller.SetState(new WallJumpState(controller));
 
             // Climb State
             if (Input.GetButton("Hold") && controller.IsOnWall && canChangeState)

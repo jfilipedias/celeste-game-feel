@@ -20,10 +20,14 @@ namespace CelesteGameFeel.Player
         // TODO: Review states trasitions
         public virtual void Start()
         {
+            elapsedTime = 0;
+            canChangeState = false;
         }
 
         public virtual void Update()
         {
+            elapsedTime += Time.deltaTime;
+         
             HandleInput();
         }
 

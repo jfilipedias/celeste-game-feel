@@ -15,11 +15,18 @@ namespace CelesteGameFeel.Player.States
         #region Base Methods
         public override void Start()
         {
+            base.Start();
+
             controller.CanFlipDirection = false;
 
-            jumpHorizontalDirection = Input.GetAxisRaw("Horizontal");
+            bool wasClimbing = controller.PreviousState.GetType() == typeof(ClimbState);
 
-            if (jumpHorizontalDirection == -controller.FacingDirection)
+            if (wasClimbing)
+                jumpHorizontalDirection = Input.GetAxisRaw("Horizontal");
+            else
+                jumpHorizontalDirection = -controller.FacingDirection;
+
+            if (wasClimbing && jumpHorizontalDirection == -controller.FacingDirection)
                 controller.FlipDirection();
             else
                 controller.CanFlipDirection = true;
