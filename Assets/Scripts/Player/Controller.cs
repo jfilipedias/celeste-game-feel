@@ -50,8 +50,8 @@ namespace CelesteGameFeel.Player
         private bool hitRightCorner;
         private bool hitLeftCorner;
         private bool hitHead;
-        private bool handsOnWall;
-        private bool feetOnWall;
+        private bool isHandsOnWall;
+        private bool isFeetOnWall;
 
         private bool isFlipped;
         private bool isCornerCorrection;
@@ -72,6 +72,8 @@ namespace CelesteGameFeel.Player
         public float JumpForce { get => jumpForce; }
         public float WallSlideSpeed { get => wallSlideSpeed; }
         public float ClimbSpeed { get => climbSpeed; }
+        public float ClimbLedgeForce { get => climbLedgeForce; }
+        public int ClimbLedgeIterations { get => climbLedgeIterations; }
         public float DashSpeed { get => dashSpeed; }
 
         public float FacingDirection { get => facingDirection; }
@@ -85,6 +87,8 @@ namespace CelesteGameFeel.Player
         // Bools
         public bool IsOnGround { get => isOnGround; }
         public bool IsOnWall { get => isOnWall; }
+        public bool IsHandsOnWall { get => isHandsOnWall; }
+        public bool IsFeetOnWall { get => isFeetOnWall; }
         public bool IsFlipped { get => isFlipped; }
         
         public bool CanFlipDirection { get => canFlipDirection; set => canFlipDirection = value; }
@@ -163,8 +167,8 @@ namespace CelesteGameFeel.Player
 
             hitSpike = collisionHandler.SpikeCollision();
             isOnWall = collisionHandler.WallCollision();
-            handsOnWall = collisionHandler.HandsOnWall();
-            feetOnWall = collisionHandler.FeetOnWall();
+            isHandsOnWall = collisionHandler.HandsOnWall();
+            isFeetOnWall = collisionHandler.FeetOnWall();
         }
 
         private void CheckHeadCollisions()

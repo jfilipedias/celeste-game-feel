@@ -22,6 +22,13 @@ namespace CelesteGameFeel.Player.States
         {
             base.Update();
 
+            // Fall State
+            if (!controller.IsOnWall)
+                controller.SetState(new FallState(controller));
+
+            // Climb Ledge State
+            if (controller.IsFeetOnWall && !controller.IsHandsOnWall)
+                controller.SetState(new ClimbLedgeState(controller));
             // TODO: Fix climb if isn't in wall
             // TODO: Implement ledge climb
         }
