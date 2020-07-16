@@ -70,7 +70,7 @@ namespace CelesteGameFeel.Player.States
             controller.PlayerRigidbody.velocity = dashDirection * controller.DashSpeed;
             particleController.PlayDashParticles();
 
-            // TODO: Shake camera
+            controller.ShakeCamera();
         }
     }
 }

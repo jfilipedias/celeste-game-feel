@@ -29,8 +29,6 @@ namespace CelesteGameFeel.Player.States
             // Climb Ledge State
             if (controller.IsFeetOnWall && !controller.IsHandsOnWall)
                 controller.SetState(new ClimbLedgeState(controller));
-            // TODO: Fix climb if isn't in wall
-            // TODO: Implement ledge climb
         }
 
         public override void FixedUpdate()

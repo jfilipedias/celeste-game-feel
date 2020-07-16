@@ -158,6 +158,11 @@ namespace CelesteGameFeel.Player
             sprite.flipX = isFlipped;
         }
 
+        public void ShakeCamera()
+        {
+            StartCoroutine(Camera.main.GetComponent<CameraShake>().Shake());
+        }
+
         private void CheckCollisions()
         {
             isOnGround = collisionHandler.GroundCollision();
