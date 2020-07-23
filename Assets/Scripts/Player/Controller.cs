@@ -1,4 +1,5 @@
 ﻿using CelesteGameFeel.Player.States;
+using System.Collections;
 using UnityEngine;
 
 namespace CelesteGameFeel.Player
@@ -64,7 +65,7 @@ namespace CelesteGameFeel.Player
         #region Proterties
         // Components
         public Rigidbody2D PlayerRigidbody { get => playerRigidbody; }
-
+        public BoxCollider2D BoxCollider { get => boxCollider; set => boxCollider = value; }
         public State PreviousState { get => previousState; }
 
         // Movement
@@ -75,6 +76,8 @@ namespace CelesteGameFeel.Player
         public float ClimbLedgeForce { get => climbLedgeForce; }
         public int ClimbLedgeIterations { get => climbLedgeIterations; }
         public float DashSpeed { get => dashSpeed; }
+
+        public float StoredVelocityY { get => storedVelocityY; }
 
         public float FacingDirection { get => facingDirection; }
         public float DefaultGravityScale { get => defaultGravityScale; }
@@ -87,6 +90,8 @@ namespace CelesteGameFeel.Player
         // Bools
         public bool IsOnGround { get => isOnGround; }
         public bool IsOnWall { get => isOnWall; }
+        public bool HitRightCorner { get => hitRightCorner; }
+        public bool HitLeftCorner { get => hitLeftCorner; }
         public bool IsHandsOnWall { get => isHandsOnWall; }
         public bool IsFeetOnWall { get => isFeetOnWall; }
         public bool IsFlipped { get => isFlipped; }
@@ -113,6 +118,9 @@ namespace CelesteGameFeel.Player
 
         private void Update()
         {
+            if (!isOnGround && playerRigidbody.velocity.y > 0)
+                storedVelocityY = playerRigidbody.velocity.y;
+
             CheckCollisions();
 
             HandleInput();
@@ -124,6 +132,9 @@ namespace CelesteGameFeel.Player
 
             if (!canDash && isOnGround)
                 canDash = true;
+
+            if ((hitLeftCorner || hitRightCorner) && !hitHead && currentState.GetType() != typeof(CornerCorrectionState))
+                SetState(new CornerCorrectionState(this));
         }
 
         private void FixedUpdate()
@@ -171,7 +182,7 @@ namespace CelesteGameFeel.Player
             isFeetOnWall = collisionHandler.FeetOnWall();
         }
 
-        private void CheckHeadCollisions()
+        public void CheckHeadCollisions()
         {
             hitRightCorner = collisionHandler.RightCornerOnWall();
             hitLeftCorner = collisionHandler.LeftCornerOnWall();
