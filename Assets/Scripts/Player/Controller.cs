@@ -126,6 +126,9 @@ namespace CelesteGameFeel.Player
 
             CheckCollisions();
 
+            if (hitSpike || transform.position.y <= levelLimit.y)
+                     Die();
+
             HandleInput();
 
             currentState.Update();
@@ -175,6 +178,11 @@ namespace CelesteGameFeel.Player
             facingDirection *= -1;
             isFlipped = !isFlipped;
             sprite.flipX = isFlipped;
+        }
+
+        private void Die()
+        {
+            Destroy(gameObject);
         }
 
         private void CheckCollisions()
