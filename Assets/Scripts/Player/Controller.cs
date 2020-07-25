@@ -1,5 +1,4 @@
 ﻿using CelesteGameFeel.Player.States;
-using System.Collections;
 using UnityEngine;
 
 namespace CelesteGameFeel.Player
