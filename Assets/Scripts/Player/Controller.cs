@@ -21,6 +21,8 @@ namespace CelesteGameFeel.Player
         [SerializeField] private float jumpTime = 0.4f;
         [SerializeField] private float wallJumpTime = 0.4f;
         [SerializeField] private float dashTime = 0.2f;
+        [SerializeField] private float coyoteTime = 0.15f;
+        [SerializeField] private float jumpBufferingTime = 0.15f;
 
         // Components
         private SpriteRenderer sprite;
@@ -76,9 +78,7 @@ namespace CelesteGameFeel.Player
         public float ClimbLedgeForce { get => climbLedgeForce; }
         public int ClimbLedgeIterations { get => climbLedgeIterations; }
         public float DashSpeed { get => dashSpeed; }
-
         public float StoredVelocityY { get => storedVelocityY; }
-
         public float FacingDirection { get => facingDirection; }
         public float DefaultGravityScale { get => defaultGravityScale; }
 
@@ -86,12 +86,15 @@ namespace CelesteGameFeel.Player
         public float JumpTime { get => jumpTime; }
         public float WallJumpTime { get => wallJumpTime; }
         public float DashTime { get => dashTime; }
+        public float CoyoteTimeCounter { get => coyoteTimeCounter; }
+        public float JumpBufferingCounter { get => jumpBufferingCounter; }
 
         // Bools
         public bool IsOnGround { get => isOnGround; }
         public bool IsOnWall { get => isOnWall; }
         public bool HitRightCorner { get => hitRightCorner; }
         public bool HitLeftCorner { get => hitLeftCorner; }
+        public bool HitHead { get => hitHead; } 
         public bool IsHandsOnWall { get => isHandsOnWall; }
         public bool IsFeetOnWall { get => isFeetOnWall; }
         public bool IsFlipped { get => isFlipped; }
@@ -109,7 +112,7 @@ namespace CelesteGameFeel.Player
             playerRigidbody = GetComponent<Rigidbody2D>();
             collisionHandler = GetComponent<CollisionHandler>();
 
-            //levelLimit = GameObject.FindGameObjectWithTag("Level Limit").transform.position;
+            levelLimit = GameObject.FindGameObjectWithTag("Level Limit").transform.position;
 
             defaultGravityScale = playerRigidbody.gravityScale;
 
@@ -127,14 +130,17 @@ namespace CelesteGameFeel.Player
 
             currentState.Update();
 
+            if (isOnGround)
+              coyoteTimeCounter = coyoteTime;
+
             if (canFlipDirection && (moveDirection != 0 && moveDirection != facingDirection))
                 FlipDirection();
 
             if (!canDash && isOnGround)
                 canDash = true;
 
-            if ((hitLeftCorner || hitRightCorner) && !hitHead && currentState.GetType() != typeof(CornerCorrectionState))
-                SetState(new CornerCorrectionState(this));
+            coyoteTimeCounter -= Time.deltaTime;
+            jumpBufferingCounter -= Time.deltaTime;
         }
 
         private void FixedUpdate()
@@ -147,11 +153,13 @@ namespace CelesteGameFeel.Player
         #region Controller Methods
         // TODO: Add xbox controller support
         // TODO: Implement stamina to wall climb
-        // TODO: Reimplement all game fell as coyote time, jump buffering and corner correction
 
         public void HandleInput()
         {
             moveDirection = Input.GetAxisRaw("Horizontal");
+
+            if (Input.GetButtonDown("Jump"))
+                jumpBufferingCounter = jumpBufferingTime;
         }
 
         public void SetState(State newState)

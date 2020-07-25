@@ -27,6 +27,10 @@ namespace CelesteGameFeel.Player.States
             if (horizontalDirection != 0 && controller.IsOnGround && canChangeState)
                 controller.SetState(new WalkState(controller));
 
+            // Jump State
+            if (controller.CoyoteTimeCounter >= 0 && Input.GetButtonDown("Jump"))
+                controller.SetState(new JumpState(controller));
+
             // Wall Jump State
             if (controller.IsOnWall && Input.GetButtonDown("Jump"))
                 controller.SetState(new WallJumpState(controller));

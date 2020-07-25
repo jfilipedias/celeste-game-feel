@@ -32,6 +32,10 @@ namespace CelesteGameFeel.Player.States
         {
             base.Update();
 
+            // Corner CorrectionState
+            if ((controller.HitLeftCorner || controller.HitRightCorner) && !controller.HitHead)
+                controller.SetState(new CornerCorrectionState(controller));
+
             // Fall State
             if (elapsedTime >= controller.DashTime)
                 controller.SetState(new FallState(controller));

@@ -4,14 +4,18 @@ namespace CelesteGameFeel.Player.States
 {
     public class JumpState : State
     {
+        private ParticleController particleController;
+
         public JumpState(Controller controller) : base(controller)
         {
+            particleController = controller.GetComponentInChildren<ParticleController>();
         }
 
         #region Base Methods
         public override void Start()
         {
             base.Start();
+            particleController.PlayGroundParticles();
 
             controller.PlayerRigidbody.velocity = Vector2.zero;
             Jump();
@@ -23,6 +27,10 @@ namespace CelesteGameFeel.Player.States
 
             if (elapsedTime >= controller.JumpTime)
                 canChangeState = true;
+
+            // Corner CorrectionState
+            if ((controller.HitLeftCorner || controller.HitRightCorner) && !controller.HitHead)
+                controller.SetState(new CornerCorrectionState(controller));
         }
 
         public override void FixedUpdate()

@@ -23,7 +23,7 @@ namespace CelesteGameFeel.Player.States
         protected override void HandleInput()
         {
             // Jump State
-            if (Input.GetButtonDown("Jump"))
+            if (Input.GetButtonDown("Jump") || (Input.GetButton("Jump") && controller.JumpBufferingCounter >= 0))
                 controller.SetState(new JumpState(controller));
 
             // Walk State

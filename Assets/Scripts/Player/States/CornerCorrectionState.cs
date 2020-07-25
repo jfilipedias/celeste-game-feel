@@ -42,8 +42,6 @@ namespace CelesteGameFeel.Player.States
             controller.PlayerRigidbody.velocity = new Vector2(direction, controller.PlayerRigidbody.velocity.y);
 
             controller.CheckHeadCollisions();
-
-            Debug.Log("Looping throw");
         }
     }
 }
