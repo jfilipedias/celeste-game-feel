@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using CelesteGameFeel.Player;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,7 +10,7 @@ public class SpriteHandler : MonoBehaviour
     [SerializeField] private Sprite blueSprite;
 
     private SpriteRenderer playerSpriteRenderer;
-    private PlayerController controller;
+    private Controller controller;
 
     private bool canDash = true;
     private bool isFlipped = false;
@@ -19,7 +20,7 @@ public class SpriteHandler : MonoBehaviour
     private void Awake()
     {
         playerSpriteRenderer = this.GetComponent<SpriteRenderer>();
-        controller = this.GetComponent<PlayerController>();
+        controller = this.GetComponent<Controller>();
     }
 
     private void Update()

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class CameraShake : MonoBehaviour
@@ -6,7 +7,7 @@ public class CameraShake : MonoBehaviour
     [SerializeField] private float force = 0.1f;
     [SerializeField] private float duration = 0.1f;
 
-    public IEnumerator Shake()
+    public async Task Shake()
     {
         Vector3 originalPosition = this.transform.localPosition;
 
@@ -21,7 +22,7 @@ public class CameraShake : MonoBehaviour
 
             elapsed += Time.deltaTime;
 
-            yield return null;
+            await Task.Yield();
         }
 
         this.transform.localPosition = originalPosition; 
