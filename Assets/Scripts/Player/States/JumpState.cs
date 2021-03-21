@@ -18,6 +18,7 @@ namespace CelesteGameFeel.Player.States
             particleController.PlayGroundParticles();
 
             controller.PlayerRigidbody.velocity = Vector2.zero;
+            controller.CanJumpOnWall = false;
             Jump();
         }
 

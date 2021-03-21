@@ -60,6 +60,7 @@ namespace CelesteGameFeel.Player
 
         private bool canFlipDirection = true;
         private bool canDash = true;
+        private bool canJumpOnWall = true;
         #endregion
 
 
@@ -100,6 +101,7 @@ namespace CelesteGameFeel.Player
         
         public bool CanFlipDirection { get => canFlipDirection; set => canFlipDirection = value; }
         public bool CanDash { get => canDash; set => canDash = value; }
+        public bool CanJumpOnWall { get => CanJumpOnWall; set => canJumpOnWall = value; }
         #endregion
 
 
@@ -162,6 +164,9 @@ namespace CelesteGameFeel.Player
 
             if (Input.GetButtonDown("Jump"))
                 jumpBufferingCounter = jumpBufferingTime;
+
+            if (Input.GetButtonUp("Jump"))
+                canJumpOnWall = true;
         }
 
         public void SetState(State newState)
