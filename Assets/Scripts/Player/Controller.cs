@@ -171,7 +171,6 @@ namespace CelesteGameFeel.Player
 
         public void SetState(State newState)
         {
-            Debug.Log(newState.ToString());
             currentState.Finish();
             previousState = currentState;
             currentState = newState;
