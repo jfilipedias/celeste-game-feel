@@ -43,11 +43,16 @@ namespace CelesteGameFeel.Player.States
 
         public override void Finish()
         {
+            verticalDirection = Input.GetAxisRaw("Vertical");
+
             controller.PlayerRigidbody.gravityScale = controller.DefaultGravityScale;
             particleController.StopDashParticles();
 
             if (dashDirection.y > 0)
                 controller.PlayerRigidbody.velocity *= 0.5f;
+
+            if (dashDirection.x != 0 && dashDirection.y > 0)
+                controller.PlayerRigidbody.velocity = new Vector2(controller.PlayerRigidbody.velocity.x, controller.PlayerRigidbody.velocity.y * verticalDirection * 0.5f);
         }
         #endregion
 

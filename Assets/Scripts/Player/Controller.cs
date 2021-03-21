@@ -14,12 +14,12 @@ namespace CelesteGameFeel.Player
         [SerializeField] private float climbSpeed = 5f;
         [SerializeField] private float climbLedgeForce = 8f;
         [SerializeField] private int climbLedgeIterations = 15;
-        [SerializeField] private float dashSpeed = 22f;
+        [SerializeField] private float dashSpeed = 35f;
 
         [Header("Timers")]
         [SerializeField] private float jumpTime = 0.4f;
         [SerializeField] private float wallJumpTime = 0.4f;
-        [SerializeField] private float dashTime = 0.2f;
+        [SerializeField] private float dashTime = 0.15f;
         [SerializeField] private float coyoteTime = 0.15f;
         [SerializeField] private float jumpBufferingTime = 0.15f;
 
@@ -166,6 +166,7 @@ namespace CelesteGameFeel.Player
 
         public void SetState(State newState)
         {
+            Debug.Log(newState.ToString());
             currentState.Finish();
             previousState = currentState;
             currentState = newState;
