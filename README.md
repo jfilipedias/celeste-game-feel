@@ -9,9 +9,11 @@ In addition to the basic mechanics, this project implement some little ajust as 
 
 ### Coyote Time
 You can still jump for a short time after leaving a ledge.
+![Coyote Time](Preview/coyote-time.GIF)
 
 ### Jump Buffering
 If you press and hold the jump button a short time before landing, you will jump on the exact frame that you land.
 
 ### Jump Corner Correction
 If you bonk your head on a corner, the game tries to wiggle you to the side around it.
+![Coyote Time](Preview/corner-correction.GIF)
